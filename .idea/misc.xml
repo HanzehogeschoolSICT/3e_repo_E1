@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ParserProjectConfiguration">
     <class-path />
+  </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_3" default="false" assert-keyword="false" jdk-15="false" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+  <component name="ProjectRootManager">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>
