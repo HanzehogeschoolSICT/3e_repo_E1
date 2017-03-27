@@ -12,4 +12,6 @@ public interface GameServer {
     boolean forfeit();
     boolean challenge(String player, String game);
     boolean acceptChallenge(int challengeNum);
+
+    void registerEventListener(GameEventListener gameEventListener);
 }
