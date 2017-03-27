@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -13,17 +14,19 @@ public class Client implements GameClient {
     private CommandType ct;
     private boolean success = false;
     private String[] gameList;
-    private String[] playerlist;
+    private String[] playerList;
 
     public Client () {
 
     }
 
 
-    public synchronized void guardedLock() {
+    public void guardedLock() {
         while (ct != null) {
             try {
-                this.wait();
+                synchronized (this) {
+                    this.wait();
+                }
             } catch (InterruptedException e) {}
         }
     }
@@ -77,7 +80,9 @@ public class Client implements GameClient {
             try {
                 bw.write("get gamelist\n");
                 ct = CommandType.GETGAMELIST;
+                System.out.println("before lock");
                 guardedLock();
+                System.out.println("after lock");
                 return gameList;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -93,7 +98,7 @@ public class Client implements GameClient {
                 bw.write("get playerlist\n");
                 ct = CommandType.GETPLAYERS;
                 guardedLock();
-                return playerlist;
+                return playerList;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -182,6 +187,7 @@ public class Client implements GameClient {
     }
 
     public void listener () {
+        Client client = this;
         Thread listen = new Thread(new Runnable() {
             public void run() {
                 try {
@@ -189,7 +195,8 @@ public class Client implements GameClient {
 
                     while (true) {
                         String line;
-                        if ((line = in.readLine()) != null) {
+                        if ((line = in.readLine()) != null && ct != null) {
+                            System.out.println(ct);
                             switch (ct) {
                                 case LOGIN:
                                 case SUBSCRIBE:
@@ -197,6 +204,7 @@ public class Client implements GameClient {
                                 case FORFEIT:
                                 case CHALLENGE:
                                 case ACCEPTCHALLENGE:
+                                    System.out.println("in switch case");
                                     success = true;
                                     break;
                                 case GETGAMELIST:
@@ -205,12 +213,15 @@ public class Client implements GameClient {
                                     break;
                                 case GETPLAYERS:
                                     line = line.substring(1, line.length()-1);
-                                    playerlist = line.split(",");
+                                    playerList = line.split(",");
                                     break;
 
 
                             }
                             ct = null;
+                            synchronized (client) {
+                                client.notify();
+                            }
                         }
                     }
                 } catch (IOException e) {
@@ -220,6 +231,28 @@ public class Client implements GameClient {
             }
         });
         listen.start();
+    }
+
+    public static void main(String[] args) {
+        Client client = new Client();
+        boolean connected = false;
+        try {
+            connected = client.connect(InetAddress.getByName("145.33.225.170"), 7789);
+            System.out.println(connected);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        client.listener();
+
+        if (connected) {
+            System.out.println("hoi");
+            boolean login = client.login("samikroon");
+            System.out.println("logging in: " + login);
+            String[] test = client.getGameList();
+            System.out.println("gamelist: " +test);
+        }
+
+
     }
 
 }
