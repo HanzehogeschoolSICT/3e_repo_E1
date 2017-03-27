@@ -1,12 +1,12 @@
 import java.net.InetAddress;
 import java.util.Collection;
 
-public interface GameServer {
+public interface GameClient {
     boolean connect(InetAddress inetAddress, int port);
     boolean login(String username);
     boolean logout();
-    Collection<String> getGameList();
-    Collection<String> getPlayers();
+    String[] getGameList();
+    String[] getPlayers();
     boolean subscribe(String game);
     boolean move(String move);
     boolean forfeit();
