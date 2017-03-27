@@ -70,5 +70,3 @@ fabric.properties
 # Eclipse
 .project
 .classpath
-bin/
-src/
