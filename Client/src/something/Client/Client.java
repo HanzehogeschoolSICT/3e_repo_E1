@@ -205,7 +205,7 @@ public class Client implements GameClient {
     
     public void startListening() {
         Client client = this;
-        
+
         Thread listen = new Thread(new Runnable() {
             public void run() {
                 try {
