@@ -2,12 +2,11 @@ import event.GameEventListener;
 
 import java.net.InetAddress;
 import event.GameEvent;
-import event.GameEventListener;
 
 public interface GameClient {
     boolean connect(InetAddress inetAddress, int port);
     boolean login(String username);
-    boolean logout();
+    void logout();
     String[] getGameList();
     String[] getPlayers();
     boolean subscribe(String game);

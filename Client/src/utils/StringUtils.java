@@ -15,7 +15,7 @@ public class StringUtils {
 		
 		mapString = mapString.substring(1, mapString.length()-1).replace("\"", "");
 		String[] entries = mapString.split(", ");
-		for(String entry : entries) {			
+		for(String entry : entries) {
 			String key = entry.split(": ")[0];
 			String value = entry.split(": ").length > 1 ? entry.split(": ")[1] : "";
 			

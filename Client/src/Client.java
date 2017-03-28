@@ -74,18 +74,14 @@ public class Client implements GameClient {
     }
 
     @Override
-    public boolean logout() {
+    public void logout() {
         if (ct == null) {
             try {
                 sendCommand("bye");
-                ct = CommandType.LOGOUT;
-                guardedLock();
-                return success;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        return false;
     }
 
     @Override
