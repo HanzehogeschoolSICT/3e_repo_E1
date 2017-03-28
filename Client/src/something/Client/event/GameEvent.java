@@ -1,4 +1,4 @@
-package event;
+package something.Client.event;
 
 /**
  * Marker interface for game events

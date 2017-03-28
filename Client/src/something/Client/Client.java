@@ -1,21 +1,18 @@
+package something.Client;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Random;
-
-import event.GameEvent;
-import event.GameEventListener;
-import event.events.ChallengeCancelledEvent;
-import event.events.ChallengeReceiveEvent;
-import event.events.MatchFinishEvent;
-import event.events.MatchStartEvent;
-import event.events.MoveEvent;
-import event.events.YourTurnEvent;
+import something.Client.event.GameEvent;
+import something.Client.event.GameEventListener;
+import something.Client.event.events.ChallengeCancelledEvent;
+import something.Client.event.events.ChallengeReceiveEvent;
+import something.Client.event.events.MatchFinishEvent;
+import something.Client.event.events.MatchStartEvent;
+import something.Client.event.events.MoveEvent;
+import something.Client.event.events.YourTurnEvent;
 import utils.StringUtils;
 
 /**
@@ -78,6 +75,7 @@ public class Client implements GameClient {
         if (ct == null) {
             try {
                 sendCommand("bye");
+                socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -195,9 +193,7 @@ public class Client implements GameClient {
     }
     
     @Override
-    public void callEvent(GameEvent event) {
-    	System.out.println(event.getClass());
-    	
+    public void callEvent(GameEvent event) {    	
     	Iterator<GameEventListener> listenerIterator = registeredListeners.iterator();
     	
     	while(listenerIterator.hasNext()) {
@@ -227,24 +223,24 @@ public class Client implements GameClient {
                         		
                         		switch(eventType) {
                         			case "MATCH":
-                        				callEvent(new MatchStartEvent(data.get("GAMETYPE"), data.get("PLAYERTOMOVE"), data.get("OPPONENT")));
+                        				callEvent(new MatchStartEvent(client, data.get("GAMETYPE"), data.get("PLAYERTOMOVE"), data.get("OPPONENT")));
                         				break;
                         			case "YOURTURN":
-                        				callEvent(new YourTurnEvent(data.get("TURNMESSAGE")));
+                        				callEvent(new YourTurnEvent(client, data.get("TURNMESSAGE")));
                         				break;
                         			case "MOVE":
-                        				callEvent(new MoveEvent(data.get("PLAYER"), data.get("DETAILS"), data.get("MOVE")));
+                        				callEvent(new MoveEvent(client, data.get("PLAYER"), data.get("DETAILS"), data.get("MOVE")));
                         				break;
                         			case "WIN":
                         			case "LOSS":
                         			case "DRAW":
-                        				callEvent(new MatchFinishEvent(data.get("RESULT"), data.get("PLAYERONESCORE"), data.get("PLAYERTWOSCORE"), data.get("COMMENT")));
+                        				callEvent(new MatchFinishEvent(client, data.get("RESULT"), data.get("PLAYERONESCORE"), data.get("PLAYERTWOSCORE"), data.get("COMMENT")));
                         				break;
                         			case "CHALLENGE":
-                        				callEvent(new ChallengeReceiveEvent(data.get("CHALLENGER"), data.get("GAMETYPE"), data.get("CHALLENGENUMBER")));
+                        				callEvent(new ChallengeReceiveEvent(client, data.get("CHALLENGER"), data.get("GAMETYPE"), data.get("CHALLENGENUMBER")));
                         				break;
                         			case "CHALLENGE CANCELLED":
-                        				callEvent(new ChallengeCancelledEvent(data.get("CHALLENGENUMBER")));
+                        				callEvent(new ChallengeCancelledEvent(client, data.get("CHALLENGENUMBER")));
                         				break;
                         		}
                         		
@@ -289,7 +285,8 @@ public class Client implements GameClient {
         bw.flush();
     }
 
-    public static void main(String[] args) {
+    //Test code
+    /*public static void main(String[] args) {
         Client client = new Client();
         
         boolean connected = false;
@@ -313,5 +310,5 @@ public class Client implements GameClient {
             
             client.subscribe("Tic-tac-toe");
         }
-    }
+    }*/
 }

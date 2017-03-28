@@ -1,4 +1,4 @@
-package event;
+package something.Client.event;
 
 @FunctionalInterface
 public interface GameEventListener {

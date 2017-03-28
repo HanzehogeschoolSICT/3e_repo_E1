@@ -1,7 +1,8 @@
-import event.GameEventListener;
-
+package something.Client;
 import java.net.InetAddress;
-import event.GameEvent;
+
+import something.Client.event.GameEvent;
+import something.Client.event.GameEventListener;
 
 public interface GameClient {
     boolean connect(InetAddress inetAddress, int port);
