@@ -1,3 +1,5 @@
+import event.GameEventListener;
+
 import java.net.InetAddress;
 import event.GameEvent;
 import event.GameEventListener;
