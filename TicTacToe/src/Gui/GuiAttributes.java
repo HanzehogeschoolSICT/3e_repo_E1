@@ -1,4 +1,4 @@
-package GUI;
+package Gui;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
