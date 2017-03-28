@@ -10,6 +10,12 @@ public class StartGui extends Application{
 
         primaryStage.setScene(new GuiSettings().scene);
         primaryStage.show();
+
+        Stage secondaryStage = new Stage();
+        secondaryStage.setTitle("Login");
+        secondaryStage.setScene(new InitPopUp().scene);
+        secondaryStage.show();
+
     }
 
     public static void main(String[] args){ Application.launch(args); }
