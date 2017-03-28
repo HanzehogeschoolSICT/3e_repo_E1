@@ -3,6 +3,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -34,7 +35,7 @@ public class Client implements GameClient {
     @Override
     public boolean connect(InetAddress inetAddress, int port) {
         try {
-            this.socket = new Socket(inetAddress, 7789);
+            this.socket = new Socket(inetAddress, port);
             this.bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             return true;
         } catch (Exception e) {
@@ -47,7 +48,8 @@ public class Client implements GameClient {
     public boolean login(String username) {
         if (ct == null) {
             try {
-                bw.write(username + "\n");
+                writer("login " + username);
+                System.out.println("login " + username);
                 ct = CommandType.LOGIN;
                 guardedLock();
                 return success;
@@ -63,7 +65,7 @@ public class Client implements GameClient {
     public boolean logout() {
         if (ct == null) {
             try {
-                bw.write("bye\n");
+                writer("bye");
                 ct = CommandType.LOGOUT;
                 guardedLock();
                 return success;
@@ -78,7 +80,7 @@ public class Client implements GameClient {
     public String[] getGameList() {
         if (ct == null) {
             try {
-                bw.write("get gamelist\n");
+                writer("get gamelist");
                 ct = CommandType.GETGAMELIST;
                 System.out.println("before lock");
                 guardedLock();
@@ -95,7 +97,7 @@ public class Client implements GameClient {
     public String[] getPlayers() {
         if (ct == null) {
             try {
-                bw.write("get playerlist\n");
+                writer("get playerlist");
                 ct = CommandType.GETPLAYERS;
                 guardedLock();
                 return playerList;
@@ -110,7 +112,7 @@ public class Client implements GameClient {
     public boolean subscribe(String game) {
         if (ct == null) {
             try {
-                bw.write("subscribe " + game + "\n");
+                writer("subscribe " + game);
                 ct = CommandType.SUBSCRIBE;
                 guardedLock();
                 return success;
@@ -125,7 +127,7 @@ public class Client implements GameClient {
     public boolean move(String move) {
         if (ct == null) {
             try {
-                bw.write("move " + move + "\n");
+                writer("move " + move);
                 ct = CommandType.MOVE;
                 guardedLock();
                 return success;
@@ -140,7 +142,7 @@ public class Client implements GameClient {
     public boolean forfeit() {
         if (ct == null) {
             try {
-                bw.write("forfeit\n");
+                writer("forfeit");
                 ct = CommandType.FORFEIT;
                 guardedLock();
                 return success;
@@ -155,7 +157,7 @@ public class Client implements GameClient {
     public boolean challenge(String player, String game) {
         if (ct == null) {
             try {
-                bw.write("challenge \"" + player + "\" \"" + game + "\"\n");
+                writer("challenge \"" + player + "\" \"" + game + "\"");
                 ct = CommandType.CHALLENGE;
                 guardedLock();
                 return success;
@@ -170,7 +172,7 @@ public class Client implements GameClient {
     public boolean acceptChallenge(int challengeNum) {
         if (ct == null) {
             try {
-                bw.write("challenge accept " + challengeNum + "\n");
+                writer("challenge accept " + challengeNum);
                 ct = CommandType.ACCEPTCHALLENGE;
                 guardedLock();
                 return success;
@@ -194,33 +196,39 @@ public class Client implements GameClient {
                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                     while (true) {
-                        String line;
-                        if ((line = in.readLine()) != null && ct != null) {
-                            System.out.println(ct);
-                            switch (ct) {
-                                case LOGIN:
-                                case SUBSCRIBE:
-                                case MOVE:
-                                case FORFEIT:
-                                case CHALLENGE:
-                                case ACCEPTCHALLENGE:
-                                    System.out.println("in switch case");
-                                    success = true;
-                                    break;
-                                case GETGAMELIST:
-                                    line = line.substring(1, line.length()-1);
-                                    gameList = line.split(",");
-                                    break;
-                                case GETPLAYERS:
-                                    line = line.substring(1, line.length()-1);
-                                    playerList = line.split(",");
-                                    break;
+                        String line = in.readLine();
+                        System.out.println(line);
+                        if (line != null &&
+                                (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {
+                            if (ct != null) {
+                                System.out.println(ct);
+                                switch (ct) {
+                                    case LOGIN:
+                                    case SUBSCRIBE:
+                                    case MOVE:
+                                    case FORFEIT:
+                                    case CHALLENGE:
+                                    case ACCEPTCHALLENGE:
+                                        System.out.println("in switch case");
+                                        success = true;
+                                        break;
+                                    case GETGAMELIST:
+                                        line = in.readLine();
+                                        line = line.substring(15, line.length() - 2);
+                                        gameList = line.split("\", \"");
+                                        break;
+                                    case GETPLAYERS:
+                                        line = in.readLine();
+                                        line = line.substring(1, line.length() - 1);
+                                        playerList = line.split(",");
+                                        break;
 
 
-                            }
-                            ct = null;
-                            synchronized (client) {
-                                client.notify();
+                                }
+                                ct = null;
+                                synchronized (client) {
+                                    client.notify();
+                                }
                             }
                         }
                     }
@@ -233,23 +241,30 @@ public class Client implements GameClient {
         listen.start();
     }
 
+    private void writer(String writable) throws IOException{
+        bw.write(writable);
+        bw.newLine();
+        bw.flush();
+    }
+
     public static void main(String[] args) {
         Client client = new Client();
         boolean connected = false;
         try {
-            connected = client.connect(InetAddress.getByName("145.33.225.170"), 7789);
+            connected = client.connect(InetAddress.getByName("localhost"), 7789);
+            client.listener();
             System.out.println(connected);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        client.listener();
+
 
         if (connected) {
             System.out.println("hoi");
             boolean login = client.login("samikroon");
             System.out.println("logging in: " + login);
             String[] test = client.getGameList();
-            System.out.println("gamelist: " +test);
+            System.out.println("gamelist: " + Arrays.asList(test));
         }
 
 
