@@ -21,7 +21,8 @@ import something.Client.utils.StringUtils;
 public class Client implements GameClient {
     private Socket socket;
     private BufferedWriter bw;
-    
+    private BufferedReader br;
+
     private CommandType ct;
     private boolean success = false;
     private String[] gameList;
@@ -31,6 +32,7 @@ public class Client implements GameClient {
     
     public Client () {
     	registeredListeners = new LinkedList<>();
+    	startListening();
     }
 
     public void guardedLock() {
@@ -48,6 +50,7 @@ public class Client implements GameClient {
         try {
             this.socket = new Socket(inetAddress, port);
             this.bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -209,10 +212,8 @@ public class Client implements GameClient {
         Thread listen = new Thread(new Runnable() {
             public void run() {
                 try {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
                     while (true) {
-                        String line = in.readLine();
+                        String line = br.readLine();
                         
                         if (line != null && (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {   
                         	//Received event
@@ -256,11 +257,11 @@ public class Client implements GameClient {
                                         success = line.startsWith("OK");
                                         break;
                                     case GETGAMELIST:
-                                        line = in.readLine();
+                                        line = br.readLine();
                                         gameList = StringUtils.stringToArray(line.substring("SVR GAMELIST ".length()));
                                         break;
                                     case GETPLAYERS:
-                                        line = in.readLine();
+                                        line = br.readLine();
                                         playerList = StringUtils.stringToArray(line.substring("SVR PLAYERLIST ".length()));
                                         break;
                                 }
