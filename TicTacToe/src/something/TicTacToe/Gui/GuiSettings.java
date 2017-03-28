@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 public class GuiSettings {
     Scene scene;
     Integer turn = 0;
+    byte[] seeValues = new byte[]{0,0,0,0,0,0,0,0,0};
 
     public GuiSettings(){
         try{
