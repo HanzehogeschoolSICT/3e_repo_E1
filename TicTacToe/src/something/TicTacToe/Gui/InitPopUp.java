@@ -1,4 +1,4 @@
-package Gui;
+package something.TicTacToe.Gui;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -11,14 +11,17 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import something.TicTacToe.Controller;
 
 
 public class InitPopUp {
     Scene scene;
     final ToggleGroup playerOneGroup = new ToggleGroup();
     final ToggleGroup playerTwoGroup = new ToggleGroup();
+    private Controller controller;
 
-    public InitPopUp(){
+    public InitPopUp(Controller controller){
+        this.controller = controller;
         try{
             this.scene = makeScene();
         } catch (Exception e){
