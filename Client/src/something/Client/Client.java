@@ -2,6 +2,7 @@ package something.Client;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -32,7 +33,12 @@ public class Client implements GameClient {
     
     public Client () {
     	registeredListeners = new LinkedList<>();
-    	startListening();
+    	
+    	try {
+			connect(InetAddress.getByName("localhost"), 7789);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
     }
 
     public void guardedLock() {
@@ -51,7 +57,10 @@ public class Client implements GameClient {
             this.socket = new Socket(inetAddress, port);
             this.bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        	startListening();
+
             return true;
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -281,7 +290,7 @@ public class Client implements GameClient {
     }
 
     private void sendCommand(String writable) throws IOException {
-        bw.write(writable);
+    	bw.write(writable);
         bw.newLine();
         bw.flush();
     }
