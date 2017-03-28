@@ -13,7 +13,7 @@ import something.Client.event.events.MatchFinishEvent;
 import something.Client.event.events.MatchStartEvent;
 import something.Client.event.events.MoveEvent;
 import something.Client.event.events.YourTurnEvent;
-import utils.StringUtils;
+import something.Client.utils.StringUtils;
 
 /**
  * Created by samikroon on 3/27/17.

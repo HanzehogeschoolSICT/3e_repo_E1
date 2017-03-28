@@ -1,4 +1,4 @@
-package utils;
+package something.Client.utils;
 
 import java.util.HashMap;
 
