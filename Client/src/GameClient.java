@@ -1,7 +1,8 @@
 import event.GameEventListener;
 
 import java.net.InetAddress;
-import java.util.Collection;
+import event.GameEvent;
+import event.GameEventListener;
 
 public interface GameClient {
     boolean connect(InetAddress inetAddress, int port);
@@ -16,4 +17,5 @@ public interface GameClient {
     boolean acceptChallenge(int challengeNum);
 
     void registerEventListener(GameEventListener gameEventListener);
+    void callEvent(GameEvent event);
 }

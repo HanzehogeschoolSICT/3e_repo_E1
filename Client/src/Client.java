@@ -2,9 +2,21 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Random;
+
+import event.GameEvent;
+import event.GameEventListener;
+import event.events.ChallengeCancelledEvent;
+import event.events.ChallengeReceiveEvent;
+import event.events.MatchFinishEvent;
+import event.events.MatchStartEvent;
+import event.events.MoveEvent;
+import event.events.YourTurnEvent;
+import utils.StringUtils;
 
 /**
  * Created by samikroon on 3/27/17.
@@ -12,13 +24,16 @@ import java.util.Collection;
 public class Client implements GameClient {
     private Socket socket;
     private BufferedWriter bw;
+    
     private CommandType ct;
     private boolean success = false;
     private String[] gameList;
     private String[] playerList;
 
+    private LinkedList<GameEventListener> registeredListeners;
+    
     public Client () {
-
+    	registeredListeners = new LinkedList<>();
     }
 
     public void guardedLock() {
@@ -48,7 +63,6 @@ public class Client implements GameClient {
         if (ct == null) {
             try {
                 sendCommand("login " + username);
-                System.out.println("login " + username);
                 ct = CommandType.LOGIN;
                 guardedLock();
                 return success;
@@ -181,11 +195,25 @@ public class Client implements GameClient {
 
     @Override
     public void registerEventListener(GameEventListener gameEventListener) {
-
+    	registeredListeners.add(gameEventListener);
     }
-
-    public void listener() {
+    
+    @Override
+    public void callEvent(GameEvent event) {
+    	System.out.println(event.getClass());
+    	
+    	Iterator<GameEventListener> listenerIterator = registeredListeners.iterator();
+    	
+    	while(listenerIterator.hasNext()) {
+    		GameEventListener listener = listenerIterator.next();
+    		
+    		listener.handleEvent(event);
+    	}
+    }
+    
+    public void startListening() {
         Client client = this;
+        
         Thread listen = new Thread(new Runnable() {
             public void run() {
                 try {
@@ -193,11 +221,39 @@ public class Client implements GameClient {
 
                     while (true) {
                         String line = in.readLine();
-                        System.out.println(line);
-                        if (line != null &&
-                                (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {
-                            if (ct != null) {
-                                System.out.println(ct);
+                        
+                        if (line != null && (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {   
+                        	//Received event
+                        	if(line.startsWith("SVR GAME ")) {
+                        		String eventStr = line.substring("SVR GAME ".length());
+                        		String eventType = eventStr.split(" \\{")[0];
+                        		HashMap<String, String> data = StringUtils.stringToMap("{" + eventStr.split(" \\{")[1]);
+                        		
+                        		switch(eventType) {
+                        			case "MATCH":
+                        				callEvent(new MatchStartEvent(data.get("GAMETYPE"), data.get("PLAYERTOMOVE"), data.get("OPPONENT")));
+                        				break;
+                        			case "YOURTURN":
+                        				callEvent(new YourTurnEvent(data.get("TURNMESSAGE")));
+                        				break;
+                        			case "MOVE":
+                        				callEvent(new MoveEvent(data.get("PLAYER"), data.get("DETAILS"), data.get("MOVE")));
+                        				break;
+                        			case "WIN":
+                        			case "LOSS":
+                        			case "DRAW":
+                        				callEvent(new MatchFinishEvent(data.get("RESULT"), data.get("PLAYERONESCORE"), data.get("PLAYERTWOSCORE"), data.get("COMMENT")));
+                        				break;
+                        			case "CHALLENGE":
+                        				callEvent(new ChallengeReceiveEvent(data.get("CHALLENGER"), data.get("GAMETYPE"), data.get("CHALLENGENUMBER")));
+                        				break;
+                        			case "CHALLENGE CANCELLED":
+                        				callEvent(new ChallengeCancelledEvent(data.get("CHALLENGENUMBER")));
+                        				break;
+                        		}
+                        		
+                        	//Received command response
+                        	} else if (ct != null) {
                                 switch (ct) {
                                     case LOGIN:
                                     case SUBSCRIBE:
@@ -205,17 +261,15 @@ public class Client implements GameClient {
                                     case FORFEIT:
                                     case CHALLENGE:
                                     case ACCEPTCHALLENGE:
-                                        System.out.println("in switch case");
-                                        success = true;
+                                        success = line.startsWith("OK");
                                         break;
                                     case GETGAMELIST:
                                         line = in.readLine();
-                                        gameList = StringUtils.parseString(line.substring("SVR GAMELIST ".length()));
+                                        gameList = StringUtils.stringToArray(line.substring("SVR GAMELIST ".length()));
                                         break;
                                     case GETPLAYERS:
                                         line = in.readLine();
-                                        System.out.println(line);
-                                        playerList = StringUtils.parseString(line.substring("SVR PLAYERLIST ".length()));
+                                        playerList = StringUtils.stringToArray(line.substring("SVR PLAYERLIST ".length()));
                                         break;
                                 }
                                 ct = null;
@@ -228,7 +282,6 @@ public class Client implements GameClient {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
         });
         listen.start();
@@ -242,24 +295,27 @@ public class Client implements GameClient {
 
     public static void main(String[] args) {
         Client client = new Client();
+        
         boolean connected = false;
         try {
             connected = client.connect(InetAddress.getByName("localhost"), 7789);
-            client.listener();
+            client.startListening();
             System.out.println("connected: " + connected);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
-
+        
         if (connected) {
-            boolean login = client.login("samikroon");
+            boolean login = client.login("#" + new Random().nextInt(100));
             System.out.println("logging in: " + login);
-            String[] test = client.getPlayers();
-            System.out.println("players: " + Arrays.asList(test));
+            
+            String[] players = client.getPlayers();
+            System.out.println("players: " + Arrays.asList(players));
+            
+            String[] games = client.getGameList();
+            System.out.println("games: " + Arrays.asList(games));
+            
+            client.subscribe("Tic-tac-toe");
         }
-
-
     }
-
 }
