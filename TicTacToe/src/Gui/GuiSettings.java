@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 
 public class GuiSettings {
     Scene scene;
+    Integer turn = 0;
 
     public GuiSettings(){
         try{
@@ -46,51 +47,55 @@ public class GuiSettings {
     private void clicked(double x, double y, GraphicsContext context){
         System.out.println(x+" "+y);
         if (x<150.0 && y<150.0){
-            System.out.println("X=1, Y=1");
-//           context.strokeOval(20.0,30.0,50.0,60.0);
+            drawPlay(10, 10, context);
         } if (150.0<x && x<300.0 && y<150.0){
-            System.out.println("X=2, Y=1");
-//            drawThing(2);
+            drawPlay(160, 10, context);
         } if (300.0<x && x<450.0 && y<150.0){
-            System.out.println("X=4, Y=1");
-//            drawThing(3);
+            drawPlay(310, 10, context);
         } if (x<150.0 && 150.0<y && y<300.0){
-            System.out.println("X=1, Y=2");
-//            drawThing(4);
+            drawPlay(10, 160, context);
         } if (150.0<x && x<300.0 && 150.0<y && y<300.0){
-            System.out.println("X=2, Y=2");
-//            drawThing(5);
+            drawPlay(160, 160, context);
         } if (300.0<x && x<450.0 && 150.0<y && y<300.0){
-            System.out.println("X=3, Y=2");
+            drawPlay(310, 160, context);
         } if (x<150.0 && 300.0<y && y<450.0){
-            System.out.println("X=1, Y=3");
+            drawPlay(10, 310, context);
         } if(150.0<x && x<300.0 &&300.0<y && y<450.0){
-            System.out.println("X=2, Y=3");
+            drawPlay(160, 310, context);
         } if(300.0<x && x<450.0 && 300.0<y && y<450.0){
-            System.out.println("X=3, Y=3");
+            drawPlay(310, 310, context);
         } if(0.0<x && 450.0<y || 450.0<x && 0.0<y){
             System.out.println("klik op het bord aub!");
         }
     }
 
-    private void drawThing(int x){ // kan gebruikt worden voor dingen, is nu nog niet het geval
-        switch (x) {
-            case 1:
-                System.out.println("1");
-                break;
-            case 2:
-                System.out.println("2");
-                break;
-            case 3:
-                System.out.println("3");
-                break;
-            case 4:
-                System.out.println("4");
-                break;
-            case 5:
-                System.out.println("5");
-                break;
+    private int setTurn(){
+        Integer whoseTurn = turn%2;
+        turn=turn+1;
+        System.out.println(whoseTurn);
+        return whoseTurn;
+    }
+
+    private void drawPlay(double x, double y, GraphicsContext context){
+        if(setTurn()==0){
+            drawCircle(x, y, context);
+        } else {
+            drawCross(x, y, context);
         }
+    }
+
+    private void drawCircle(double x, double y, GraphicsContext context){
+        System.out.println("x: "+x+"y: "+y);
+        context.setLineWidth(4);
+        context.setStroke(Color.CADETBLUE);
+        context.strokeOval(x,y,120,120);
+    }
+
+    private void drawCross(double x, double y, GraphicsContext context){
+        context.setLineWidth(4);
+        context.setStroke(Color.CORAL);
+        context.strokeLine(x,y,x+120,y+120);
+        context.strokeLine(x+120,y, x, y+120);
     }
 
     private Canvas makeCanvas(){
@@ -117,7 +122,7 @@ public class GuiSettings {
     }
 
     private Scene makeScene(){
-        Scene scene = new Scene(makeRootGroup(),450,450, Color.WHEAT);
+        Scene scene = new Scene(makeRootGroup(),450,450, Color.LIGHTGRAY);
         return scene;
     }
 }
