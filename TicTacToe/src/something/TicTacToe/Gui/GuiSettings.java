@@ -7,11 +7,12 @@ import javafx.scene.canvas.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import something.TicTacToe.TicTacToeBoard;
 
 public class GuiSettings {
     Scene scene;
     Integer turn = 0;
-    byte[] seeValues = new byte[]{0,0,0,0,0,0,0,0,0};
+    TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
 
     public GuiSettings(){
         try{
@@ -46,25 +47,35 @@ public class GuiSettings {
     }
 
     private void clicked(double x, double y, GraphicsContext context){
+        Integer posOnBoard;
         System.out.println(x+" "+y);
         if (x<150.0 && y<150.0){
-            drawPlay(10, 10, context);
+            posOnBoard = 0;
+            drawPlay(10, 10, context, posOnBoard);
         } if (150.0<x && x<300.0 && y<150.0){
-            drawPlay(160, 10, context);
+            posOnBoard = 1;
+            drawPlay(160, 10, context, posOnBoard);
         } if (300.0<x && x<450.0 && y<150.0){
-            drawPlay(310, 10, context);
+            posOnBoard = 2;
+            drawPlay(310, 10, context, posOnBoard);
         } if (x<150.0 && 150.0<y && y<300.0){
-            drawPlay(10, 160, context);
+            posOnBoard = 3;
+            drawPlay(10, 160, context, posOnBoard);
         } if (150.0<x && x<300.0 && 150.0<y && y<300.0){
-            drawPlay(160, 160, context);
+            posOnBoard = 4;
+            drawPlay(160, 160, context, posOnBoard);
         } if (300.0<x && x<450.0 && 150.0<y && y<300.0){
-            drawPlay(310, 160, context);
+            posOnBoard = 5;
+            drawPlay(310, 160, context, posOnBoard);
         } if (x<150.0 && 300.0<y && y<450.0){
-            drawPlay(10, 310, context);
+            posOnBoard = 6;
+            drawPlay(10, 310, context, posOnBoard);
         } if(150.0<x && x<300.0 &&300.0<y && y<450.0){
-            drawPlay(160, 310, context);
+            posOnBoard = 7;
+            drawPlay(160, 310, context, posOnBoard);
         } if(300.0<x && x<450.0 && 300.0<y && y<450.0){
-            drawPlay(310, 310, context);
+            posOnBoard = 8;
+            drawPlay(310, 310, context, posOnBoard);
         } if(0.0<x && 450.0<y || 450.0<x && 0.0<y){
             System.out.println("klik op het bord aub!");
         }
@@ -72,17 +83,31 @@ public class GuiSettings {
 
     private int setTurn(){
         Integer whoseTurn = turn%2;
-        turn=turn+1;
         System.out.println(whoseTurn);
         return whoseTurn;
     }
 
-    private void drawPlay(double x, double y, GraphicsContext context){
-        if(setTurn()==0){
-            drawCircle(x, y, context);
+    private void drawPlay(double x, double y, GraphicsContext context, int posOnBoard){
+        Integer getTurn = setTurn();
+        if(getTurn==0){
+            boolean bool = setOnBoard(x, y, 0, posOnBoard);
+            if(bool==true){
+                drawCircle(x, y, context);
+                turn=turn+1;
+            }
         } else {
-            drawCross(x, y, context);
+            boolean bool = setOnBoard(x, y, 1, posOnBoard);
+            if (bool==true){
+                drawCross(x, y, context);
+                turn=turn+1;
+            }
         }
+    }
+
+    private boolean setOnBoard(double x, double y, int turn, int posOnBoard){
+        boolean bool = ticTacToeBoard.makeTurn(x, y, turn, posOnBoard);
+        System.out.println(ticTacToeBoard.toString());
+        return bool;
     }
 
     private void drawCircle(double x, double y, GraphicsContext context){
