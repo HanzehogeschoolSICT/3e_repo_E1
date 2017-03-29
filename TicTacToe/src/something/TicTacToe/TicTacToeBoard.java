@@ -21,6 +21,29 @@ public class TicTacToeBoard {
         return builder.toString();
     }
 
+    public Mark testMakeTurn(int posOnBoard, int turn){
+     if(this.board[posOnBoard] == Mark.EMPTY){
+         Mark mark;
+         if(turn%2==0){
+             mark = Mark.NOUGHT;
+             board[posOnBoard] = mark;
+         } else {
+             mark = Mark.CROSS;
+             board[posOnBoard] = mark;
+         }
+         return mark;
+     }  else {
+         System.out.println("ja dit kan niet hoor");
+         return Mark.EMPTY;
+     }
+
+    }
+
+    public Mark[] getBoard(){
+        return this.board;
+    }
+
+
     public boolean makeTurn(double x, double y, int turn, int posOnBoard){
         if(this.board[posOnBoard] == Mark.EMPTY) {
             if (x < 150.0 && y < 150.0) {
@@ -57,9 +80,11 @@ public class TicTacToeBoard {
         }
     }
 
-//    public Mark checkForEmpty(int position){
-//        return this.board[position];
-//    }
+    public void emptyBoard(){
+        for(int i=0; i<board.length; i++){
+            board[i] = Mark.EMPTY;
+        }
+    }
 
     private void changeBoard(int position, int turn){
         if (turn==0) {
@@ -69,20 +94,4 @@ public class TicTacToeBoard {
         }
     }
 
-    enum Mark {
-        EMPTY(" "),
-        NOUGHT("O"),
-        CROSS("X");
-
-        private String str;
-
-        Mark(String str) {
-            this.str = str;
-        }
-
-        @Override
-        public String toString() {
-            return str;
-        }
-    }
 }
