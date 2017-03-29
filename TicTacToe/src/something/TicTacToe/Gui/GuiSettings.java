@@ -93,12 +93,12 @@ public class GuiSettings {
         } if(0.0<x && 450.0<y || 450.0<x && 0.0<y){
             System.out.println("klik op het bord aub!");
             ticTacToeBoard.emptyBoard();
-            emptyBoard(context);
+            emptyBoard(context);        //TODO: deze functie moet via controller aangeroepen worden door de client
             drawGrid(context,450,450);
         }
     }
 
-    private int setTurn(){
+    private int setTurn(){              //TODO: deze functie moet uit de server komen, hier wordt bepaald wie aan zet is
         Integer whoseTurn = turn%2;
         System.out.println(whoseTurn);
         return whoseTurn;
