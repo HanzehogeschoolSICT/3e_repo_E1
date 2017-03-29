@@ -2,10 +2,12 @@ package something.TicTacToe.Gui;
 
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import something.TicTacToe.Controller;
 
 import java.util.Optional;
@@ -22,40 +24,55 @@ public class StartGui extends Application{
         this.primaryStage = primaryStage;
         controller = new Controller(this);
 
-
-        this.primaryStage.setTitle("menu");
-        this.primaryStage.setScene(new InitPopUp(controller).scene);
-        this.primaryStage.show();
-
+        showInitPopUp();
     }
 
-
+    public void addShutdownOnClose(Stage stage) {
+    	stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent we) {
+                System.exit(0);
+            }
+        }); 
+    }
+    
+    public void showInitPopUp() {
+    	primaryStage.setTitle("menu");
+        primaryStage.setScene(new InitPopUp(controller).scene);
+        primaryStage.show();
+        addShutdownOnClose(primaryStage);
+    }
+    
     public void hideInitPopUp() {
         primaryStage.hide();
     }
-
-
-
 
     public void startGameStage() {
         gameStage = new Stage();
         gameStage.setTitle("Tic Tac Toe");
         gameStage.setScene(new GuiSettings(controller).scene);
         gameStage.show();
+        addShutdownOnClose(gameStage);
     }
 
+    public void endGameStage() {
+        gameStage.close();
+        gameStage = null;
+    }
+    
     public void startPopUp () {
         gameStage.close();
         primaryStage.show();
     }
 
-    public void waitPopUp () {
-        waitAlert = new Alert(Alert.AlertType.INFORMATION);
-        waitAlert.setTitle("Tic Tac Toe");
-        waitAlert.setHeaderText(null);
-        waitAlert.setContentText("Waiting for a game");
-        waitAlert.initStyle(StageStyle.UNDECORATED);
-        waitAlert.getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
+    public void waitPopUp (String message) {
+    	if(waitAlert == null) {
+	        waitAlert = new Alert(Alert.AlertType.INFORMATION);
+	        waitAlert.setTitle("Tic Tac Toe");
+	        waitAlert.setHeaderText(null);
+	        waitAlert.setContentText(message);
+	        waitAlert.initStyle(StageStyle.UNDECORATED);
+	        waitAlert.getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
+    	}
         waitAlert.show();
     }
 

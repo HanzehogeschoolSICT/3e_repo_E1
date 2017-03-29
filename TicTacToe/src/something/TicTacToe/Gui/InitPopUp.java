@@ -115,7 +115,7 @@ public class InitPopUp {
 
 
     private Scene makeScene(){
-        Scene scene = new Scene(makePane(),200 ,200 , Color.WHEAT);
+        Scene scene = new Scene(makePane(),250 ,250 , Color.WHEAT);
         return scene;
     }
 }

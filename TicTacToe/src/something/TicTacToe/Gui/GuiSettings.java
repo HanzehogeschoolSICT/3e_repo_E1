@@ -142,7 +142,6 @@ public class GuiSettings {
     }
 
     private void drawCircle(double x, double y, GraphicsContext context){
-//        System.out.println("x: "+x+"y: "+y);
         context.setLineWidth(4);
         context.setStroke(Color.CADETBLUE);
         context.strokeOval(x,y,120,120);
