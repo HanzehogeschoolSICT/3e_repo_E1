@@ -88,7 +88,6 @@ public class InitPopUp {
                     String playerOne = playerOneGroup.getSelectedToggle().getUserData().toString();
                     String playerTwo = playerTwoGroup.getSelectedToggle().getUserData().toString();
                     controller.processLogin(playerOne, playerTwo, username.getText());
-                    controller.login(username.getText());
                     /*System.out.println(playerOneGroup.getSelectedToggle().getUserData().toString());
                     System.out.println(playerTwoGroup.getSelectedToggle().getUserData().toString());
                     System.out.println(username.getText());*/

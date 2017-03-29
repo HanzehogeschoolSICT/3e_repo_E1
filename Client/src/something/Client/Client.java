@@ -3,9 +3,12 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Random;
+
 import something.Client.event.GameEvent;
 import something.Client.event.GameEventListener;
 import something.Client.event.events.ChallengeCancelledEvent;
@@ -296,13 +299,12 @@ public class Client implements GameClient {
     }
 
     //Test code
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         Client client = new Client();
         
         boolean connected = false;
         try {
             connected = client.connect(InetAddress.getByName("localhost"), 7789);
-            client.startListening();
             System.out.println("connected: " + connected);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -320,5 +322,5 @@ public class Client implements GameClient {
             
             client.subscribe("Tic-tac-toe");
         }
-    }*/
+    }
 }
