@@ -7,14 +7,17 @@ import javafx.scene.canvas.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import something.TicTacToe.Controller;
 import something.TicTacToe.TicTacToeBoard;
 
 public class GuiSettings {
     Scene scene;
     Integer turn = 0;
     TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
+    private Controller controller;
 
-    public GuiSettings(){
+    public GuiSettings(Controller controller){
+        this.controller = controller;
         try{
             this.scene = makeScene();
         } catch (Exception e){

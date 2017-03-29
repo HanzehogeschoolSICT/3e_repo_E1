@@ -84,10 +84,10 @@ public class InitPopUp {
             @Override
             public void handle(ActionEvent event) {
                 if (playerOneGroup.getSelectedToggle() != null && playerTwoGroup.getSelectedToggle() != null &&
-                        username.getText() != null) {
+                        username.getText() != "") {
                     String playerOne = playerOneGroup.getSelectedToggle().getUserData().toString();
                     String playerTwo = playerTwoGroup.getSelectedToggle().getUserData().toString();
-                    controller.setPlayers(playerOne, playerTwo, username.getText());
+                    controller.processLogin(playerOne, playerTwo, username.getText());
                     controller.login(username.getText());
                     /*System.out.println(playerOneGroup.getSelectedToggle().getUserData().toString());
                     System.out.println(playerTwoGroup.getSelectedToggle().getUserData().toString());
