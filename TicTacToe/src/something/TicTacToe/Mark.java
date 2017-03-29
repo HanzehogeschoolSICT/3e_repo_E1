@@ -1,8 +1,5 @@
 package something.TicTacToe;
 
-/**
- * Created by MSI on 29-3-2017.
- */
 public enum Mark {
     EMPTY(" "),
     NOUGHT("O"),
