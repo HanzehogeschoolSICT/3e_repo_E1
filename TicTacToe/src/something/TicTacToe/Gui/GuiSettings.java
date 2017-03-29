@@ -1,13 +1,15 @@
 package something.TicTacToe.Gui;
 
+import com.sun.javafx.scene.KeyboardShortcutsHandler;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.*;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import something.TicTacToe.Controller;
+import something.TicTacToe.Mark;
 import something.TicTacToe.TicTacToeBoard;
 
 public class GuiSettings {
@@ -51,61 +53,115 @@ public class GuiSettings {
 
     private void clicked(double x, double y, GraphicsContext context){
         Integer posOnBoard;
-        System.out.println(x+" "+y);
+//        System.out.println(x+" "+y);
         if (x<150.0 && y<150.0){
             posOnBoard = 0;
-            drawPlay(10, 10, context, posOnBoard);
+            testDrawPlay(posOnBoard, context);
+//            drawPlay(10, 10, context, posOnBoard);
         } if (150.0<x && x<300.0 && y<150.0){
             posOnBoard = 1;
-            drawPlay(160, 10, context, posOnBoard);
+            testDrawPlay(posOnBoard, context);
+//            drawPlay(160, 10, context, posOnBoard);
         } if (300.0<x && x<450.0 && y<150.0){
             posOnBoard = 2;
-            drawPlay(310, 10, context, posOnBoard);
+            testDrawPlay(posOnBoard, context);
+//            drawPlay(310, 10, context, posOnBoard);
         } if (x<150.0 && 150.0<y && y<300.0){
             posOnBoard = 3;
-            drawPlay(10, 160, context, posOnBoard);
+            testDrawPlay(posOnBoard, context);
+//            drawPlay(10, 160, context, posOnBoard);
         } if (150.0<x && x<300.0 && 150.0<y && y<300.0){
             posOnBoard = 4;
-            drawPlay(160, 160, context, posOnBoard);
+            testDrawPlay(posOnBoard, context);
+//            drawPlay(160, 160, context, posOnBoard);
         } if (300.0<x && x<450.0 && 150.0<y && y<300.0){
             posOnBoard = 5;
-            drawPlay(310, 160, context, posOnBoard);
+            testDrawPlay(posOnBoard, context);
+//            drawPlay(310, 160, context, posOnBoard);
         } if (x<150.0 && 300.0<y && y<450.0){
             posOnBoard = 6;
-            drawPlay(10, 310, context, posOnBoard);
+            testDrawPlay(posOnBoard, context);
+//            drawPlay(10, 310, context, posOnBoard);
         } if(150.0<x && x<300.0 &&300.0<y && y<450.0){
             posOnBoard = 7;
-            drawPlay(160, 310, context, posOnBoard);
+            testDrawPlay(posOnBoard, context);
+//            drawPlay(160, 310, context, posOnBoard);
         } if(300.0<x && x<450.0 && 300.0<y && y<450.0){
             posOnBoard = 8;
-            drawPlay(310, 310, context, posOnBoard);
+            testDrawPlay(posOnBoard, context);
+//            drawPlay(310, 310, context, posOnBoard);
         } if(0.0<x && 450.0<y || 450.0<x && 0.0<y){
             System.out.println("klik op het bord aub!");
+            ticTacToeBoard.emptyBoard();
+            emptyBoard(context);        //TODO: deze functie moet via controller aangeroepen worden door de client
+            drawGrid(context,450,450);
         }
     }
 
-    private int setTurn(){
+    private int setTurn(){              //TODO: deze functie moet uit de server komen, hier wordt bepaald wie aan zet is
         Integer whoseTurn = turn%2;
         System.out.println(whoseTurn);
         return whoseTurn;
     }
 
-    private void drawPlay(double x, double y, GraphicsContext context, int posOnBoard){
+    private void testDrawPlay(int posOnBoard, GraphicsContext context){
         Integer getTurn = setTurn();
-        if(getTurn==0){
-            boolean bool = setOnBoard(x, y, 0, posOnBoard);
-            if(bool==true){
-                drawCircle(x, y, context);
-                turn=turn+1;
-            }
-        } else {
-            boolean bool = setOnBoard(x, y, 1, posOnBoard);
-            if (bool==true){
-                drawCross(x, y, context);
-                turn=turn+1;
-            }
+//        if(getTurn==0) {
+        Mark mark = ticTacToeBoard.testMakeTurn(posOnBoard, getTurn);
+        if (mark == Mark.CROSS){
+            System.out.println("X IS DONe");
+            redrawBoard(context);
+            turn = turn+1;
+        }
+        if (mark == Mark.NOUGHT){
+            System.out.println("O IS DONE");
+            redrawBoard(context);
+            turn = turn+1;
+        }
+        if (mark == Mark.EMPTY){
+            System.out.println("KAN NIET");
+        }
+        System.out.println(ticTacToeBoard.toString());
+    }
+
+    private void redrawBoard(GraphicsContext context){
+        Mark[] bord = ticTacToeBoard.getBoard();
+        for(int i = 0; i<bord.length; i++){
+//            if (bord[i] == Mark.EMPTY){ emptyBoard(context); }
+            if (bord[i] == Mark.CROSS){ tussenDraw(i, context, Mark.CROSS); }
+            if (bord[i] == Mark.NOUGHT){ tussenDraw(i, context, Mark.NOUGHT); }
+        }
+
+    }
+
+    private void emptyBoard(GraphicsContext context){
+        context.clearRect(0,0,450,450);
+    }
+
+    private void tussenDraw(int posOnBoard, GraphicsContext context, Mark mark){
+        if(posOnBoard == 0){ drawPlay(10, 10, context, mark);}
+        if(posOnBoard == 1){ drawPlay(160, 10, context, mark);}
+        if(posOnBoard == 2){ drawPlay(310, 10, context, mark);}
+        if(posOnBoard == 3){ drawPlay(10, 160, context, mark);}
+        if(posOnBoard == 4){ drawPlay(160, 160, context, mark);}
+        if(posOnBoard == 5){ drawPlay(310, 160, context, mark);}
+        if(posOnBoard == 6){ drawPlay(10, 310, context, mark);}
+        if(posOnBoard == 7){ drawPlay(160, 310, context, mark);}
+        if(posOnBoard == 8){ drawPlay(310, 310, context, mark);}
+    }
+
+    private void drawPlay(double x, double y, GraphicsContext context, Mark mark){
+        if (mark==Mark.CROSS){
+            drawCross(x, y, context);
+        }
+        if (mark==Mark.NOUGHT){
+            drawCircle(x, y, context);
         }
     }
+
+//    private void clearBoard(){
+//        makeRootGroup();
+//    }
 
     private boolean setOnBoard(double x, double y, int turn, int posOnBoard){
         boolean bool = ticTacToeBoard.makeTurn(x, y, turn, posOnBoard);
@@ -114,7 +170,7 @@ public class GuiSettings {
     }
 
     private void drawCircle(double x, double y, GraphicsContext context){
-        System.out.println("x: "+x+"y: "+y);
+//        System.out.println("x: "+x+"y: "+y);
         context.setLineWidth(4);
         context.setStroke(Color.CADETBLUE);
         context.strokeOval(x,y,120,120);
