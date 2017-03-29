@@ -8,6 +8,7 @@ import something.TicTacToe.Controller;
 
 public class StartGui extends Application{
     private Stage primaryStage;
+    private Stage gameStage;
     private Controller controller;
 
     @Override
@@ -26,10 +27,15 @@ public class StartGui extends Application{
 
     public void startGameStage() {
         primaryStage.hide();
-        Stage gameStage = new Stage();
+        gameStage = new Stage();
         gameStage.setTitle("Tic Tac Toe");
         gameStage.setScene(new GuiSettings(controller).scene);
         gameStage.show();
+    }
+
+    public void startPopUp () {
+        gameStage.close();
+        primaryStage.show();
     }
 
     public static void main(String[] args){ Application.launch(args); }
