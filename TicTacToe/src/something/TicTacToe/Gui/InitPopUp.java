@@ -20,6 +20,7 @@ public class InitPopUp {
     final ToggleGroup playerOneGroup = new ToggleGroup();
     final ToggleGroup playerTwoGroup = new ToggleGroup();
     private Controller controller;
+    private CheckBox subscribe;
 
     public InitPopUp(Controller controller){
         this.controller = controller;
@@ -73,7 +74,11 @@ public class InitPopUp {
         playerTwoOnline.setToggleGroup(playerTwoGroup);
         playerTwoPC.setToggleGroup(playerTwoGroup);
 
-        playerOne.getChildren().addAll(playerOneText, playerOneSelf, playerOnePC);
+        subscribe = new CheckBox("Subscribe");
+        subscribe.setSelected(true);
+
+
+        playerOne.getChildren().addAll(playerOneText, playerOneSelf, playerOnePC, subscribe);
         playerTwo.getChildren().addAll(playerTwoText, playerTwoOnline, playerTwoPC);
 
         borderPane.setLeft(playerOne);
@@ -87,7 +92,7 @@ public class InitPopUp {
                         username.getText() != "") {
                     String playerOne = playerOneGroup.getSelectedToggle().getUserData().toString();
                     String playerTwo = playerTwoGroup.getSelectedToggle().getUserData().toString();
-                    controller.processLogin(playerOne, playerTwo, username.getText());
+                    controller.processLogin(playerOne, playerTwo, username.getText(), subscribe.isSelected());
                     /*System.out.println(playerOneGroup.getSelectedToggle().getUserData().toString());
                     System.out.println(playerTwoGroup.getSelectedToggle().getUserData().toString());
                     System.out.println(username.getText());*/

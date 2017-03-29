@@ -23,7 +23,7 @@ public class Controller {
         this.startGui = startGui;
     }
 
-    public void processLogin(String playerMode, String opponentMode, String username) {
+    public void processLogin(String playerMode, String opponentMode, String username, boolean subscribe) {
     	PlayerType playerType = playerMode == "Me" ? new HumanPlayer() : new AIPlayer();
     	
         if (opponentMode == "Online") {
