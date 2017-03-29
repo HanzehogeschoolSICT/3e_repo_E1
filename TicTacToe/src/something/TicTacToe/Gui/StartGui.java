@@ -30,8 +30,14 @@ public class StartGui extends Application{
     }
 
 
-    public void startGameStage() {
+    public void hideInitPopUp() {
         primaryStage.hide();
+    }
+
+
+
+
+    public void startGameStage() {
         gameStage = new Stage();
         gameStage.setTitle("Tic Tac Toe");
         gameStage.setScene(new GuiSettings(controller).scene);
