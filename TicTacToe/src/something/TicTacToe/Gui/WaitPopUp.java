@@ -35,16 +35,24 @@ public class WaitPopUp {
         BorderPane borderPane = new BorderPane();
         playersListView.setPrefSize(200, 100);
         updateListView();
-        Text topText = new Text("Wait for a game or challenge someone from the list");
+        Text topText = new Text("Wait for a game or challenge");
         borderPane.setTop(topText);
         borderPane.setCenter(playersListView);
-        Button challenge = challengeButton();
-        Button refresh = refreshButton();
-        ToolBar toolBar = new ToolBar(challenge, refresh);
+        ToolBar toolBar = new ToolBar(challengeButton(), refreshButton(), subscribeButton());
         borderPane.setBottom(toolBar);
 
-
         return borderPane;
+    }
+
+    private Button subscribeButton() {
+        Button subscribe = new Button("Subscribe");
+        subscribe.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                controller.getClient().subscribe("Tic-tac-toe");
+            }
+        });
+        return subscribe;
     }
 
     private Button challengeButton() {
