@@ -11,7 +11,7 @@ public class StringUtils {
 	}
 	
 	public static HashMap<String, String> stringToMap(String mapString) {
-		HashMap<String, String> map = new HashMap<String, String>();
+		HashMap<String, String> map = new HashMap<>();
 		
 		mapString = mapString.substring(1, mapString.length()-1).replace("\"", "");
 		String[] entries = mapString.split(", ");

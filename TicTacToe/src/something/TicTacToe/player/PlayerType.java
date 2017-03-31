@@ -1,7 +1,7 @@
 package something.TicTacToe.player;
 
-public interface PlayerType {
+import something.TicTacToe.Mark;
 
-	abstract String getMove();
-	
+public interface PlayerType {
+	int getMove(Mark[] board);
 }
