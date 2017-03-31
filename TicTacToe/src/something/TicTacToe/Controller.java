@@ -72,7 +72,6 @@ public class Controller implements GameEventListener {
         	player = new OfflinePlayer(playerType);
         	offlineOpponent = new OfflinePlayer(new AIPlayer());
         	
-        	
         	loadAIPlayerCross(player, false);
             loadAIPlayerCross(offlineOpponent, true);
             
@@ -99,6 +98,7 @@ public class Controller implements GameEventListener {
 			Platform.runLater(() -> {
 				startGui.endGameStage();
 				startGui.waitPopUp();
+				startGui.showResult(event.getResult());
 			});
 			
 		} else if(e instanceof YourTurnEvent) {

@@ -245,7 +245,7 @@ public class Client implements GameClient {
                         			case "WIN":
                         			case "LOSS":
                         			case "DRAW":
-                        				callEvent(new MatchFinishEvent(client, data.get("RESULT"), data.get("PLAYERONESCORE"), data.get("PLAYERTWOSCORE"), data.get("COMMENT")));
+                        				callEvent(new MatchFinishEvent(client, eventType, data.get("PLAYERONESCORE"), data.get("PLAYERTWOSCORE"), data.get("COMMENT")));
                         				break;
                         			case "CHALLENGE":
                         				callEvent(new ChallengeReceiveEvent(client, data.get("CHALLENGER"), data.get("GAMETYPE"), data.get("CHALLENGENUMBER")));

@@ -48,35 +48,4 @@ public class TicTacToeBoard {
 			board[i] = Mark.EMPTY;
 		}
 	}
-
-	/*
-	 * public boolean hasWon(String player)
-  {
-    int number = getPlayerType(player).ordinal();
-    if ((this.grid[0][0] == number) && (this.grid[0][1] == number) && (this.grid[0][2] == number)) {
-      return true;
-    }
-    if ((this.grid[1][0] == number) && (this.grid[1][1] == number) && (this.grid[1][2] == number)) {
-      return true;
-    }
-    if ((this.grid[2][0] == number) && (this.grid[2][1] == number) && (this.grid[2][2] == number)) {
-      return true;
-    }
-    if ((this.grid[0][0] == number) && (this.grid[1][0] == number) && (this.grid[2][0] == number)) {
-      return true;
-    }
-    if ((this.grid[0][1] == number) && (this.grid[1][1] == number) && (this.grid[2][1] == number)) {
-      return true;
-    }
-    if ((this.grid[0][2] == number) && (this.grid[1][2] == number) && (this.grid[2][2] == number)) {
-      return true;
-    }
-    if ((this.grid[0][0] == number) && (this.grid[1][1] == number) && (this.grid[2][2] == number)) {
-      return true;
-    }
-    if ((this.grid[2][0] == number) && (this.grid[1][1] == number) && (this.grid[0][2] == number)) {
-      return true;
-    }
-    return false;
-  }*/
 }

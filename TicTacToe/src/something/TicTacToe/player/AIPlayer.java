@@ -55,24 +55,24 @@ public class AIPlayer implements PlayerType {
                             board[i] = Mark.EMPTY;
                         }
                     }
-                    return value - depth;
+                    return value + depth;
                 }
             }
         }
-        return victory - depth;
+        return victory + depth;
     }
 
-    private static boolean isFull(Mark[] board) {
+    public static boolean isFull(Mark[] board) {
         for (Mark mark : board) if (mark == Mark.EMPTY) return false;
         return true;
     }
 
-    private static int checkVictory(Mark[] board) {
+    public static int checkVictory(Mark[] board) {
         for (int i = 0; i < 3; i++) {
-            if (board[i] == Mark.CROSS && board[i + 1] == Mark.CROSS && board[i + 2] == Mark.CROSS) return 10;
+            if (board[i*3] == Mark.CROSS && board[i*3 + 1] == Mark.CROSS && board[i*3 + 2] == Mark.CROSS) return 10;
             if (board[i] == Mark.CROSS && board[i + 3] == Mark.CROSS && board[i + 6] == Mark.CROSS) return 10;
 
-            if (board[i] == Mark.NOUGHT && board[i + 1] == Mark.NOUGHT && board[i + 2] == Mark.NOUGHT) return -10;
+            if (board[i*3] == Mark.NOUGHT && board[i*3 + 1] == Mark.NOUGHT && board[i*3 + 2] == Mark.NOUGHT) return -10;
             if (board[i] == Mark.NOUGHT && board[i + 3] == Mark.NOUGHT && board[i + 6] == Mark.NOUGHT) return -10;
         }
         if (board[0] == Mark.CROSS && board[4] == Mark.CROSS && board[8] == Mark.CROSS) return 10;
