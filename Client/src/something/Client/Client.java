@@ -20,6 +20,7 @@ import something.Client.utils.StringUtils;
  * Created by samikroon on 3/27/17.
  */
 public class Client implements GameClient {
+		
     private Socket socket;
     private BufferedWriter bw;
     private BufferedReader br;

@@ -79,7 +79,7 @@ public class GameBoard {
 	    			boolean success = makeMove(index);
 	    			
 	            	if(success) {
-	            		controller.getPlayer().makeMove(index, board);
+	            		controller.getPlayer().doMakeMove(index, controller);
 	            	}
             	}
             }

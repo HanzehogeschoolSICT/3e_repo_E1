@@ -1,5 +1,6 @@
 package something.TicTacToe.player;
 
+import something.TicTacToe.Controller;
 import something.TicTacToe.Gui.GameBoard;
 
 public abstract class Player {
@@ -19,21 +20,33 @@ public abstract class Player {
 		return playersTurn;
 	}
 	
-	public void setTurn(boolean turn, GameBoard board) {
+	public void setTurn(boolean turn, Controller controller) {
 		playersTurn = turn;
 		
 		if(turn == true) {
 			if(playerType instanceof AIPlayer) {
-				int index = playerType.getMove(board);
-				boolean success = board.makeMove(index);
+				int index = playerType.getMove(controller.getGUI().getBoard());
+				boolean success = controller.getGUI().getBoard().makeMove(index);
 				
 	        	if(success) {
-	        		makeMove(index, board);
+	        		doMakeMove(index, controller);
 	        	}			
 			}
 		}
 	}
 	
-	public abstract void makeMove(int index, GameBoard board);
+	public void doMakeMove(int index, Controller controller) {
+		makeMove(index, controller);
+		
+		if(controller.getClient() == null) {
+			if(controller.getPlayer() == this) {
+				controller.getOpponentPlayer().setTurn(true, controller);
+			} else {
+				controller.getPlayer().setTurn(true, controller);
+			}
+		}
+	}
+	
+	public abstract void makeMove(int index, Controller controller);
 	
 }

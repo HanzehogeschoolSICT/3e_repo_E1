@@ -1,7 +1,7 @@
 package something.TicTacToe.player;
 
 import something.Client.Client;
-import something.TicTacToe.Gui.GameBoard;
+import something.TicTacToe.Controller;
 
 public class OnlinePlayer extends Player {
 
@@ -14,10 +14,10 @@ public class OnlinePlayer extends Player {
 	}
 	
 	@Override
-	public void makeMove(int index, GameBoard board) {
+	public void makeMove(int index, Controller controller) {
 		if(hasTurn()) {
 			client.move(index + "");
-			setTurn(false, board);
+			setTurn(false, controller);
 		}
 	}
 }

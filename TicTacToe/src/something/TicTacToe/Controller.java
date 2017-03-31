@@ -27,6 +27,7 @@ public class Controller implements GameEventListener {
 
     private String username;
     private Player player;
+    private Player offlineOpponent;
     
     public Controller(StartGui startGui) {
         this.startGui = startGui;
@@ -36,8 +37,16 @@ public class Controller implements GameEventListener {
         return client;
     }
     
+    public StartGui getGUI() {
+        return startGui;
+    }
+    
     public Player getPlayer() {
     	return player;
+    }
+    
+    public Player getOpponentPlayer() {
+    	return offlineOpponent;
     }
     
     public String getUsername() {
@@ -61,8 +70,15 @@ public class Controller implements GameEventListener {
             
         } else {
         	player = new OfflinePlayer(playerType);
+        	offlineOpponent = new OfflinePlayer(new AIPlayer());
         	
+        	
+        	loadAIPlayerCross(player, false);
+            loadAIPlayerCross(offlineOpponent, true);
+            
             startGui.startGameStage();
+            
+            player.setTurn(true, this);
         }
     }
 
@@ -75,11 +91,7 @@ public class Controller implements GameEventListener {
 				startGui.closeWaitPopUp();
 				startGui.startGameStage();
 			});
-			
-			if(player.getPlayerType() instanceof AIPlayer) {
-				AIPlayer aiPlayer = (AIPlayer) player.getPlayerType();
-				aiPlayer.setIsCross(event.getOpponent().equals(event.getPlayerToMove()));
-			}
+			loadAIPlayerCross(player, event.getOpponent().equals(event.getPlayerToMove()));
 			
 		} else if(e instanceof MatchFinishEvent) {
 			MatchFinishEvent event = (MatchFinishEvent) e;
@@ -93,7 +105,7 @@ public class Controller implements GameEventListener {
 			YourTurnEvent event = (YourTurnEvent) e;
 			
 			Platform.runLater(() -> {
-				player.setTurn(true, startGui.getBoard());
+				player.setTurn(true, this);
 			});
 			
 		} else if(e instanceof MoveEvent) {
@@ -113,6 +125,13 @@ public class Controller implements GameEventListener {
 					client.acceptChallenge(Integer.parseInt(event.getChallengeNumber()));
 				}
 			});
+		}
+	}
+	
+	public void loadAIPlayerCross(Player player, boolean cross) {
+		if(player.getPlayerType() instanceof AIPlayer) {
+			AIPlayer aiPlayer = (AIPlayer) player.getPlayerType();
+			aiPlayer.setIsCross(cross);
 		}
 	}
 }

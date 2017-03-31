@@ -1,6 +1,6 @@
 package something.TicTacToe.player;
 
-import something.TicTacToe.Gui.GameBoard;
+import something.TicTacToe.Controller;
 
 public class OfflinePlayer extends Player {
 
@@ -9,7 +9,7 @@ public class OfflinePlayer extends Player {
 	}
 
 	@Override
-	public void makeMove(int index, GameBoard board) {
+	public void makeMove(int index, Controller board) {
 		if(hasTurn()) {
 			setTurn(false, board);
 		}
