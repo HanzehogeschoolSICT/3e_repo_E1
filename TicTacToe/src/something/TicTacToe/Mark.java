@@ -15,4 +15,5 @@ public enum Mark {
     public String toString() {
         return str;
     }
+
 }
