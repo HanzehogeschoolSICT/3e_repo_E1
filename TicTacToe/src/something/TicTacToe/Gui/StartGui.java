@@ -74,6 +74,14 @@ public class StartGui extends Application{
     	waitPopUp = null;
     }
 
+    public void showResult(String result) {
+        Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
+        resultInfo.setTitle("Game Result");
+        resultInfo.setHeaderText(result);
+        resultInfo.setContentText(null);
+        resultInfo.show();
+    }
+
     public boolean confirmGameDialog(String opponentName) {
         confirmGame = new Alert(Alert.AlertType.CONFIRMATION);
         confirmGame.setTitle("You have been challenged");
