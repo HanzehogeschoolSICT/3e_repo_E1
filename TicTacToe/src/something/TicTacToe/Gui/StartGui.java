@@ -18,7 +18,8 @@ public class StartGui extends Application{
     private Stage gameStage;
     private Controller controller;
     private Alert waitAlert, confirmGame;
-
+    private GuiSettings game;
+    
     @Override
     public void start(Stage primaryStage) throws Exception{
         this.primaryStage = primaryStage;
@@ -49,7 +50,7 @@ public class StartGui extends Application{
     public void startGameStage() {
         gameStage = new Stage();
         gameStage.setTitle("Tic Tac Toe");
-        gameStage.setScene(new GuiSettings(controller).scene);
+        gameStage.setScene((game = new GuiSettings(controller)).scene);
         gameStage.show();
         addShutdownOnClose(gameStage);
     }
@@ -57,6 +58,10 @@ public class StartGui extends Application{
     public void endGameStage() {
         gameStage.close();
         gameStage = null;
+    }
+    
+    public GuiSettings getGame() {
+    	return game;
     }
     
     public void startPopUp () {

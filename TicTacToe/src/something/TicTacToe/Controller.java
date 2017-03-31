@@ -4,8 +4,12 @@ import javafx.application.Platform;
 import something.Client.Client;
 import something.Client.event.GameEvent;
 import something.Client.event.GameEventListener;
+import something.Client.event.events.ChallengeCancelledEvent;
+import something.Client.event.events.ChallengeReceiveEvent;
 import something.Client.event.events.MatchFinishEvent;
 import something.Client.event.events.MatchStartEvent;
+import something.Client.event.events.MoveEvent;
+import something.Client.event.events.YourTurnEvent;
 import something.TicTacToe.Gui.StartGui;
 import something.TicTacToe.player.AIPlayer;
 import something.TicTacToe.player.HumanPlayer;
@@ -28,7 +32,11 @@ public class Controller implements GameEventListener {
     public Controller(StartGui startGui) {
         this.startGui = startGui;
     }
-
+    
+    public Player getPlayer() {
+    	return player;
+    }
+    
     public void processLogin(String playerMode, String opponentMode, String username, boolean subscribe) {
     	this.subscribe = subscribe;
     	PlayerType playerType = playerMode == "Me" ? new HumanPlayer() : new AIPlayer();
@@ -78,6 +86,26 @@ public class Controller implements GameEventListener {
 			if(subscribe) {
             	client.subscribe("Tic-tac-toe");
 			}
+			
+		} else if(e instanceof YourTurnEvent) {
+			YourTurnEvent event = (YourTurnEvent) e;
+			
+			player.setTurn(true);
+		
+		} else if(e instanceof MoveEvent) {
+			MoveEvent event = (MoveEvent) e;
+		
+			startGui.getGame().makeMove(Integer.parseInt(event.getMove()));
+		
+		} else if(e instanceof ChallengeReceiveEvent) {
+			ChallengeReceiveEvent event = (ChallengeReceiveEvent) e;
+		
+			//TODO show challange screen
+		
+		} else if(e instanceof ChallengeCancelledEvent) {
+			ChallengeCancelledEvent event = (ChallengeCancelledEvent) e;
+		
+			//TODO close challenge screen
 		}
 	}
 }

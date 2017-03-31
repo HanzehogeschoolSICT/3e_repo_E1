@@ -7,9 +7,7 @@ public class OfflinePlayer extends Player {
 	}
 
 	@Override
-	public void makeMove() {
-		String move = getPlayerType().getMove();
-		
+	public void makeMove(int index) {		
 		//TODO send move to board
 	}
 

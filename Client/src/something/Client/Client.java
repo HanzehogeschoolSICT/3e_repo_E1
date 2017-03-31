@@ -3,12 +3,9 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Random;
-
 import something.Client.event.GameEvent;
 import something.Client.event.GameEventListener;
 import something.Client.event.events.ChallengeCancelledEvent;
@@ -226,8 +223,10 @@ public class Client implements GameClient {
                 try {
                     while (true) {
                         String line = br.readLine();
-                        
+                                                
                         if (line != null && (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {   
+                        	System.out.println(line);
+                        	
                         	//Received event
                         	if(line.startsWith("SVR GAME ")) {
                         		String eventStr = line.substring("SVR GAME ".length());
@@ -296,31 +295,5 @@ public class Client implements GameClient {
     	bw.write(writable);
         bw.newLine();
         bw.flush();
-    }
-
-    //Test code
-    public static void main(String[] args) {
-        Client client = new Client();
-        
-        boolean connected = false;
-        try {
-            connected = client.connect(InetAddress.getByName("localhost"), 7789);
-            System.out.println("connected: " + connected);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        
-        if (connected) {
-            boolean login = client.login("#" + new Random().nextInt(100));
-            System.out.println("logging in: " + login);
-            
-            String[] players = client.getPlayers();
-            System.out.println("players: " + Arrays.asList(players));
-            
-            String[] games = client.getGameList();
-            System.out.println("games: " + Arrays.asList(games));
-            
-            client.subscribe("Tic-tac-toe");
-        }
     }
 }
