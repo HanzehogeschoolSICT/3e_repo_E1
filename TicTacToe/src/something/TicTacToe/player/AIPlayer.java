@@ -1,16 +1,19 @@
 package something.TicTacToe.player;
 
 import something.TicTacToe.Mark;
+import something.TicTacToe.Gui.GameBoard;
 
 public class AIPlayer implements PlayerType {
     private boolean isCross;
 
-    public AIPlayer(boolean isCross) {
+    public void setIsCross(boolean isCross) {
         this.isCross = isCross;
     }
-
+    
     @Override
-    public int getMove(Mark[] board) {
+    public int getMove(GameBoard gameBoard) {
+    	Mark[] board = gameBoard.getTicTacToeBoard().getBoard();
+    	
         int index = -1;
         int value = isCross ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         for (int i = 0; i < board.length; i++) {

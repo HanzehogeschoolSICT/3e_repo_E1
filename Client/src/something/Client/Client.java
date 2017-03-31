@@ -41,7 +41,7 @@ public class Client implements GameClient {
 		}
     }
 
-    public synchronized void guardedLock() {
+    public void guardedLock() {
         while (ct != null) {
             try {
                 synchronized (this) {
@@ -69,7 +69,7 @@ public class Client implements GameClient {
 
     @Override
     public boolean login(String username) {
-        if (waitForUnlock()) {
+        if (!isLocked()) {
             try {
                 sendCommand("login " + username);
                 setCommandType(CommandType.LOGIN);
@@ -84,7 +84,7 @@ public class Client implements GameClient {
 
     @Override
     public void logout() {
-        if (waitForUnlock()) {
+        if (!isLocked()) {
             try {
                 sendCommand("bye");
                 socket.close();
@@ -96,7 +96,7 @@ public class Client implements GameClient {
 
     @Override
     public String[] getGameList() {
-        if (waitForUnlock()) {
+        if (!isLocked()) {
             try {
                 sendCommand("get gamelist");
                 setCommandType(CommandType.GETGAMELIST);
@@ -106,12 +106,12 @@ public class Client implements GameClient {
                 e.printStackTrace();
             }
         }
-        return null;
+        return gameList;
     }
 
     @Override
     public String[] getPlayers() {
-        if (waitForUnlock()) {
+        if (!isLocked()) {
             try {
                 sendCommand("get playerlist");
                 setCommandType(CommandType.GETPLAYERS);
@@ -126,7 +126,7 @@ public class Client implements GameClient {
 
     @Override
     public boolean subscribe(String game) {
-        if (waitForUnlock()) {
+        if (!isLocked()) {
             try {
                 sendCommand("subscribe " + game);
                 setCommandType(CommandType.SUBSCRIBE);
@@ -141,7 +141,7 @@ public class Client implements GameClient {
 
     @Override
     public boolean move(String move) {
-        if (waitForUnlock()) {
+        if (!isLocked()) {
             try {
                 sendCommand("move " + move);
                 setCommandType(CommandType.MOVE);
@@ -156,7 +156,7 @@ public class Client implements GameClient {
 
     @Override
     public boolean forfeit() {
-        if (waitForUnlock()) {
+        if (!isLocked()) {
             try {
                 sendCommand("forfeit");
                 setCommandType(CommandType.FORFEIT);
@@ -171,7 +171,7 @@ public class Client implements GameClient {
 
     @Override
     public boolean challenge(String player, String game) {
-        if (waitForUnlock()) {
+        if (!isLocked()) {
             try {
                 sendCommand("challenge \"" + player + "\" \"" + game + "\"");
                 setCommandType(CommandType.CHALLENGE);
@@ -186,7 +186,7 @@ public class Client implements GameClient {
 
     @Override
     public boolean acceptChallenge(int challengeNum) {
-        if (waitForUnlock()) {
+        if (!isLocked()) {
             try {
                 sendCommand("challenge accept " + challengeNum);
                 setCommandType(CommandType.ACCEPTCHALLENGE);
@@ -224,9 +224,7 @@ public class Client implements GameClient {
                     while (true) {
                         String line = br.readLine();
                                                 
-                        if (line != null && (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {   
-                        	System.out.println(line);
-                        	
+                        if (line != null && (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {                         	
                         	//Received event
                         	if(line.startsWith("SVR GAME ")) {
                         		String eventStr = line.substring("SVR GAME ".length());
@@ -298,23 +296,11 @@ public class Client implements GameClient {
         bw.flush();
     }
     
-    private synchronized void setCommandType(CommandType type) {
+    private void setCommandType(CommandType type) {
     	ct = type;
     }
     
-    private synchronized boolean isLocked() {
+    private boolean isLocked() {
     	return ct != null;
-    }
-    
-    private boolean waitForUnlock() { 
-    	while(isLocked()) {
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-    	}
-    	
-    	return true;
     }
 }

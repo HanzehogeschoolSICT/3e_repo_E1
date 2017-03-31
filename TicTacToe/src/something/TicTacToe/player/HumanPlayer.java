@@ -1,11 +1,11 @@
 package something.TicTacToe.player;
 
-import something.TicTacToe.Mark;
+import something.TicTacToe.Gui.GameBoard;
 
 public class HumanPlayer implements PlayerType {
 
 	@Override
-	public int getMove(Mark[] board) {
+	public int getMove(GameBoard board) {
 		return 0;
 	}
 

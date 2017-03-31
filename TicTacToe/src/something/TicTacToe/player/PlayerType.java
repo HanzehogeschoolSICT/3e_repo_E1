@@ -1,7 +1,7 @@
 package something.TicTacToe.player;
 
-import something.TicTacToe.Mark;
+import something.TicTacToe.Gui.GameBoard;
 
 public interface PlayerType {
-	int getMove(Mark[] board);
+	int getMove(GameBoard board);
 }
