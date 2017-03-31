@@ -1,11 +1,8 @@
 package something.TicTacToe.player;
 
 import something.Client.Client;
-import something.Client.event.GameEvent;
-import something.Client.event.GameEventListener;
-import something.Client.event.events.MatchStartEvent;
 
-public class OnlinePlayer extends Player implements GameEventListener {
+public class OnlinePlayer extends Player {
 
 	private Client client;
 	
@@ -13,25 +10,13 @@ public class OnlinePlayer extends Player implements GameEventListener {
 		super(playerType);
 		
 		this.client = client;
-		client.registerEventListener(this);
 	}
 	
 	@Override
-	public void makeMove() {
-		String move = getPlayerType().getMove();
-		
-		//TODO send move through client
-	}
-
-	@Override
-	public void handleEvent(GameEvent e) {
-		if(e instanceof MatchStartEvent) {
-			MatchStartEvent event = (MatchStartEvent) e;
-			
-			//TODO start game
-			
-		} else if(true) {
-			
+	public void makeMove(int index) {
+		if(hasTurn()) {
+			client.move(index + "");
+			setTurn(false);
 		}
 	}
 }
