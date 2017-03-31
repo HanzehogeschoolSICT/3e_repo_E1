@@ -108,4 +108,9 @@ public class Controller implements GameEventListener {
 			//TODO close challenge screen
 		}
 	}
+
+    public boolean forfeit() {
+        boolean check = client.forfeit();
+        return check;
+    }
 }
