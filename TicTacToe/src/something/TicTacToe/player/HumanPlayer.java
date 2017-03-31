@@ -1,10 +1,12 @@
 package something.TicTacToe.player;
 
+import something.TicTacToe.Mark;
+
 public class HumanPlayer implements PlayerType {
 
 	@Override
-	public String getMove() {
-		return null;
+	public int getMove(Mark[] board) {
+		return 0;
 	}
 
 }

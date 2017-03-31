@@ -1,12 +1,10 @@
 package something.TicTacToe.Gui;
 
-
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import something.TicTacToe.Controller;
 
@@ -16,7 +14,7 @@ import java.util.Optional;
 public class StartGui extends Application{
     private Stage primaryStage, gameStage, waitPopUp;
     private Controller controller;
-    private Alert waitAlert, confirmGame;
+    private Alert confirmGame;
     private GuiSettings game;
     
     @Override
@@ -62,22 +60,18 @@ public class StartGui extends Application{
     public GuiSettings getGame() {
     	return game;
     }
-    
-    public void startPopUp () {
-        gameStage.close();
-        primaryStage.show();
-    }
 
     public void waitPopUp () {
     	waitPopUp = new Stage();
         waitPopUp.setTitle("Wait or Challenge");
         waitPopUp.setScene(new WaitPopUp(controller).scene);
         waitPopUp.show();
+        addShutdownOnClose(waitPopUp);
     }
 
-
     public void closeWaitPopUp() {
-        waitAlert.close();
+    	waitPopUp.close();
+    	waitPopUp = null;
     }
 
     public boolean confirmGameDialog(String opponentName) {
@@ -85,7 +79,7 @@ public class StartGui extends Application{
         confirmGame.setTitle("You have been challenged");
         confirmGame.setHeaderText("Challenger: " + opponentName);
         confirmGame.setContentText("Would you like to accept this game?");
-
+        
         Optional<ButtonType> result = confirmGame.showAndWait();
         if (result.get() == ButtonType.OK) {
             return true;
@@ -93,9 +87,4 @@ public class StartGui extends Application{
             return false;
         }
     }
-
-
-
-    public static void main(String[] args){ Application.launch(args); }
-
 }

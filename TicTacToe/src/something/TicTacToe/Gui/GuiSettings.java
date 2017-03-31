@@ -46,7 +46,7 @@ public class GuiSettings {
         forfeit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                boolean check = controller.forfeit();
+                boolean check = controller.getClient().forfeit();
                 if (!check) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Disconnecting failed");

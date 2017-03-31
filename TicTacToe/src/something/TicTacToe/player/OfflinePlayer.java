@@ -7,7 +7,7 @@ public class OfflinePlayer extends Player {
 	}
 
 	@Override
-	public void makeMove(int index) {		
+	public void makeMove(int index) {
 		//TODO send move to board
 	}
 

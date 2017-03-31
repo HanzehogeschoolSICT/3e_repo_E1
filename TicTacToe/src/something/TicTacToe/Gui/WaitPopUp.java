@@ -31,7 +31,6 @@ public class WaitPopUp {
         }
     }
 
-
     private BorderPane makePane() {
         BorderPane borderPane = new BorderPane();
         playersListView.setPrefSize(200, 100);
@@ -55,7 +54,7 @@ public class WaitPopUp {
             public void handle(ActionEvent event) {
                 String opponent = playersListView.getSelectionModel().getSelectedItem();
                 if (opponent != "") {
-                    controller.challenge(opponent);
+                    controller.getClient().challenge(opponent, "Tic-tac-toe");
                 } else {
                     throwAlert();
                 }
@@ -75,7 +74,6 @@ public class WaitPopUp {
         return refresh;
     }
 
-
     private void throwAlert() {
         Alert noSelection = new Alert(Alert.AlertType.ERROR);
         noSelection.setTitle("Warning");
@@ -85,18 +83,19 @@ public class WaitPopUp {
     }
 
     private void updateListView () {
-        String[] playerArray = controller.getPlayers();
-        ObservableList observablePlayerList =
-                FXCollections.observableArrayList();
+    	String[] playerArray = controller.getClient().getPlayers();
+        
+        ObservableList<String> observablePlayerList = FXCollections.observableArrayList();
         for (String player : playerArray) {
-            observablePlayerList.add(player);
+        	if(!controller.getUsername().equals(player)) {
+        		observablePlayerList.add(player);
+        	}
         }
         playersListView.setItems(observablePlayerList);
     }
 
-
     private Scene makeScene(){
-        Scene scene = new Scene(makePane(),250 ,250 , Color.WHEAT);
+        Scene scene = new Scene(makePane(), 250, 250, Color.WHEAT);
         return scene;
     }
 }

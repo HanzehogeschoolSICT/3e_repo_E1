@@ -41,7 +41,7 @@ public class Client implements GameClient {
 		}
     }
 
-    public void guardedLock() {
+    public synchronized void guardedLock() {
         while (ct != null) {
             try {
                 synchronized (this) {
@@ -50,7 +50,7 @@ public class Client implements GameClient {
             } catch (InterruptedException e) {}
         }
     }
-
+    
     @Override
     public boolean connect(InetAddress inetAddress, int port) {
         try {
@@ -69,10 +69,10 @@ public class Client implements GameClient {
 
     @Override
     public boolean login(String username) {
-        if (ct == null) {
+        if (waitForUnlock()) {
             try {
                 sendCommand("login " + username);
-                ct = CommandType.LOGIN;
+                setCommandType(CommandType.LOGIN);
                 guardedLock();
                 return success;
             } catch (Exception e) {
@@ -84,7 +84,7 @@ public class Client implements GameClient {
 
     @Override
     public void logout() {
-        if (ct == null) {
+        if (waitForUnlock()) {
             try {
                 sendCommand("bye");
                 socket.close();
@@ -96,10 +96,10 @@ public class Client implements GameClient {
 
     @Override
     public String[] getGameList() {
-        if (ct == null) {
+        if (waitForUnlock()) {
             try {
                 sendCommand("get gamelist");
-                ct = CommandType.GETGAMELIST;
+                setCommandType(CommandType.GETGAMELIST);
                 guardedLock();
                 return gameList;
             } catch (IOException e) {
@@ -111,25 +111,25 @@ public class Client implements GameClient {
 
     @Override
     public String[] getPlayers() {
-        if (ct == null) {
+        if (waitForUnlock()) {
             try {
                 sendCommand("get playerlist");
-                ct = CommandType.GETPLAYERS;
+                setCommandType(CommandType.GETPLAYERS);
                 guardedLock();
                 return playerList;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        return null;
+		return playerList;
     }
 
     @Override
     public boolean subscribe(String game) {
-        if (ct == null) {
+        if (waitForUnlock()) {
             try {
                 sendCommand("subscribe " + game);
-                ct = CommandType.SUBSCRIBE;
+                setCommandType(CommandType.SUBSCRIBE);
                 guardedLock();
                 return success;
             } catch (Exception e) {
@@ -141,10 +141,10 @@ public class Client implements GameClient {
 
     @Override
     public boolean move(String move) {
-        if (ct == null) {
+        if (waitForUnlock()) {
             try {
                 sendCommand("move " + move);
-                ct = CommandType.MOVE;
+                setCommandType(CommandType.MOVE);
                 guardedLock();
                 return success;
             } catch (Exception e) {
@@ -156,10 +156,10 @@ public class Client implements GameClient {
 
     @Override
     public boolean forfeit() {
-        if (ct == null) {
+        if (waitForUnlock()) {
             try {
                 sendCommand("forfeit");
-                ct = CommandType.FORFEIT;
+                setCommandType(CommandType.FORFEIT);
                 guardedLock();
                 return success;
             } catch (Exception e) {
@@ -171,10 +171,10 @@ public class Client implements GameClient {
 
     @Override
     public boolean challenge(String player, String game) {
-        if (ct == null) {
+        if (waitForUnlock()) {
             try {
                 sendCommand("challenge \"" + player + "\" \"" + game + "\"");
-                ct = CommandType.CHALLENGE;
+                setCommandType(CommandType.CHALLENGE);
                 guardedLock();
                 return success;
             } catch (Exception e) {
@@ -186,10 +186,10 @@ public class Client implements GameClient {
 
     @Override
     public boolean acceptChallenge(int challengeNum) {
-        if (ct == null) {
+        if (waitForUnlock()) {
             try {
                 sendCommand("challenge accept " + challengeNum);
-                ct = CommandType.ACCEPTCHALLENGE;
+                setCommandType(CommandType.ACCEPTCHALLENGE);
                 guardedLock();
                 return success;
             } catch (Exception e) {
@@ -273,7 +273,8 @@ public class Client implements GameClient {
                                         break;
                                     case GETPLAYERS:
                                         line = br.readLine();
-                                        playerList = StringUtils.stringToArray(line.substring("SVR PLAYERLIST ".length()));
+                                                                                
+                                        playerList = StringUtils.stringToArray(line.substring("SVR PLAYERLIST ".length()));                   
                                         break;
                                 }
                                 ct = null;
@@ -295,5 +296,25 @@ public class Client implements GameClient {
     	bw.write(writable);
         bw.newLine();
         bw.flush();
+    }
+    
+    private synchronized void setCommandType(CommandType type) {
+    	ct = type;
+    }
+    
+    private synchronized boolean isLocked() {
+    	return ct != null;
+    }
+    
+    private boolean waitForUnlock() { 
+    	while(isLocked()) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+    	}
+    	
+    	return true;
     }
 }

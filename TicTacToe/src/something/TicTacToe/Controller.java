@@ -26,6 +26,7 @@ public class Controller implements GameEventListener {
     private Client client;
     private StartGui startGui;
 
+    private String username;
     private Player player;
     private boolean subscribe;
     
@@ -33,13 +34,22 @@ public class Controller implements GameEventListener {
         this.startGui = startGui;
     }
     
+    public Client getClient() {
+        return client;
+    }
+    
     public Player getPlayer() {
     	return player;
     }
     
+    public String getUsername() {
+    	return username;
+    }
+    
     public void processLogin(String playerMode, String opponentMode, String username, boolean subscribe) {
+    	this.username = username;
     	this.subscribe = subscribe;
-    	PlayerType playerType = playerMode == "Me" ? new HumanPlayer() : new AIPlayer();
+    	PlayerType playerType = playerMode == "Me" ? new HumanPlayer() : new AIPlayer(true); //TODO
     	
     	startGui.hideInitPopUp();
     	
@@ -93,31 +103,20 @@ public class Controller implements GameEventListener {
 		} else if(e instanceof MoveEvent) {
 			MoveEvent event = (MoveEvent) e;
 		
-			startGui.getGame().makeMove(Integer.parseInt(event.getMove()));
-		
+			Platform.runLater(() -> {
+				startGui.getGame().makeMove(Integer.parseInt(event.getMove()));
+			});
+			
 		} else if(e instanceof ChallengeReceiveEvent) {
 			ChallengeReceiveEvent event = (ChallengeReceiveEvent) e;
 		
-			//TODO show challange screen
-		
-		} else if(e instanceof ChallengeCancelledEvent) {
-			ChallengeCancelledEvent event = (ChallengeCancelledEvent) e;
-		
-			//TODO close challenge screen
+			Platform.runLater(() -> {
+				boolean confirm = startGui.confirmGameDialog(event.getChallenger());
+				
+				if(confirm) {
+					client.acceptChallenge(Integer.parseInt(event.getChallengeNumber()));
+				}
+			});
 		}
 	}
-
-    public boolean forfeit() {
-        boolean check = client.forfeit();
-        return check;
-    }
-
-    public String[] getPlayers() {
-        return client.getPlayers();
-    }
-
-    public boolean challenge(String name) {
-        return client.challenge(name, "Tic-tac-toe");
-    }
-
 }
