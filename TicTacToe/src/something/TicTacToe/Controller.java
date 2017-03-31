@@ -52,10 +52,8 @@ public class Controller implements GameEventListener {
             
             if(subscribe) {
             	client.subscribe("Tic-tac-toe");
-            	startGui.waitPopUp("Waiting for a game");
-            } else {
-            	startGui.waitPopUp("Waiting for a challenge");
             }
+            startGui.waitPopUp();
             
         } else {
         	player = new OfflinePlayer(playerType);
@@ -81,7 +79,7 @@ public class Controller implements GameEventListener {
 			
 			Platform.runLater(() -> {
 				startGui.endGameStage();
-				startGui.waitPopUp("");
+				startGui.waitPopUp();
 			});
 			if(subscribe) {
             	client.subscribe("Tic-tac-toe");
@@ -113,4 +111,13 @@ public class Controller implements GameEventListener {
         boolean check = client.forfeit();
         return check;
     }
+
+    public String[] getPlayers() {
+        return client.getPlayers();
+    }
+
+    public boolean challenge(String name) {
+        return client.challenge(name, "Tic-tac-toe");
+    }
+
 }

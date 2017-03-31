@@ -1,0 +1,102 @@
+package something.TicTacToe.Gui;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import something.TicTacToe.Controller;
+
+/**
+ * Created by samikroon on 3/31/17.
+ */
+public class WaitPopUp {
+    Scene scene;
+    Controller controller;
+    private ListView<String> playersListView = new ListView<>();
+
+    public WaitPopUp(Controller controller) {
+        this.controller = controller;
+        try{
+            this.scene = makeScene();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    private BorderPane makePane() {
+        BorderPane borderPane = new BorderPane();
+        playersListView.setPrefSize(200, 100);
+        updateListView();
+        Text topText = new Text("Wait for a game or challenge someone from the list");
+        borderPane.setTop(topText);
+        borderPane.setCenter(playersListView);
+        Button challenge = challengeButton();
+        Button refresh = refreshButton();
+        ToolBar toolBar = new ToolBar(challenge, refresh);
+        borderPane.setBottom(toolBar);
+
+
+        return borderPane;
+    }
+
+    private Button challengeButton() {
+        Button challenge = new Button("Challenge");
+        challenge.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String opponent = playersListView.getSelectionModel().getSelectedItem();
+                if (opponent != "") {
+                    controller.challenge(opponent);
+                } else {
+                    throwAlert();
+                }
+            }
+        });
+        return challenge;
+    }
+
+    private Button refreshButton() {
+        Button refresh = new Button("Refresh");
+        refresh.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                updateListView();
+            }
+        });
+        return refresh;
+    }
+
+
+    private void throwAlert() {
+        Alert noSelection = new Alert(Alert.AlertType.ERROR);
+        noSelection.setTitle("Warning");
+        noSelection.setHeaderText("You did not select a valid opponent");
+        noSelection.setContentText(null);
+        noSelection.show();
+    }
+
+    private void updateListView () {
+        String[] playerArray = controller.getPlayers();
+        ObservableList observablePlayerList =
+                FXCollections.observableArrayList();
+        for (String player : playerArray) {
+            observablePlayerList.add(player);
+        }
+        playersListView.setItems(observablePlayerList);
+    }
+
+
+    private Scene makeScene(){
+        Scene scene = new Scene(makePane(),250 ,250 , Color.WHEAT);
+        return scene;
+    }
+}

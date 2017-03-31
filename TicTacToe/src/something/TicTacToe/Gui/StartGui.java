@@ -14,8 +14,7 @@ import java.util.Optional;
 
 
 public class StartGui extends Application{
-    private Stage primaryStage;
-    private Stage gameStage;
+    private Stage primaryStage, gameStage, waitPopUp;
     private Controller controller;
     private Alert waitAlert, confirmGame;
     private GuiSettings game;
@@ -69,17 +68,13 @@ public class StartGui extends Application{
         primaryStage.show();
     }
 
-    public void waitPopUp (String message) {
-    	if(waitAlert == null) {
-	        waitAlert = new Alert(Alert.AlertType.INFORMATION);
-	        waitAlert.setTitle("Tic Tac Toe");
-	        waitAlert.setHeaderText(null);
-	        waitAlert.setContentText(message);
-	        waitAlert.initStyle(StageStyle.UNDECORATED);
-	        waitAlert.getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
-    	}
-        waitAlert.show();
+    public void waitPopUp () {
+    	waitPopUp = new Stage();
+        waitPopUp.setTitle("Wait or Challenge");
+        waitPopUp.setScene(new WaitPopUp(controller).scene);
+        waitPopUp.show();
     }
+
 
     public void closeWaitPopUp() {
         waitAlert.close();
