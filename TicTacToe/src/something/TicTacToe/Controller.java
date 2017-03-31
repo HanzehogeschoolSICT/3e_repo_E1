@@ -80,4 +80,9 @@ public class Controller implements GameEventListener {
 			}
 		}
 	}
+
+    public boolean forfeit() {
+        boolean check = client.forfeit();
+        return check;
+    }
 }

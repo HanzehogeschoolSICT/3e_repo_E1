@@ -1,11 +1,16 @@
 package something.TicTacToe.Gui;
 
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.*;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToolBar;
 import javafx.scene.input.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import something.TicTacToe.Controller;
 import something.TicTacToe.Mark;
@@ -15,6 +20,7 @@ public class GuiSettings {
     Scene scene;
     Integer turn = 0;
     TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
+    private BorderPane borderPane;
     private Controller controller;
 
     public GuiSettings(Controller controller){
@@ -28,10 +34,29 @@ public class GuiSettings {
 
     private Group makeRootGroup() {
         Group rootGroup = new Group();
-
+        borderPane = new BorderPane();
         Canvas canvas = makeCanvas();
-        rootGroup.getChildren().add(canvas);
+        borderPane.setCenter(canvas);
+        rootGroup.getChildren().add(borderPane);
 
+        ToolBar toolBar = new ToolBar();
+        Button forfeit = new Button("Forfeit");
+        forfeit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                boolean check = controller.forfeit();
+                if (!check) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Disconnecting failed");
+                    alert.setHeaderText("Forfeiting the match failed, please try again");
+                    alert.setContentText(null);
+                    alert.show();
+                }
+            }
+        });
+
+        toolBar.getItems().add(forfeit);
+        borderPane.setTop(toolBar);
 
         Integer canvasH = (int)canvas.getHeight();
         Integer canvasW = (int)canvas.getWidth();
