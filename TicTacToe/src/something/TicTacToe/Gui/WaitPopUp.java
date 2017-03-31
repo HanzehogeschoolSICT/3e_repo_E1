@@ -61,7 +61,7 @@ public class WaitPopUp {
             @Override
             public void handle(ActionEvent event) {
                 String opponent = playersListView.getSelectionModel().getSelectedItem();
-                if (opponent != "") {
+                if (opponent != null) {
                     controller.getClient().challenge(opponent, "Tic-tac-toe");
                 } else {
                     throwAlert();
@@ -103,7 +103,7 @@ public class WaitPopUp {
     }
 
     private Scene makeScene(){
-        Scene scene = new Scene(makePane(), 250, 250, Color.WHEAT);
+        Scene scene = new Scene(makePane(), 300, 300, Color.WHEAT);
         return scene;
     }
 }

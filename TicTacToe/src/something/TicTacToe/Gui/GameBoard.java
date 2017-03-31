@@ -16,7 +16,7 @@ import something.TicTacToe.Controller;
 import something.TicTacToe.Mark;
 import something.TicTacToe.TicTacToeBoard;
 
-public class GuiSettings {
+public class GameBoard {
     Scene scene;
     Integer turn = 0;
     TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
@@ -25,7 +25,7 @@ public class GuiSettings {
     
     private GraphicsContext graphicsContext;
     
-    public GuiSettings(Controller controller){
+    public GameBoard(Controller controller){
         this.controller = controller;
         try{
             this.scene = makeScene();
@@ -34,7 +34,13 @@ public class GuiSettings {
         }
     }
     
+    public TicTacToeBoard getTicTacToeBoard() {
+    	return ticTacToeBoard;
+    }
+    
     private Group makeRootGroup() {
+    	GameBoard board = this;
+    	
         Group rootGroup = new Group();
         borderPane = new BorderPane();
         Canvas canvas = makeCanvas();
@@ -58,7 +64,7 @@ public class GuiSettings {
         });
 
         toolBar.getItems().add(forfeit);
-        borderPane.setTop(toolBar);
+        borderPane.setBottom(toolBar);
 
         Integer canvasH = (int)canvas.getHeight();
         Integer canvasW = (int)canvas.getWidth();
@@ -73,7 +79,7 @@ public class GuiSettings {
 	    			boolean success = makeMove(index);
 	    			
 	            	if(success) {
-	            		controller.getPlayer().makeMove(index);
+	            		controller.getPlayer().doMakeMove(index, controller);
 	            	}
             	}
             }
@@ -85,7 +91,7 @@ public class GuiSettings {
     }
 
     private int getMoveIndex(double x, double y){
-        Integer posOnBoard = null;
+        int posOnBoard = 0;
         
         if (x<150.0 && y<150.0){
             posOnBoard = 0;
@@ -107,7 +113,7 @@ public class GuiSettings {
             posOnBoard = 8;
         }
         
-        return posOnBoard.intValue();
+        return posOnBoard;
     }
 
     private int setTurn(){
@@ -175,7 +181,7 @@ public class GuiSettings {
     }
 
     private Canvas makeCanvas(){
-        Canvas canvas = new Canvas(500,500);
+        Canvas canvas = new Canvas(500,450);
         return canvas;
     }
 
@@ -198,7 +204,7 @@ public class GuiSettings {
     }
 
     private Scene makeScene(){
-        Scene scene = new Scene(makeRootGroup(),450,450, Color.LIGHTGRAY);
+        Scene scene = new Scene(makeRootGroup(), 450, 500, Color.LIGHTGRAY);
         return scene;
     }
 }

@@ -15,7 +15,7 @@ public class StartGui extends Application{
     private Stage primaryStage, gameStage, waitPopUp;
     private Controller controller;
     private Alert confirmGame;
-    private GuiSettings game;
+    private GameBoard board;
     
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -47,7 +47,7 @@ public class StartGui extends Application{
     public void startGameStage() {
         gameStage = new Stage();
         gameStage.setTitle("Tic Tac Toe");
-        gameStage.setScene((game = new GuiSettings(controller)).scene);
+        gameStage.setScene((board = new GameBoard(controller)).scene);
         gameStage.show();
         addShutdownOnClose(gameStage);
     }
@@ -57,8 +57,8 @@ public class StartGui extends Application{
         gameStage = null;
     }
     
-    public GuiSettings getGame() {
-    	return game;
+    public GameBoard getBoard() {
+    	return board;
     }
 
     public void waitPopUp () {

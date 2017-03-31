@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import something.Client.Client;
 import something.Client.event.GameEvent;
 import something.Client.event.GameEventListener;
-import something.Client.event.events.ChallengeCancelledEvent;
 import something.Client.event.events.ChallengeReceiveEvent;
 import something.Client.event.events.MatchFinishEvent;
 import something.Client.event.events.MatchStartEvent;
@@ -28,7 +27,7 @@ public class Controller implements GameEventListener {
 
     private String username;
     private Player player;
-    private boolean subscribe;
+    private Player offlineOpponent;
     
     public Controller(StartGui startGui) {
         this.startGui = startGui;
@@ -38,19 +37,26 @@ public class Controller implements GameEventListener {
         return client;
     }
     
+    public StartGui getGUI() {
+        return startGui;
+    }
+    
     public Player getPlayer() {
     	return player;
+    }
+    
+    public Player getOpponentPlayer() {
+    	return offlineOpponent;
     }
     
     public String getUsername() {
     	return username;
     }
     
-    public void processLogin(String playerMode, String opponentMode, String username, boolean subscribe) {
+    public void processLogin(String playerMode, String opponentMode, String username) {
     	this.username = username;
-    	this.subscribe = subscribe;
-    	PlayerType playerType = playerMode == "Me" ? new HumanPlayer() : new AIPlayer(true); //TODO
-    	
+    	PlayerType playerType = playerMode == "Me" ? new HumanPlayer() : new AIPlayer();
+
     	startGui.hideInitPopUp();
     	
         if (opponentMode == "Online") {
@@ -60,22 +66,24 @@ public class Controller implements GameEventListener {
             player = new OnlinePlayer(playerType, client);
             client.login(username);
             
-            if(subscribe) {
-            	client.subscribe("Tic-tac-toe");
-            }
             startGui.waitPopUp();
             
         } else {
         	player = new OfflinePlayer(playerType);
+        	offlineOpponent = new OfflinePlayer(new AIPlayer());
         	
+        	
+        	loadAIPlayerCross(player, false);
+            loadAIPlayerCross(offlineOpponent, true);
+            
             startGui.startGameStage();
+            
+            player.setTurn(true, this);
         }
     }
 
 	@Override
-	public void handleEvent(GameEvent e) {
-		System.out.println(e);
-		
+	public void handleEvent(GameEvent e) {		
 		if(e instanceof MatchStartEvent) {
 			MatchStartEvent event = (MatchStartEvent) e;
 			
@@ -83,6 +91,7 @@ public class Controller implements GameEventListener {
 				startGui.closeWaitPopUp();
 				startGui.startGameStage();
 			});
+			loadAIPlayerCross(player, event.getOpponent().equals(event.getPlayerToMove()));
 			
 		} else if(e instanceof MatchFinishEvent) {
 			MatchFinishEvent event = (MatchFinishEvent) e;
@@ -91,20 +100,19 @@ public class Controller implements GameEventListener {
 				startGui.endGameStage();
 				startGui.waitPopUp();
 			});
-			if(subscribe) {
-            	client.subscribe("Tic-tac-toe");
-			}
 			
 		} else if(e instanceof YourTurnEvent) {
 			YourTurnEvent event = (YourTurnEvent) e;
 			
-			player.setTurn(true);
-		
+			Platform.runLater(() -> {
+				player.setTurn(true, this);
+			});
+			
 		} else if(e instanceof MoveEvent) {
 			MoveEvent event = (MoveEvent) e;
 		
 			Platform.runLater(() -> {
-				startGui.getGame().makeMove(Integer.parseInt(event.getMove()));
+				startGui.getBoard().makeMove(Integer.parseInt(event.getMove()));
 			});
 			
 		} else if(e instanceof ChallengeReceiveEvent) {
@@ -117,6 +125,13 @@ public class Controller implements GameEventListener {
 					client.acceptChallenge(Integer.parseInt(event.getChallengeNumber()));
 				}
 			});
+		}
+	}
+	
+	public void loadAIPlayerCross(Player player, boolean cross) {
+		if(player.getPlayerType() instanceof AIPlayer) {
+			AIPlayer aiPlayer = (AIPlayer) player.getPlayerType();
+			aiPlayer.setIsCross(cross);
 		}
 	}
 }

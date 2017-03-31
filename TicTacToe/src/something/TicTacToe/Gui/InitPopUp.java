@@ -20,7 +20,6 @@ public class InitPopUp {
     final ToggleGroup playerOneGroup = new ToggleGroup();
     final ToggleGroup playerTwoGroup = new ToggleGroup();
     private Controller controller;
-    private CheckBox subscribe;
 
     public InitPopUp(Controller controller){
         this.controller = controller;
@@ -60,11 +59,13 @@ public class InitPopUp {
 
         RadioButton playerOneSelf = new RadioButton("Me");
         playerOneSelf.setUserData("Me");
+        playerOneSelf.setSelected(true);
         RadioButton playerOnePC = new RadioButton("PC");
         playerOnePC.setUserData("PC");
 
         RadioButton playerTwoOnline = new RadioButton("Online");
         playerTwoOnline.setUserData("Online");
+        playerTwoOnline.setSelected(true);
         RadioButton playerTwoPC = new RadioButton("PC");
         playerTwoPC.setUserData("PC");
 
@@ -74,11 +75,8 @@ public class InitPopUp {
         playerTwoOnline.setToggleGroup(playerTwoGroup);
         playerTwoPC.setToggleGroup(playerTwoGroup);
 
-        subscribe = new CheckBox("Subscribe");
-        subscribe.setSelected(true);
 
-
-        playerOne.getChildren().addAll(playerOneText, playerOneSelf, playerOnePC, subscribe);
+        playerOne.getChildren().addAll(playerOneText, playerOneSelf, playerOnePC);
         playerTwo.getChildren().addAll(playerTwoText, playerTwoOnline, playerTwoPC);
 
         borderPane.setLeft(playerOne);
@@ -87,18 +85,15 @@ public class InitPopUp {
         Button submit = new Button("Login");
         submit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent event) {
-                if (playerOneGroup.getSelectedToggle() != null && playerTwoGroup.getSelectedToggle() != null &&
-                        username.getText() != "") {
+            public void handle(ActionEvent event) {            	
+                if (playerOneGroup.getSelectedToggle() != null && playerTwoGroup.getSelectedToggle() != null && username.getText().length() > 0) {
                     String playerOne = playerOneGroup.getSelectedToggle().getUserData().toString();
                     String playerTwo = playerTwoGroup.getSelectedToggle().getUserData().toString();
-                    controller.processLogin(playerOne, playerTwo, username.getText(), subscribe.isSelected());
-                    /*System.out.println(playerOneGroup.getSelectedToggle().getUserData().toString());
-                    System.out.println(playerTwoGroup.getSelectedToggle().getUserData().toString());
-                    System.out.println(username.getText());*/
+                    controller.processLogin(playerOne, playerTwo, username.getText());
+                    
                 } else {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("You ****** up");
+                    alert.setTitle("An error occurred!");
                     alert.setHeaderText("Fill in every field please");
                     alert.showAndWait();
                 }
@@ -109,13 +104,9 @@ public class InitPopUp {
 
         return borderPane;
     }
-
-
-
-
-
+    
     private Scene makeScene(){
-        Scene scene = new Scene(makePane(),250 ,250 , Color.WHEAT);
+        Scene scene = new Scene(makePane(), 250, 250, Color.WHEAT);
         return scene;
     }
 }
