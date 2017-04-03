@@ -147,15 +147,15 @@ public class GameBoard {
     }
 
     private void whereToDraw(int posOnBoard, Mark mark){
-        if(posOnBoard == 0){ drawPlay(10, 10, mark);}
-        if(posOnBoard == 1){ drawPlay(160, 10, mark);}
-        if(posOnBoard == 2){ drawPlay(310, 10, mark);}
-        if(posOnBoard == 3){ drawPlay(10, 160, mark);}
-        if(posOnBoard == 4){ drawPlay(160, 160, mark);}
-        if(posOnBoard == 5){ drawPlay(310, 160, mark);}
-        if(posOnBoard == 6){ drawPlay(10, 310, mark);}
-        if(posOnBoard == 7){ drawPlay(160, 310, mark);}
-        if(posOnBoard == 8){ drawPlay(310, 310, mark);}
+        if(posOnBoard == 0){ drawPlay(10, 10, mark);   }
+        if(posOnBoard == 1){ drawPlay(160, 10, mark);  }
+        if(posOnBoard == 2){ drawPlay(310, 10, mark);  }
+        if(posOnBoard == 3){ drawPlay(10, 160, mark);  }
+        if(posOnBoard == 4){ drawPlay(160, 160, mark); }
+        if(posOnBoard == 5){ drawPlay(310, 160, mark); }
+        if(posOnBoard == 6){ drawPlay(10, 310, mark);  }
+        if(posOnBoard == 7){ drawPlay(160, 310, mark); }
+        if(posOnBoard == 8){ drawPlay(310, 310, mark); }
     }
 
     private void drawPlay(double x, double y, Mark mark){
