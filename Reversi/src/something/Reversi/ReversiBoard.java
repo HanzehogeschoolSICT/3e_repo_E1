@@ -6,15 +6,19 @@ public class ReversiBoard {
     public ReversiBoard(){
         this.board = new Tile[64];
         for (int i = 0; i<board.length; i++){
-            board[i] = Tile.BLACK;
+            board[i] = Tile.EMPTY;
         }
+        board[27]=Tile.WHITE;
+        board[28]=Tile.BLACK;
+        board[35]=Tile.BLACK;
+        board[36]=Tile.WHITE;
     }
 
     public String toString(){
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < board.length; i++) {
             builder.append(board[i].toString());
-            if (i % 3 == 2) {
+            if (i % 8 == 7) {
                 builder.append('\n');
             } else {
                 builder.append('|');
@@ -35,6 +39,7 @@ public class ReversiBoard {
             }
             return tile;
         } else {
+            System.out.println("MAG NIET");
             return Tile.EMPTY;
         }
     }

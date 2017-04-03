@@ -2,21 +2,19 @@ package something.Reversi.Gui;
 
 import javafx.event.EventHandler;
 import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Cylinder;
-import javafx.scene.transform.Rotate;
 import something.Reversi.ReversiBoard;
+import something.Reversi.Tile;
 
 public class GuiSettings {
     Scene scene;
+    Integer turn = 0;
     ReversiBoard reversiBoard = new ReversiBoard();
+    private GraphicsContext graphicsContext;
 
     public GuiSettings(){
         try{
@@ -33,7 +31,7 @@ public class GuiSettings {
         Canvas canvas = makeCanvas();
         rootGroup.getChildren().add(canvas);
 
-        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        graphicsContext = canvas.getGraphicsContext2D();
 
         Integer canvasW = (int) canvas.getWidth();
         Integer canvasH = (int) canvas.getHeight();
@@ -41,17 +39,20 @@ public class GuiSettings {
         canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("test");
-                getMoveIndex(event.getSceneX(), event.getSceneY());
+                int index = getMoveIndex(event.getSceneX(), event.getSceneY());
+//                boolean succes = makeMove(index);
+                makeMove(index);
+                System.out.println(reversiBoard.toString());
                 }
         });
 
-        drawGrid(graphicsContext, canvasW, canvasH);
+        drawGrid(canvasW, canvasH);
+        redrawBoard();
 
         return rootGroup;
     }
 
-    private void drawGrid(GraphicsContext graphicsContext, int canvasW, int canvasH) {
+    private void drawGrid(int canvasW, int canvasH) {
         graphicsContext.setLineWidth(1.0);
         graphicsContext.setStroke(Color.BLACK);
         for(int i = 0; i<canvasW; i=i+75){
@@ -69,54 +70,34 @@ public class GuiSettings {
 
     }
 
+    private int setTurn(){
+        return turn%2;
+    }
 
-    private int getMoveIndex(double x, double y){
-        Integer posOnBoard = null;
+    private int getMoveIndex(double x, double y) {
+        int xCoord = (int) Math.floor(y / 75) * 8;
+        int yCoord = (int) Math.floor(x / 75);
+        int posOnBoard = xCoord + yCoord;
 
-        if (x<75.0 && y<75.0){
-            posOnBoard = 0;
-            System.out.println(posOnBoard);
-        } if (75.0<x && x<150.0 && y<75.0){
-            posOnBoard = 1;
-            System.out.println(posOnBoard);
-        } if (150.0<x && x<225.0 && y<75.0){
-            posOnBoard = 2;
-            System.out.println(posOnBoard);
-        } if (225.0<x && x<300.0 && y<75.0){
-            posOnBoard = 3;
-            System.out.println(posOnBoard);
-        } if (300.0<x && x<375.0 && y<75.0){
-            posOnBoard = 4;
-            System.out.println(posOnBoard);
-        } if (x<375.0 && 150.0<y && y<75.0){
-            posOnBoard = 5;
-            System.out.println(posOnBoard);
-        } if (75.0<x && x<150.0 && y<75.0){
-            posOnBoard = 1;
-            System.out.println(posOnBoard);
-        } if (150.0<x && x<225.0 && y<75.0){
-            posOnBoard = 2;
-            System.out.println(posOnBoard);
-        } if (225.0<x && x<300.0 && y<75.0){
-            posOnBoard = 3;
-            System.out.println(posOnBoard);
-        } if (300.0<x && x<375.0 && y<75.0){
-            posOnBoard = 4;
-        } if (x<375.0 && 150.0<y && y<75.0){
-            posOnBoard = 5;
-        } if (150.0<x && x<300.0 && 150.0<y && y<300.0){
-            posOnBoard = 4;
-        } if (300.0<x && x<450.0 && 150.0<y && y<300.0){
-            posOnBoard = 5;
-        } if (x<150.0 && 300.0<y && y<450.0){
-            posOnBoard = 6;
-        } if(150.0<x && x<300.0 &&300.0<y && y<450.0){
-            posOnBoard = 7;
-        } if(300.0<x && x<450.0 && 300.0<y && y<450.0){
-            posOnBoard = 8;
+        System.out.println("tile on board: " + posOnBoard);
+
+        return posOnBoard;
+    }
+
+    public boolean makeMove(int posOnBoard){
+        int getTurn = setTurn();
+        Tile tile = reversiBoard.makeTurn(posOnBoard, getTurn);
+        if (tile == Tile.BLACK){
+            redrawBoard();
+            turn = turn+1;
+            return true;
         }
-
-        return posOnBoard.intValue();
+        if (tile == Tile.WHITE){
+            redrawBoard();
+            turn = turn+1;
+            return true;
+        }
+        return false;
     }
 
     private Canvas makeCanvas() {
@@ -124,16 +105,41 @@ public class GuiSettings {
         return canvas;
     }
 
-    private void drawBlack(){
-
+    private void redrawBoard(){
+        Tile[] board = reversiBoard.getBoard();
+//        x = modulo, y = delen, vermenigvuldig met grootte tegel
+        for(int i = 0; i<board.length; i++){
+            int xCoord = i%8*75;
+            int yCoord = i/8*75;
+            if (board[i] == Tile.BLACK) { drawPlay(xCoord, yCoord, Tile.BLACK); }
+            if (board[i] == Tile.WHITE) { drawPlay(xCoord, yCoord, Tile.WHITE); }
+        }
     }
 
-    private void drawWhite(){
-
+    private void drawPlay(int xCoord, int yCoord, Tile tile){
+//        int x = (xCoord*75)+5;
+//        int y = (yCoord*75)+5;
+        if(tile == Tile.BLACK){ drawBlack(xCoord, yCoord); }
+        if(tile == Tile.WHITE){ drawWhite(xCoord, yCoord); }
     }
+
+    private void drawBlack(int x, int y){
+        int xNew = x+5;
+        int yNew = y+5;
+        graphicsContext.setFill(Color.BLACK);
+        graphicsContext.fillOval(xNew, yNew, 60, 60);
+    }
+
+    private void drawWhite(int x, int y){
+        int xNew = x+7;
+        int yNew = y+7;
+        graphicsContext.setFill(Color.WHITE);
+        graphicsContext.fillOval(xNew, yNew, 60, 60);
+    }
+
 
     private Scene makeScene() {
-        Scene scene = new Scene(makeRootGroup(), 590, 590, true);
+        Scene scene = new Scene(makeRootGroup(), 590, 590, Color.DARKGREEN);
         return scene;
     }
 }

@@ -13,15 +13,18 @@ import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import something.Reversi.Controller;
 
 public class StartGui extends Application{
     private Stage primaryStage;
     private Stage gameStage;
-
+    private Controller controller;
+    
     @Override
     public void start(Stage primaryStage) throws Exception{
         this.primaryStage = primaryStage;
-
+        this.controller = new Controller(this);
+        
         startGameStage();
 /*
         final PhongMaterial redmaterial = new PhongMaterial();

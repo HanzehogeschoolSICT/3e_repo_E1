@@ -1,4 +1,4 @@
-package something.TicTacToe.player;
+package something.Client.player;
 
 import something.TicTacToe.Gui.GameBoard;
 
