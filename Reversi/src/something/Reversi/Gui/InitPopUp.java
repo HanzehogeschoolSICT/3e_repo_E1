@@ -35,54 +35,54 @@ public class InitPopUp {
     private BorderPane makePane() {
         BorderPane borderPane = new BorderPane();
 
-        HBox usernameBar = new HBox(20);
-        Text usernameText = new Text();
-        usernameText.setFont(new Font(15));
-        usernameText.setText("Username:");
+        HBox usernameBarRev = new HBox(20);
+        Text usernameTextRev = new Text();
+        usernameTextRev.setFont(new Font(15));
+        usernameTextRev.setText("Username:");
         username = new TextField();
-        usernameBar.getChildren().addAll(usernameText, username);
-        borderPane.setTop(usernameBar);
+        usernameBarRev.getChildren().addAll(usernameTextRev, username);
+        borderPane.setTop(usernameBarRev);
 
-        VBox playerOne = new VBox(10);
-        VBox playerTwo = new VBox(10);
+        VBox playerOneRev = new VBox(10);
+        VBox playerTwoRev = new VBox(10);
 
         Insets insets = new Insets(30, 15, 10, 15);
-        playerOne.setPadding(insets);
-        playerTwo.setPadding(insets);
+        playerOneRev.setPadding(insets);
+        playerTwoRev.setPadding(insets);
 
-        Text playerOneText = new Text();
-        playerOneText.setFont(new Font(15));
-        playerOneText.setText("Player 1");
+        Text playerOneTextRev = new Text();
+        playerOneTextRev.setFont(new Font(15));
+        playerOneTextRev.setText("Player 1");
 
-        Text playerTwoText = new Text();
-        playerTwoText.setFont(new Font(15));
-        playerTwoText.setText("Player 2");
+        Text playerTwoTextRev = new Text();
+        playerTwoTextRev.setFont(new Font(15));
+        playerTwoTextRev.setText("Player 2");
 
-        RadioButton playerOneSelf = new RadioButton("Me");
-        playerOneSelf.setUserData("Me");
-        RadioButton playerOnePC = new RadioButton("PC");
-        playerOnePC.setUserData("PC");
+        RadioButton playerOneSelfRev = new RadioButton("Me");
+        playerOneSelfRev.setUserData("Me");
+        RadioButton playerOnePCRev = new RadioButton("PC");
+        playerOnePCRev.setUserData("PC");
 
-        RadioButton playerTwoOnline = new RadioButton("Online");
-        playerTwoOnline.setUserData("Online");
-        RadioButton playerTwoPC = new RadioButton("PC");
-        playerTwoPC.setUserData("PC");
+        RadioButton playerTwoOnlineRev = new RadioButton("Online");
+        playerTwoOnlineRev.setUserData("Online");
+        RadioButton playerTwoPCRev = new RadioButton("PC");
+        playerTwoPCRev.setUserData("PC");
 
-        playerOneSelf.setToggleGroup(playerOneGroup);
-        playerOnePC.setToggleGroup(playerOneGroup);
+        playerOneSelfRev.setToggleGroup(playerOneGroup);
+        playerOnePCRev.setToggleGroup(playerOneGroup);
 
-        playerTwoOnline.setToggleGroup(playerTwoGroup);
-        playerTwoPC.setToggleGroup(playerTwoGroup);
+        playerTwoOnlineRev.setToggleGroup(playerTwoGroup);
+        playerTwoPCRev.setToggleGroup(playerTwoGroup);
 
         subscribe = new CheckBox("Subscribe");
         subscribe.setSelected(true);
 
 
-        playerOne.getChildren().addAll(playerOneText, playerOneSelf, playerOnePC, subscribe);
-        playerTwo.getChildren().addAll(playerTwoText, playerTwoOnline, playerTwoPC);
+        playerOneRev.getChildren().addAll(playerOneTextRev, playerOneSelfRev, playerOnePCRev, subscribe);
+        playerTwoRev.getChildren().addAll(playerTwoTextRev, playerTwoOnlineRev, playerTwoPCRev);
 
-        borderPane.setLeft(playerOne);
-        borderPane.setRight(playerTwo);
+        borderPane.setLeft(playerOneRev);
+        borderPane.setRight(playerTwoRev);
 
         Button submit = new Button("Login");
         submit.setOnAction(new EventHandler<ActionEvent>() {
@@ -92,7 +92,7 @@ public class InitPopUp {
                         username.getText() != "") {
                     String playerOne = playerOneGroup.getSelectedToggle().getUserData().toString();
                     String playerTwo = playerTwoGroup.getSelectedToggle().getUserData().toString();
-//                    controller.processLogin(playerOne, playerTwo, username.getText(), subscribe.isSelected());
+//                    controller.processLogin(playerOneRev, playerTwoRev, username.getText(), subscribe.isSelected());
                     /*System.out.println(playerOneGroup.getSelectedToggle().getUserData().toString());
                     System.out.println(playerTwoGroup.getSelectedToggle().getUserData().toString());
                     System.out.println(username.getText());*/
