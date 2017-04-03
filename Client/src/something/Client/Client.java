@@ -2,10 +2,10 @@ package something.Client;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+
 import something.Client.event.GameEvent;
 import something.Client.event.GameEventListener;
 import something.Client.event.events.ChallengeCancelledEvent;
@@ -16,9 +16,6 @@ import something.Client.event.events.MoveEvent;
 import something.Client.event.events.YourTurnEvent;
 import something.Client.utils.StringUtils;
 
-/**
- * Created by samikroon on 3/27/17.
- */
 public class Client implements GameClient {
 		
     private Socket socket;
@@ -30,18 +27,8 @@ public class Client implements GameClient {
     private String[] gameList;
     private String[] playerList;
 
-    private LinkedList<GameEventListener> registeredListeners;
+    private LinkedList<GameEventListener> registeredListeners = new LinkedList<>();
     
-    public Client () {
-    	registeredListeners = new LinkedList<>();
-    	
-    	try {
-			connect(InetAddress.getByName("localhost"), 7789);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-    }
-
     public void guardedLock() {
         while (ct != null) {
             try {
@@ -141,7 +128,7 @@ public class Client implements GameClient {
     }
 
     @Override
-    public boolean move(String move) {
+    public boolean move(String move) {    	
         if (!isLocked()) {
             try {
                 sendCommand("move " + move);
@@ -224,8 +211,8 @@ public class Client implements GameClient {
                 try {
                     while (true) {
                         String line = br.readLine();
-                                                
-                        if (line != null && (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {                         	
+                                                            
+                        if (line != null && (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {
                         	//Received event
                         	if(line.startsWith("SVR GAME ")) {
                         		String eventStr = line.substring("SVR GAME ".length());
@@ -263,7 +250,7 @@ public class Client implements GameClient {
                                     case MOVE:
                                     case FORFEIT:
                                     case CHALLENGE:
-                                    case ACCEPTCHALLENGE:
+                                    case ACCEPTCHALLENGE:                                    	
                                         success = line.startsWith("OK");
                                         break;
                                     case GETGAMELIST:
@@ -291,7 +278,11 @@ public class Client implements GameClient {
         listen.start();
     }
 
-    private void sendCommand(String writable) throws IOException {
+    public void sendCommand(String writable) throws IOException {      	
+    	if(bw == null) {
+    		throw new NullPointerException("Client not connected");
+    	}
+    	
     	bw.write(writable);
         bw.newLine();
         bw.flush();

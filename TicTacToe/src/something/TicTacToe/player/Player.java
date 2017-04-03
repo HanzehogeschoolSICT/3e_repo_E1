@@ -1,5 +1,6 @@
 package something.TicTacToe.player;
 
+import something.Client.player.PlayerType;
 import something.TicTacToe.Controller;
 import something.TicTacToe.Mark;
 

@@ -9,13 +9,13 @@ import something.Client.event.events.MatchFinishEvent;
 import something.Client.event.events.MatchStartEvent;
 import something.Client.event.events.MoveEvent;
 import something.Client.event.events.YourTurnEvent;
+import something.Client.player.OfflinePlayer;
+import something.Client.player.OnlinePlayer;
+import something.Client.player.PlayerType;
 import something.TicTacToe.Gui.StartGui;
 import something.TicTacToe.player.AIPlayer;
 import something.TicTacToe.player.HumanPlayer;
-import something.TicTacToe.player.OfflinePlayer;
-import something.TicTacToe.player.OnlinePlayer;
 import something.TicTacToe.player.Player;
-import something.TicTacToe.player.PlayerType;
 
 /**
  * Created by samikroon on 3/28/17.
