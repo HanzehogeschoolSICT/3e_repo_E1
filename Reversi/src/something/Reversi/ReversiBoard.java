@@ -30,6 +30,7 @@ public class ReversiBoard {
     }
 
     public boolean makeTurn(int posOnBoard, int turn) throws IllegalMoveException {
+
         if (this.board[posOnBoard] == Tile.EMPTY) {
             Tile tile;
             if (turn % 2 == 0) { //TODO: koppelen aan de client/server in plaats van een turn die steeds een opgehoogd wordt;
@@ -47,6 +48,11 @@ public class ReversiBoard {
             //throw new IllegalMoveException("Non-valid move");
             return false;
         }
+    }
+
+    private void turnTiles (int index, Tile tile) {
+        
+
     }
 
     public Tile[] getBoard(){
