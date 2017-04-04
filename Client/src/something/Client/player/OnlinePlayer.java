@@ -3,8 +3,6 @@ package something.Client.player;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import something.Client.event.events.MoveEvent;
-
 public class OnlinePlayer extends Player {
 
 	public OnlinePlayer(String username, PlayerType playerType) {

@@ -8,9 +8,7 @@ public abstract class Player extends Client {
 	private String username;
 	private PlayerType playerType;
 	private boolean playersTurn = false;
-	
-	private Player opponent;
-	
+		
 	public Player(String username, PlayerType playerType) {
 		this.username = username;
 		this.playerType = playerType;
@@ -26,17 +24,6 @@ public abstract class Player extends Client {
 	
 	public boolean hasTurn() {
 		return playersTurn;
-	}
-	
-	public Player getOpponent() {
-		return opponent;
-	}
-	
-	public void setOpponent(Player opponent) {
-		this.opponent = opponent;
-		if(opponent.getOpponent() == null) {
-			opponent.setOpponent(this);
-		}
 	}
 	
 	public void setHasTurn(boolean turn) {
