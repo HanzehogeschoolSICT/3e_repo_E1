@@ -36,9 +36,11 @@ public class ReversiBoard {
             if (turn % 2 == 0) { //TODO: koppelen aan de client/server in plaats van een turn die steeds een opgehoogd wordt;
                 tile = Tile.BLACK;
                 board[posOnBoard] = tile;
+                turnTiles(posOnBoard, tile);
             } else {
                 tile = Tile.WHITE;
                 board[posOnBoard] = tile;
+                turnTiles(posOnBoard, tile);
             }
             return true;
         } else {
@@ -50,10 +52,51 @@ public class ReversiBoard {
         }
     }
 
-    private void turnTiles (int index, Tile tile) {
-        
-
+    private void turnTiles(int index, Tile tile) {
+        //check horizontal
+        int startHor = (index - (index % 8));
+        turnTilesInDirection(index, startHor+8, 1, tile ); //to the right
+        turnTilesInDirection(index, startHor, -1, tile); //to the left
+        //check vertical
+        int startVer = (index%8);
+        turnTilesInDirection(index, 56+startVer, 8, tile ); //downwards
+        turnTilesInDirection(index, startVer, -8, tile ); //upwards
+        //check diagonal 1
+        int[] diag1Coordinates = determineDownwardsDiagonal(index);
+        turnTilesInDirection(index, diag1Coordinates[0], -9, tile); //upwards
+        turnTilesInDirection(index, diag1Coordinates[1], 9, tile); //downwards
+        //check diagonal 2
+        int[] diag2Coordinates = determineUpwardsDiagonal(index);
+        turnTilesInDirection(index, diag2Coordinates[0], -7, tile); //upwards
+        turnTilesInDirection(index, diag2Coordinates[1], 7, tile); //downwards
     }
+
+    private void turnTilesInDirection (int index, int endIndex, int stepSize, Tile tile) {
+        boolean check = true;
+        boolean otherStone = false;
+        boolean ownStone = false;
+        int iterator = index;
+        while (check && iterator <= endIndex) {
+            iterator += stepSize;
+            if (board[iterator] != tile && board[iterator] != Tile.EMPTY) {
+                otherStone = true;
+            } else if (board[iterator] == tile && otherStone) {
+                flipStones(index, iterator, stepSize, tile);
+            } else {
+                break;
+            }
+
+        }
+    }
+
+    private void flipStones(int index, int endIndex, int stepSize, Tile tile) {
+        int iterator = index;
+        while (iterator != endIndex) {
+            iterator += stepSize;
+            board[iterator] = tile;
+        }
+    }
+
 
     public Tile[] getBoard(){
         return this.board;

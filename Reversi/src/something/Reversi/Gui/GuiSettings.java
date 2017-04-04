@@ -19,6 +19,7 @@ public class GuiSettings {
     ReversiBoard reversiBoard = new ReversiBoard();
     private GraphicsContext graphicsContext;
     private Controller controller;
+    private Integer canvasW, canvasH;
     
     public GuiSettings(Controller controller){
     	this.controller = controller;
@@ -41,8 +42,8 @@ public class GuiSettings {
 
         graphicsContext = canvas.getGraphicsContext2D();
 
-        Integer canvasW = (int) canvas.getWidth();
-        Integer canvasH = (int) canvas.getHeight();
+        canvasW = (int) canvas.getWidth();
+        canvasH = (int) canvas.getHeight();
 
         canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
@@ -125,6 +126,8 @@ public class GuiSettings {
 
     private void redrawBoard(){
         Tile[] board = reversiBoard.getBoard();
+        graphicsContext.clearRect(0,0,600,600);
+        drawGrid(canvasW, canvasH);
 //        x = modulo, y = delen, vermenigvuldig met grootte tegel
         for(int i = 0; i<board.length; i++){
             int xCoord = i%8*75;
