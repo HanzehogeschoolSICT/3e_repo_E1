@@ -9,6 +9,7 @@ import something.Reversi.player.Controller;
 public class StartGui extends Application{
     private Stage primaryStage;
     private Stage gameStage;
+    private Stage waitPopUp;
     private Controller controller;
     
     @Override
@@ -70,6 +71,24 @@ public class StartGui extends Application{
                 System.exit(0);
             }
         });
+    }
+
+    public void endGameStage() {
+        gameStage.close();
+        gameStage = null;
+    }
+
+    public void waitPopUp () {
+        waitPopUp = new Stage();
+        waitPopUp.setTitle("Wait or Challenge");
+        waitPopUp.setScene(new WaitPopUp(controller).scene);
+        waitPopUp.show();
+        addShutdownOnClose(waitPopUp);
+    }
+
+    public void closeWaitPopUp() {
+        waitPopUp.close();
+        waitPopUp = null;
     }
 
     public void showInitPopUp() {
