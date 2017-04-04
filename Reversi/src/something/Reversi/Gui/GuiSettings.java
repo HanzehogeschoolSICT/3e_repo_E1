@@ -7,8 +7,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import something.Reversi.ReversiBoard;
-import something.Reversi.Tile;
+import something.Reversi.player.ReversiBoard;
+import something.Reversi.player.Tile;
 
 public class GuiSettings {
     Scene scene;

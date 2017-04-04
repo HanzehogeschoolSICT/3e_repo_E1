@@ -1,4 +1,4 @@
-package something.Reversi;
+package something.Reversi.player;
 
 import java.util.ArrayList;
 
@@ -44,6 +44,7 @@ public class ReversiBoard {
             System.out.println("MAG NIET");
             return Tile.EMPTY;
         }
+
     }
 
     public Tile[] getBoard(){
