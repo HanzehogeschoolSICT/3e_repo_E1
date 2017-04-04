@@ -27,20 +27,20 @@ public class ReversiBoard {
         return builder.toString();
     }
 
-    public Tile makeTurn(int posOnBoard, int turn) {
+    public boolean makeTurn(int posOnBoard, int turn) {
         if (this.board[posOnBoard] == Tile.EMPTY) {
             Tile tile;
-            if (turn % 2 == 0) {
+            if (turn % 2 == 0) { //TODO: koppelen aan de client/server in plaats van een turn die steeds een opgehoogd wordt;
                 tile = Tile.BLACK;
                 board[posOnBoard] = tile;
             } else {
                 tile = Tile.WHITE;
                 board[posOnBoard] = tile;
             }
-            return tile;
+            return true;
         } else {
             System.out.println("MAG NIET");
-            return Tile.EMPTY;
+            return false;
         }
     }
 

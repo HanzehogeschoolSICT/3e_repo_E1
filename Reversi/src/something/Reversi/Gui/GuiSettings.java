@@ -86,18 +86,15 @@ public class GuiSettings {
 
     public boolean makeMove(int posOnBoard){
         int getTurn = setTurn();
-        Tile tile = reversiBoard.makeTurn(posOnBoard, getTurn);
-        if (tile == Tile.BLACK){
+        boolean makeTurn = reversiBoard.makeTurn(posOnBoard, getTurn);
+        if(makeTurn == true){
             redrawBoard();
             turn = turn+1;
             return true;
         }
-        if (tile == Tile.WHITE){
-            redrawBoard();
-            turn = turn+1;
-            return true;
+        else {
+            return false;
         }
-        return false;
     }
 
     private Canvas makeCanvas() {
