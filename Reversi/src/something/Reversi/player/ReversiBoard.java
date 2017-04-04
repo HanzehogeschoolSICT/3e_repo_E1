@@ -29,7 +29,7 @@ public class ReversiBoard {
         return builder.toString();
     }
 
-    public boolean makeTurn(int posOnBoard, int turn) {
+    public boolean makeTurn(int posOnBoard, int turn) throws IllegalMoveException {
         if (this.board[posOnBoard] == Tile.EMPTY) {
             Tile tile;
             if (turn % 2 == 0) { //TODO: koppelen aan de client/server in plaats van een turn die steeds een opgehoogd wordt;
@@ -41,10 +41,11 @@ public class ReversiBoard {
             }
             return true;
         } else {
-            System.out.println("MAG NIET");
-            return false;
+            if (getValidMoves(Tile.BLACK).size() == 0 && getValidMoves(Tile.WHITE).size() == 0) {
+                return false;
+            }
+            throw new IllegalMoveException("Non-valid move");
         }
-
     }
 
     public Tile[] getBoard(){
