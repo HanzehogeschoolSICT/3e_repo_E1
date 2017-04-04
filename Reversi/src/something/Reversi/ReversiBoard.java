@@ -1,5 +1,7 @@
 package something.Reversi;
 
+import java.util.ArrayList;
+
 public class ReversiBoard {
     private Tile[] board;
 
@@ -54,33 +56,33 @@ public class ReversiBoard {
         }
     }
 
+    public ArrayList getValidMoves(Tile tile) {
+        ArrayList<Integer> validMoves = new ArrayList<>();
+        for (int i = 0; i < 64; i++) {
+            if (checkValidityMove(i, tile)) {
+                validMoves.add(i);
+            }
+        }
+        return validMoves;
+    }
+
+
     public boolean checkValidityMove (int index, Tile tile) {
-        if (board[index] != Tile.EMPTY) {
-            return false;
-        }
-        if (tile == Tile.EMPTY) {
-            throw new IllegalArgumentException("Illegal tile");
-        }
+        if (board[index] != Tile.EMPTY) {return false;}
+        if (tile == Tile.EMPTY) {throw new IllegalArgumentException("Illegal tile");}
         //check horizontal
         int startHor = (index - (index % 8));
-        if(checkLineBoard(startHor, startHor+8, 1, index, tile )) {
-            return true;
-        }
+        if(checkLineBoard(startHor, startHor+8, 1, index, tile )) {return true;}
         //check vertical
         int startVer = (index%8);
-        if(checkLineBoard(startVer, 56+startVer, 8, index, tile )) {
-            return true;
-        }
+        if(checkLineBoard(startVer, 56+startVer, 8, index, tile )) {return true;}
         //check diagonal 1
         int[] diag1Coordinates = determineDownwardsDiagonal(index);
-        if (checkLineBoard(diag1Coordinates[0], diag1Coordinates[1], 9, index, tile)){
-            return true;
-        }
+        if (checkLineBoard(diag1Coordinates[0], diag1Coordinates[1], 9, index, tile)){return true;}
         //check diagonal 2
         int[] diag2Coordinates = determineUpwardsDiagonal(index);
-        if (checkLineBoard(diag2Coordinates[0], diag2Coordinates[1], 7, index, tile)){
-            return true;
-        }
+        if (checkLineBoard(diag2Coordinates[0], diag2Coordinates[1], 7, index, tile)){return true;}
+
         return false;
     }
 
@@ -122,13 +124,10 @@ public class ReversiBoard {
 
 
     private boolean checkLineBoard(int startIndex, int endIndex, int stepSize, int index, Tile tile) {
-        boolean ownStone = false;
-        boolean otherStone = false;
-
+        boolean ownStone = false; boolean otherStone = false;
         for (int i = startIndex; i < endIndex; i+=stepSize) {
             if (index == i) {
                 ownStone = false; otherStone = false;
-                continue;
             } else if (board[i] == tile) {
                 if (otherStone && i > index) {return true;}
                 ownStone = true;
