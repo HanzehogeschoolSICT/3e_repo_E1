@@ -28,7 +28,7 @@ public class OfflinePlayer extends Player {
 	public void makeMove(int index) {
 		callEvent(new MoveEvent(this, getUsername(), "", index + ""));
 		getOpponent().callEvent(new MoveEvent(getOpponent(), getUsername(), "", index + ""));
-		getOpponent().callEvent(new YourTurnEvent(getOpponent(), ""));
+		setHasTurn(false);
 	}
 
 }

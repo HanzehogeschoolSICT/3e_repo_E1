@@ -21,5 +21,6 @@ public class OnlinePlayer extends Player {
 	@Override
 	public void makeMove(int index) {
 		move(index + "");
+		setHasTurn(false);
 	}
 }

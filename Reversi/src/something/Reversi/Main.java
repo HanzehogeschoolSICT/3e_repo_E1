@@ -1,4 +1,4 @@
-package something.Reversi.player;
+package something.Reversi;
 
 import something.Reversi.Gui.StartGui;
 

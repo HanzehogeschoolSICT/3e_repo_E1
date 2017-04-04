@@ -7,17 +7,21 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import something.Reversi.player.IllegalMoveException;
-import something.Reversi.player.ReversiBoard;
-import something.Reversi.player.Tile;
+import something.Client.player.Player;
+import something.Reversi.Controller;
+import something.Reversi.IllegalMoveException;
+import something.Reversi.ReversiBoard;
+import something.Reversi.Tile;
 
 public class GuiSettings {
     Scene scene;
     Integer turn = 0;
     ReversiBoard reversiBoard = new ReversiBoard();
     private GraphicsContext graphicsContext;
-
-    public GuiSettings(){
+    private Controller controller;
+    
+    public GuiSettings(Controller controller){
+    	this.controller = controller;
         try{
             this.scene = makeScene();
         } catch (Exception e){
@@ -25,8 +29,11 @@ public class GuiSettings {
         }
     }
 
+    public ReversiBoard getReversiBoard() {
+    	return reversiBoard;
+    }
+    
     private Group makeRootGroup(){
-
         Group rootGroup = new Group();
 
         Canvas canvas = makeCanvas();
@@ -41,10 +48,18 @@ public class GuiSettings {
             @Override
             public void handle(MouseEvent event) {
                 int index = getMoveIndex(event.getSceneX(), event.getSceneY());
-//                boolean succes = makeMove(index);
-                makeMove(index);
-                System.out.println(reversiBoard.toString());
+
+                Player player = controller.getPlayerOnTurn();
+                if(player != null) {
+                	boolean success = makeMove(index);
+                	
+                	if(success) {
+                		player.makeMove(index);
+                	}
                 }
+                
+                System.out.println(reversiBoard.toString());
+            }
         });
 
         drawGrid(canvasW, canvasH);

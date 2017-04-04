@@ -1,4 +1,4 @@
-package something.Reversi.player;
+package something.Reversi;
 
 import java.util.ArrayList;
 
@@ -44,7 +44,8 @@ public class ReversiBoard {
             if (getValidMoves(Tile.BLACK).size() == 0 && getValidMoves(Tile.WHITE).size() == 0) {
                 return false;
             }
-            throw new IllegalMoveException("Non-valid move");
+            //throw new IllegalMoveException("Non-valid move");
+            return false;
         }
     }
 

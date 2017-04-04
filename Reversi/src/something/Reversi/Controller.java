@@ -1,4 +1,4 @@
-package something.Reversi.player;
+package something.Reversi;
 
 import java.util.Random;
 
@@ -15,63 +15,57 @@ import something.Client.player.OnlinePlayer;
 import something.Client.player.Player;
 import something.Client.player.PlayerType;
 import something.Reversi.Gui.StartGui;
-import something.TicTacToe.player.AIPlayer;
-import something.TicTacToe.player.HumanPlayer;
+import something.Reversi.player.AIPlayer;
+import something.Reversi.player.HumanPlayer;
 
 public class Controller implements GameEventListener {
 
 	private StartGui gui;
 	
-	private Player player;
+	private Player player1;
 	private Player player2;
 	
 	public Controller(StartGui startGui) {
 		this.gui = startGui;
-
-		/*boolean online = false;
-		if(online) {
-			player = new OnlinePlayer("player", new HumanPlayer());
-			player.registerEventListener(this);
-			player2 = new OnlinePlayer("player2", new HumanPlayer());
-			player2.registerEventListener(this);
-			
-			player.subscribe("Tic-tac-toe");
-			player2.subscribe("Tic-tac-toe");
-			
-		} else {
-			player = new OfflinePlayer(new HumanPlayer());
-			player.registerEventListener(this);
-			player2 = new OfflinePlayer(new HumanPlayer());
-			player2.registerEventListener(this);
-			
-			startOfflineMatch((OfflinePlayer) player, (OfflinePlayer) player2, "Tic-tac-toe");
-		}*/		
 	}
 
 	public Player getPlayer() {
-		return player;
+		return player1;
+	}
+	
+	public Player getPlayerOnTurn() {
+		if(player1 != null && player1.hasTurn()) {
+			return player1;
+		}
+		if(player2 != null && player2.hasTurn()) {
+			return player2;
+		}
+		return null;
 	}
 	
 	public void processLogin(String playerMode, String opponentMode, String username) {
     	PlayerType playerType = playerMode == "Me" ? new HumanPlayer() : new AIPlayer();
     	
         if (opponentMode == "Online") {
-            player = new OnlinePlayer(username, playerType);
-            player.registerEventListener(this);
+            player1 = new OnlinePlayer(username, playerType);
+            player1.registerEventListener(this);
+            
+            gui.hideInitPopUp();
+            gui.waitPopUp();
             
         } else {
-        	player = new OfflinePlayer(playerType);
-            player.registerEventListener(this);
+        	player1 = new OfflinePlayer(playerType);
+            player1.registerEventListener(this);
         	player2 = new OfflinePlayer(new AIPlayer());
             player2.registerEventListener(this);
 
-        	startOfflineMatch((OfflinePlayer) player, (OfflinePlayer) player2, "Reversi");
+        	startOfflineMatch((OfflinePlayer) player1, (OfflinePlayer) player2, "Reversi");
         }
     }
 	
 	private void startOfflineMatch(OfflinePlayer player, OfflinePlayer player2, String game) {
 		OfflinePlayer hasMove =  new Random().nextInt(2) == 0 ? player : player2;
-				
+		
 		player.setOpponent(player2);
 		player.callEvent(new MatchStartEvent(player, game, hasMove.getUsername(), player2.getUsername()));
 		player2.callEvent(new MatchStartEvent(player2, game, hasMove.getUsername(), player.getUsername()));
@@ -79,17 +73,22 @@ public class Controller implements GameEventListener {
 	}
 	
 	@Override
-	public void handleEvent(GameEvent e) { //TODO implements all events and responses
+	public void handleEvent(GameEvent e) {
 		Platform.runLater(() -> {
 			System.out.println(e);
 			
-			if(e instanceof MatchStartEvent) {				
+			if(e instanceof MatchStartEvent) {		
 				gui.hideInitPopUp();
+				gui.closeWaitPopUp();
 				gui.startGameStage();
 				
 			} else if(e instanceof MatchFinishEvent) {
-				//TODO back to init screen
-				gui.showInitPopUp();
+				gui.endGameStage();
+				if(player1 instanceof OfflinePlayer) {
+					gui.showInitPopUp();
+				} else {
+					gui.waitPopUp();
+				}
 				
 			} else if(e instanceof YourTurnEvent) {
 				YourTurnEvent event = (YourTurnEvent) e;
@@ -97,25 +96,27 @@ public class Controller implements GameEventListener {
 				
 				player.setHasTurn(true);
 				
-				int move = new Random().nextInt(9); //TODO get player/AI move
-				player.makeMove(move);
-				System.out.println(player.getUsername() + " move " + move);
-				
-				player.setHasTurn(false);
+				if(player.getPlayerType() instanceof AIPlayer) {
+					int move = player.getPlayerType().getMove(gui.getGUI().getReversiBoard());
+					player.makeMove(move);
+				}
 				
 			} else if(e instanceof MoveEvent) {
 				MoveEvent event = (MoveEvent) e;
-				Player player = (Player) event.getClient();
 
-				//TODO render move
-				System.out.println(player.getUsername() + " render " + event.getMove());
+				gui.getGUI().makeMove(Integer.parseInt(event.getMove()));
 			
 				//TODO check if end of game
 				
 			} else if(e instanceof ChallengeReceiveEvent) {
 				ChallengeReceiveEvent event = (ChallengeReceiveEvent) e;
-			
-				//TODO show challenge popup
+				Player player = (Player) event.getClient();
+				
+				boolean confirm = gui.confirmGameDialog(event.getChallenger());
+				
+				if(confirm) {
+					player.acceptChallenge(Integer.parseInt(event.getChallengeNumber()));
+				}
 			}
 		});
 	}

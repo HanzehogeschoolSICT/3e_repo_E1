@@ -1,4 +1,4 @@
-package something.Reversi.player;
+package something.Reversi;
 
 /**
  * Created by samikroon on 4/4/17.

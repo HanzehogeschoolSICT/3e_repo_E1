@@ -1,16 +1,22 @@
 package something.Reversi.Gui;
 
+import java.util.Optional;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import something.Reversi.player.Controller;
+import something.Reversi.Controller;
 
 public class StartGui extends Application{
     private Stage primaryStage;
     private Stage gameStage;
     private Stage waitPopUp;
     private Controller controller;
+    private Alert confirmGame;
+    private GuiSettings guiSettings;
     
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -64,6 +70,10 @@ public class StartGui extends Application{
 */
     }
 
+    public GuiSettings getGUI() {
+    	return guiSettings;
+    }
+    
     public void addShutdownOnClose(Stage stage){
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -105,11 +115,23 @@ public class StartGui extends Application{
     public void startGameStage(){
         gameStage = new Stage();
         gameStage.setTitle("REVERSI!~~~");
-        gameStage.setScene(new GuiSettings().scene);
+        gameStage.setScene((guiSettings = new GuiSettings(controller)).scene);
         gameStage.setResizable(false);
         gameStage.show();
         addShutdownOnClose(gameStage);
     }
-
-    public static void main(String[] args){ Application.launch(args);}
+    
+    public boolean confirmGameDialog(String opponentName) {
+        confirmGame = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmGame.setTitle("You have been challenged");
+        confirmGame.setHeaderText("Challenger: " + opponentName);
+        confirmGame.setContentText("Would you like to accept this game?");
+        
+        Optional<ButtonType> result = confirmGame.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

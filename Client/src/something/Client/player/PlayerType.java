@@ -1,7 +1,7 @@
 package something.Client.player;
 
-import something.TicTacToe.Gui.GameBoard;
+import something.Reversi.ReversiBoard;
 
 public interface PlayerType {
-	int getMove(GameBoard board);
+	int getMove(ReversiBoard board);
 }

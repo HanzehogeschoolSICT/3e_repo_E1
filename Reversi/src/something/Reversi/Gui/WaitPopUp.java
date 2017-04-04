@@ -12,7 +12,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import something.Reversi.player.Controller;
+import something.Reversi.Controller;
 
 /**
  * Created by samikroon on 3/31/17.
