@@ -7,8 +7,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import something.Reversi.ReversiBoard;
-import something.Reversi.Tile;
+import something.Reversi.player.ReversiBoard;
+import something.Reversi.player.Tile;
 
 public class GuiSettings {
     Scene scene;
@@ -86,18 +86,15 @@ public class GuiSettings {
 
     public boolean makeMove(int posOnBoard){
         int getTurn = setTurn();
-        Tile tile = reversiBoard.makeTurn(posOnBoard, getTurn);
-        if (tile == Tile.BLACK){
+        boolean makeTurn = reversiBoard.makeTurn(posOnBoard, getTurn);
+        if(makeTurn == true){
             redrawBoard();
             turn = turn+1;
             return true;
         }
-        if (tile == Tile.WHITE){
-            redrawBoard();
-            turn = turn+1;
-            return true;
+        else {
+            return false;
         }
-        return false;
     }
 
     private Canvas makeCanvas() {

@@ -1,4 +1,4 @@
-package something.Reversi;
+package something.Reversi.player;
 
 public enum Tile {
     EMPTY(" "),
