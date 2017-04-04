@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import something.Reversi.player.IllegalMoveException;
 import something.Reversi.player.ReversiBoard;
 import something.Reversi.player.Tile;
 
@@ -86,7 +87,12 @@ public class GuiSettings {
 
     public boolean makeMove(int posOnBoard){
         int getTurn = setTurn();
-        boolean makeTurn = reversiBoard.makeTurn(posOnBoard, getTurn);
+        boolean makeTurn = false;
+        try {
+            makeTurn = reversiBoard.makeTurn(posOnBoard, getTurn);
+        } catch (IllegalMoveException e) {
+            e.printStackTrace();
+        }
         if(makeTurn == true){
             redrawBoard();
             turn = turn+1;
