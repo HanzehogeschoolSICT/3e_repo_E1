@@ -11,15 +11,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import something.Reversi.player.Controller;
 
 public class InitPopUp {
     Scene scene;
     private TextField username;
     final ToggleGroup playerOneGroup = new ToggleGroup();
     final ToggleGroup playerTwoGroup = new ToggleGroup();
-    private CheckBox subscribe;
-
-    public InitPopUp(){
+    private Controller controller;
+    
+    public InitPopUp(Controller controller){
+    	this.controller = controller;
         try {
             this.scene = makeScene();
         } catch (Exception e){
@@ -74,11 +76,7 @@ public class InitPopUp {
         playerTwoOnlineRev.setToggleGroup(playerTwoGroup);
         playerTwoPCRev.setToggleGroup(playerTwoGroup);
 
-        subscribe = new CheckBox("Subscribe");
-        subscribe.setSelected(true);
-
-
-        playerOneRev.getChildren().addAll(playerOneTextRev, playerOneSelfRev, playerOnePCRev, subscribe);
+        playerOneRev.getChildren().addAll(playerOneTextRev, playerOneSelfRev, playerOnePCRev);
         playerTwoRev.getChildren().addAll(playerTwoTextRev, playerTwoOnlineRev, playerTwoPCRev);
 
         borderPane.setLeft(playerOneRev);
@@ -88,17 +86,15 @@ public class InitPopUp {
         submit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (playerOneGroup.getSelectedToggle() != null && playerTwoGroup.getSelectedToggle() != null &&
-                        username.getText() != "") {
+                if (playerOneGroup.getSelectedToggle() != null && playerTwoGroup.getSelectedToggle() != null && username.getText() != "") {
                     String playerOne = playerOneGroup.getSelectedToggle().getUserData().toString();
                     String playerTwo = playerTwoGroup.getSelectedToggle().getUserData().toString();
-//                    controller.processLogin(playerOneRev, playerTwoRev, username.getText(), subscribe.isSelected());
-                    /*System.out.println(playerOneGroup.getSelectedToggle().getUserData().toString());
-                    System.out.println(playerTwoGroup.getSelectedToggle().getUserData().toString());
-                    System.out.println(username.getText());*/
+                                        
+                    controller.processLogin(playerOne, playerTwo, username.getText());
+                    
                 } else {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("You ****** up");
+                    alert.setTitle("An error occurred!");
                     alert.setHeaderText("Fill in every field please");
                     alert.showAndWait();
                 }

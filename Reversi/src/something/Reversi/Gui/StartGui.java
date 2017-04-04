@@ -16,7 +16,8 @@ public class StartGui extends Application{
         this.primaryStage = primaryStage;
         this.controller = new Controller(this);
         
-        startGameStage();
+		showInitPopUp();
+
 /*
         final PhongMaterial redmaterial = new PhongMaterial();
         redmaterial.setSpecularColor(Color.ORANGE);
@@ -60,10 +61,9 @@ public class StartGui extends Application{
         // Display the Stage
         primaryStage.show();
 */
-//        showInitPopUp();
     }
 
-    private void addShutdownOnClose(Stage stage){
+    public void addShutdownOnClose(Stage stage){
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -72,18 +72,18 @@ public class StartGui extends Application{
         });
     }
 
-    private void showInitPopUp() {
+    public void showInitPopUp() {
         primaryStage.setTitle("menu");
-        primaryStage.setScene(new InitPopUp().scene);
+        primaryStage.setScene(new InitPopUp(controller).scene);
         primaryStage.show();
         addShutdownOnClose(primaryStage);
     }
 
-    private void hideInitPopUp(){
+    public void hideInitPopUp(){
         primaryStage.hide();
     }
 
-    private void startGameStage(){
+    public void startGameStage(){
         gameStage = new Stage();
         gameStage.setTitle("REVERSI!~~~");
         gameStage.setScene(new GuiSettings().scene);
