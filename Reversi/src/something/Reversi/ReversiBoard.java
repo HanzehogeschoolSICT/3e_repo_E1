@@ -36,12 +36,11 @@ public class ReversiBoard {
             if (turn % 2 == 0) { //TODO: koppelen aan de client/server in plaats van een turn die steeds een opgehoogd wordt;
                 tile = Tile.BLACK;
                 board[posOnBoard] = tile;
-                turnTiles(posOnBoard, tile);
             } else {
                 tile = Tile.WHITE;
                 board[posOnBoard] = tile;
-                turnTiles(posOnBoard, tile);
             }
+            turnTiles(posOnBoard, tile);
             return true;
         } else {
             if (getValidMoves(Tile.BLACK).size() == 0 && getValidMoves(Tile.WHITE).size() == 0) {
@@ -74,7 +73,6 @@ public class ReversiBoard {
     private void turnTilesInDirection (int index, int endIndex, int stepSize, Tile tile) {
         boolean check = true;
         boolean otherStone = false;
-        boolean ownStone = false;
         int iterator = index;
         while (check && iterator <= endIndex) {
             iterator += stepSize;
