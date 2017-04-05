@@ -83,11 +83,6 @@ public class StartGui extends Application{
         });
     }
 
-    public void endGameStage() {
-        gameStage.close();
-        gameStage = null;
-    }
-
     public void waitPopUp () {
         waitPopUp = new Stage();
         waitPopUp.setTitle("Wait or Challenge");
@@ -97,8 +92,10 @@ public class StartGui extends Application{
     }
 
     public void closeWaitPopUp() {
-        waitPopUp.close();
-        waitPopUp = null;
+    	if(waitPopUp != null) {
+	        waitPopUp.close();
+	        waitPopUp = null;
+    	}
     }
 
     public void showInitPopUp() {
@@ -113,12 +110,19 @@ public class StartGui extends Application{
     }
 
     public void startGameStage(){
-        gameStage = new Stage();
-        gameStage.setTitle("REVERSI!~~~");
-        gameStage.setScene((guiSettings = new GuiSettings(controller)).scene);
-        gameStage.setResizable(false);
-        gameStage.show();
-        addShutdownOnClose(gameStage);
+    	if(gameStage == null) {
+	        gameStage = new Stage();
+	        gameStage.setTitle("REVERSI!~~~");
+	        gameStage.setScene((guiSettings = new GuiSettings(controller)).scene);
+	        gameStage.setResizable(false);
+	        gameStage.show();
+	        addShutdownOnClose(gameStage);
+    	}
+    }
+    
+    public void endGameStage() {
+        gameStage.close();
+        gameStage = null;
     }
     
     public boolean confirmGameDialog(String opponentName) {

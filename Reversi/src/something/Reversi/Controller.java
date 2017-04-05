@@ -106,7 +106,7 @@ public class Controller implements GameEventListener {
 
 				gui.getGUI().makeMove(Integer.parseInt(event.getMove()));
 			
-				//TODO check if end of game
+				//TODO check if end of game for offline
 				
 			} else if(e instanceof ChallengeReceiveEvent) {
 				ChallengeReceiveEvent event = (ChallengeReceiveEvent) e;
