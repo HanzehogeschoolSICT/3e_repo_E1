@@ -30,25 +30,26 @@ public class ReversiBoard {
     }
 
     public boolean makeTurn(int posOnBoard, int turn) throws IllegalMoveException {
-
         if (this.board[posOnBoard] == Tile.EMPTY) {
             Tile tile;
             if (turn % 2 == 0) { //TODO: koppelen aan de client/server in plaats van een turn die steeds een opgehoogd wordt;
                 tile = Tile.BLACK;
-                board[posOnBoard] = tile;
             } else {
                 tile = Tile.WHITE;
-                board[posOnBoard] = tile;
             }
-            turnTiles(posOnBoard, tile);
-            return true;
-        } else {
+            if (checkValidityMove(posOnBoard, tile)) {
+                board[posOnBoard] = tile;
+                turnTiles(posOnBoard, tile);
+                return true;
+            }
+        } /*else {
             if (getValidMoves(Tile.BLACK).size() == 0 && getValidMoves(Tile.WHITE).size() == 0) {
                 return false;
             }
             //throw new IllegalMoveException("Non-valid move");
             return false;
-        }
+        }*/
+        return false;
     }
 
     private void turnTiles(int index, Tile tile) {
@@ -71,10 +72,9 @@ public class ReversiBoard {
     }
 
     private void turnTilesInDirection (int index, int endIndex, int stepSize, Tile tile) {
-        boolean check = true;
         boolean otherStone = false;
         int iterator = index;
-        while (check && iterator <= endIndex) {
+        while (iterator != endIndex) {
             iterator += stepSize;
             if (board[iterator] != tile && board[iterator] != Tile.EMPTY) {
                 otherStone = true;
@@ -175,7 +175,7 @@ public class ReversiBoard {
 
     private boolean checkLineBoard(int startIndex, int endIndex, int stepSize, int index, Tile tile) {
         boolean ownStone = false; boolean otherStone = false;
-        for (int i = startIndex; i < endIndex; i+=stepSize) {
+        for (int i = startIndex; i != endIndex; i+=stepSize) {
             if (index == i) {
                 ownStone = false; otherStone = false;
             } else if (board[i] == tile) {
@@ -191,6 +191,34 @@ public class ReversiBoard {
         return false;
     }
 
+    /*
+    public static void main(String[] args) {
+        ReversiBoard test = new ReversiBoard();
+        try {
+            test.makeTurn(9, 2);
+        } catch (IllegalMoveException e) {
+            e.printStackTrace();
+        }
+        int counter = 0;
+        for (Tile t : test.board) {
+            if (counter % 8 == 0) {
+                System.out.print("\n");
+            }
+            if (t == Tile.WHITE) {
+                System.out.print("W ");
+            }
+            if (t == Tile.BLACK) {
+                System.out.print("B ");
+            }
+            if (t == Tile.EMPTY) {
+                System.out.print("E ");
+            }
+
+            counter++;
+
+        }
+    }
+    */
 
 }
 
