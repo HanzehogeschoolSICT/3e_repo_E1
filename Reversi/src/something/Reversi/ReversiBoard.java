@@ -40,6 +40,7 @@ public class ReversiBoard extends Board {
                 tile = Tile.WHITE;
             }
             if (checkValidityMove(posOnBoard, tile)) {
+                System.out.println("valid move");
                 board[posOnBoard] = tile;
                 turnTiles(posOnBoard, tile);
                 return true;
@@ -127,7 +128,11 @@ public class ReversiBoard extends Board {
         if(checkLineBoard(startHor, startHor+8, 1, index, tile )) {return true;}
         //check vertical
         int startVer = (index%8);
-        if(checkLineBoard(startVer, 56+startVer, 8, index, tile )) {return true;}
+        int temp = startVer+56;
+        if(checkLineBoard(startVer, 56+startVer, 8, index, tile )) {
+            System.out.println("start: " + startVer + " end: " + temp + " index: " + index);
+            System.out.println("vert returns");
+            return true;}
         //check diagonal 1
         int[] diag1Coordinates = determineDownwardsDiagonal(index);
         if (checkLineBoard(diag1Coordinates[0], diag1Coordinates[1], 9, index, tile)){return true;}
@@ -176,10 +181,11 @@ public class ReversiBoard extends Board {
 
 
     private boolean checkLineBoard(int startIndex, int endIndex, int stepSize, int index, Tile tile) {
-        boolean ownStone = false; boolean otherStone = false;
+        boolean ownStone = false; boolean otherStone = false; boolean afterIndex = false;
         for (int i = startIndex; i != endIndex; i+=stepSize) {
+            System.out.println("iterator: " + i);
             if (index == i) {
-                ownStone = false; otherStone = false;
+                ownStone = false; otherStone = false; afterIndex = true;
             } else if (board[i] == tile) {
                 if (otherStone && i > index) {return true;}
                 ownStone = true;
@@ -188,6 +194,8 @@ public class ReversiBoard extends Board {
                 if (ownStone && i == index-stepSize && i < index) {return true;}
                 otherStone = true;
                 if (i > index && ownStone) {return false;}
+            } else if (board[i] == Tile.EMPTY && afterIndex) {
+                return false;
             }
         }
         return false;
