@@ -40,7 +40,6 @@ public class ReversiBoard extends Board {
                 tile = Tile.WHITE;
             }
             if (checkValidityMove(posOnBoard, tile)) {
-                System.out.println("valid move");
                 board[posOnBoard] = tile;
                 turnTiles(posOnBoard, tile);
                 return true;
@@ -58,7 +57,7 @@ public class ReversiBoard extends Board {
     private void turnTiles(int index, Tile tile) {
         //check horizontal
         int startHor = (index - (index % 8));
-        turnTilesInDirection(index, startHor+8, 1, tile ); //to the right
+        turnTilesInDirection(index, startHor+7, 1, tile ); //to the right
         turnTilesInDirection(index, startHor, -1, tile); //to the left
         //check vertical
         int startVer = (index%8);
@@ -125,21 +124,17 @@ public class ReversiBoard extends Board {
         if (tile == Tile.EMPTY) {throw new IllegalArgumentException("Illegal tile");}
         //check horizontal
         int startHor = (index - (index % 8));
-        if(checkLineBoard(startHor, startHor+8, 1, index, tile )) {return true;}
+        if(checkLineBoard(startHor, startHor+7, 1, index, tile )) {return true;}
         //check vertical
         int startVer = (index%8);
         int temp = startVer+56;
-        if(checkLineBoard(startVer, 56+startVer, 8, index, tile )) {
-            System.out.println("start: " + startVer + " end: " + temp + " index: " + index);
-            System.out.println("vert returns");
-            return true;}
+        if(checkLineBoard(startVer, 56+startVer, 8, index, tile )) {return true;}
         //check diagonal 1
         int[] diag1Coordinates = determineDownwardsDiagonal(index);
         if (checkLineBoard(diag1Coordinates[0], diag1Coordinates[1], 9, index, tile)){return true;}
         //check diagonal 2
         int[] diag2Coordinates = determineUpwardsDiagonal(index);
         if (checkLineBoard(diag2Coordinates[0], diag2Coordinates[1], 7, index, tile)){return true;}
-
         return false;
     }
 
@@ -152,6 +147,7 @@ public class ReversiBoard extends Board {
             else if (startIndex < 8) {temp[0] = startIndex;}
             else if (startIndex % 8 == 0) {temp[0] = startIndex;}
         }
+        startIndex = index;
         while (temp[1] == Integer.MAX_VALUE) {
             startIndex = startIndex+9;
             if (startIndex > 63) {temp[1] = index;}
@@ -170,6 +166,7 @@ public class ReversiBoard extends Board {
             else if (startIndex < 8) {temp[0] = startIndex;}
             else if ((startIndex-7)% 8 == 0) {temp[0] = startIndex;}
         }
+        startIndex = index;
         while (temp[1] == Integer.MAX_VALUE) {
             startIndex = startIndex+7;
             if (startIndex > 63) {temp[1] = index;}
@@ -183,7 +180,6 @@ public class ReversiBoard extends Board {
     private boolean checkLineBoard(int startIndex, int endIndex, int stepSize, int index, Tile tile) {
         boolean ownStone = false; boolean otherStone = false; boolean afterIndex = false;
         for (int i = startIndex; i != endIndex; i+=stepSize) {
-            System.out.println("iterator: " + i);
             if (index == i) {
                 ownStone = false; otherStone = false; afterIndex = true;
             } else if (board[i] == tile) {
