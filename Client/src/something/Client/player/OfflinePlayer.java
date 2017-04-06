@@ -1,26 +1,27 @@
 package something.Client.player;
 
-import java.util.Random;
-
+import something.Client.Board;
 import something.Client.event.events.MoveEvent;
 import something.Client.event.events.YourTurnEvent;
 
-public class OfflinePlayer extends Player {
+import java.util.Random;
 
-	private OfflinePlayer opponent;
+public class OfflinePlayer<GameType extends Board> extends Player<GameType> {
+
+	private OfflinePlayer<GameType> opponent;
 	
-	public OfflinePlayer(PlayerType playerType) {
+	public OfflinePlayer(PlayerType<GameType> playerType) {
 		super(new Random().nextInt() + "", playerType);
 	}
 
-	public void setOpponent(OfflinePlayer opponent) {
+	public void setOpponent(OfflinePlayer<GameType> opponent) {
 		this.opponent = opponent;
 		if(opponent.getOpponent() == null) {
 			opponent.setOpponent(this);
 		}
 	}
 	
-	public OfflinePlayer getOpponent() {
+	public OfflinePlayer<GameType> getOpponent() {
 		return opponent;
 	}
 	
@@ -30,6 +31,6 @@ public class OfflinePlayer extends Player {
 		getOpponent().callEvent(new MoveEvent(getOpponent(), getUsername(), "", index + ""));
 		
 		setHasTurn(false);
-		getOpponent().callEvent(new YourTurnEvent(getOpponent(), ""));
+		getOpponent().callEvent(new YourTurnEvent<>(getOpponent(), ""));
 	}
 }

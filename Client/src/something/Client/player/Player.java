@@ -1,15 +1,15 @@
 package something.Client.player;
 
+import something.Client.Board;
 import something.Client.Client;
-import something.Client.player.PlayerType;
 
-public abstract class Player extends Client {
+public abstract class Player<GameType extends Board> extends Client<GameType> {
 	
 	private String username;
-	private PlayerType playerType;
+	private PlayerType<GameType> playerType;
 	private boolean playersTurn = false;
 		
-	public Player(String username, PlayerType playerType) {
+	public Player(String username, PlayerType<GameType> playerType) {
 		this.username = username;
 		this.playerType = playerType;
 	}
@@ -18,7 +18,7 @@ public abstract class Player extends Client {
 		return username;
 	}
 	
-	public PlayerType getPlayerType() {
+	public PlayerType<GameType> getPlayerType() {
 		return playerType;
 	}
 	

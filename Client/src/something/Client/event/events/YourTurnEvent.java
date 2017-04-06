@@ -3,17 +3,17 @@ package something.Client.event.events;
 import something.Client.Client;
 import something.Client.event.GameEvent;
 
-public class YourTurnEvent implements GameEvent {
+public class YourTurnEvent<GameType> implements GameEvent<GameType> {
 
-	private final Client client;
+	private final Client<GameType> client;
 	private final String turnMessage;
 	
-	public YourTurnEvent(Client client, String turnMessage) {
+	public YourTurnEvent(Client<GameType> client, String turnMessage) {
 		this.client = client;
 		this.turnMessage = turnMessage;
 	}
 	
-	public Client getClient() {
+	public Client<GameType> getClient() {
 		return client;
 	}
 	

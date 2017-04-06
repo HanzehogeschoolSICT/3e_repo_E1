@@ -1,4 +1,9 @@
 package something.Client;
+import something.Client.event.GameEvent;
+import something.Client.event.GameEventListener;
+import something.Client.event.events.*;
+import something.Client.utils.StringUtils;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -6,17 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import something.Client.event.GameEvent;
-import something.Client.event.GameEventListener;
-import something.Client.event.events.ChallengeCancelledEvent;
-import something.Client.event.events.ChallengeReceiveEvent;
-import something.Client.event.events.MatchFinishEvent;
-import something.Client.event.events.MatchStartEvent;
-import something.Client.event.events.MoveEvent;
-import something.Client.event.events.YourTurnEvent;
-import something.Client.utils.StringUtils;
-
-public class Client implements GameClient {
+public class Client<GameType> implements GameClient {
 		
     private Socket socket;
     private BufferedWriter bw;

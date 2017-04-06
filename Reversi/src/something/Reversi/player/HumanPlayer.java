@@ -1,12 +1,12 @@
 package something.Reversi.player;
 
-import something.Client.Board;
 import something.Client.player.PlayerType;
+import something.Reversi.ReversiBoard;
 
-public class HumanPlayer implements PlayerType {
+public class HumanPlayer implements PlayerType<ReversiBoard> {
 
 	@Override
-	public int getMove(Board board) {
+	public int getMove(ReversiBoard board) {
 		return 0;
 	}
 

@@ -78,6 +78,7 @@ public class GuiSettings {
             graphicsContext.lineTo(canvasH, y);
             graphicsContext.stroke();
         }
+
         for(int i = 0; i<canvasH; i=i+75){
             double x = i+0.5;
             graphicsContext.moveTo(x, 0);
@@ -109,7 +110,7 @@ public class GuiSettings {
         } catch (IllegalMoveException e) {
             e.printStackTrace();
         }
-        if(makeTurn == true){
+        if(makeTurn){
             redrawBoard();
             turn = turn+1;
             return true;
@@ -120,8 +121,7 @@ public class GuiSettings {
     }
 
     private Canvas makeCanvas() {
-        Canvas canvas = new Canvas(600,600);
-        return canvas;
+        return new Canvas(600,600);
     }
 
     private void redrawBoard(){

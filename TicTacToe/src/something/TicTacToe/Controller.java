@@ -1,29 +1,27 @@
 package something.TicTacToe;
 
-import java.util.Random;
-
 import javafx.application.Platform;
 import something.Client.event.GameEvent;
 import something.Client.event.GameEventListener;
-import something.Client.event.events.ChallengeReceiveEvent;
-import something.Client.event.events.MatchFinishEvent;
-import something.Client.event.events.MatchStartEvent;
-import something.Client.event.events.MoveEvent;
-import something.Client.event.events.YourTurnEvent;
+import something.Client.event.events.*;
 import something.Client.player.OfflinePlayer;
 import something.Client.player.OnlinePlayer;
 import something.Client.player.Player;
 import something.Client.player.PlayerType;
+import something.TicTacToe.Gui.GameBoard;
 import something.TicTacToe.Gui.StartGui;
 import something.TicTacToe.player.AIPlayer;
 import something.TicTacToe.player.HumanPlayer;
 
-public class Controller implements GameEventListener {
+import java.util.Objects;
+import java.util.Random;
+
+public class Controller implements GameEventListener<GameBoard> {
 
 	private StartGui gui;
 	
-	private Player player1;
-	private Player player2;
+	private Player<GameBoard> player1;
+	private Player<GameBoard> player2;
 	
 	public Controller(StartGui startGui) {
 		this.gui = startGui;
@@ -44,32 +42,32 @@ public class Controller implements GameEventListener {
 	}
 	
 	public void processLogin(String playerMode, String opponentMode, String username) {
-    	PlayerType playerType = playerMode == "Me" ? new HumanPlayer() : new AIPlayer();
+    	PlayerType<GameBoard> playerType = Objects.equals(playerMode, "Me") ? new HumanPlayer() : new AIPlayer();
     	
-        if (opponentMode == "Online") {
-            player1 = new OnlinePlayer(username, playerType);
+        if (Objects.equals(opponentMode, "Online")) {
+            player1 = new OnlinePlayer<>(username, playerType);
             player1.registerEventListener(this);
             
             gui.hideInitPopUp();
             gui.waitPopUp();
             
         } else {
-        	player1 = new OfflinePlayer(playerType);
+        	player1 = new OfflinePlayer<>(playerType);
             player1.registerEventListener(this);
-        	player2 = new OfflinePlayer(new AIPlayer());
+        	player2 = new OfflinePlayer<>(new AIPlayer());
             player2.registerEventListener(this);
 
-        	startOfflineMatch((OfflinePlayer) player1, (OfflinePlayer) player2, "Tic-tac-toe");
+        	startOfflineMatch((OfflinePlayer<GameBoard>) player1, (OfflinePlayer<GameBoard>) player2, "Tic-tac-toe");
         }
     }
 	
-	private void startOfflineMatch(OfflinePlayer player1, OfflinePlayer player2, String game) {
-		OfflinePlayer hasMove = new Random().nextInt(2) == 0 ? player1 : player2;
+	private void startOfflineMatch(OfflinePlayer<GameBoard> player1, OfflinePlayer<GameBoard> player2, String game) {
+		OfflinePlayer<GameBoard> hasMove = new Random().nextInt(2) == 0 ? player1 : player2;
 		
 		player1.setOpponent(player2);
 		player1.callEvent(new MatchStartEvent(player1, game, hasMove.getUsername(), player2.getUsername()));
 		player2.callEvent(new MatchStartEvent(player2, game, hasMove.getUsername(), player1.getUsername()));
-		hasMove.callEvent(new YourTurnEvent(hasMove, ""));
+		hasMove.callEvent(new YourTurnEvent<>(hasMove, ""));
 		
 		OfflinePlayer hasNotMove = hasMove == player1 ? player2 : player1;
 		if(hasNotMove.getPlayerType() instanceof AIPlayer) {
@@ -80,7 +78,7 @@ public class Controller implements GameEventListener {
 	}
 	
 	@Override
-	public void handleEvent(GameEvent e) {
+	public void handleEvent(GameEvent<GameBoard> e) {
 		Platform.runLater(() -> {			
 			if(e instanceof MatchStartEvent) {		
 				gui.hideInitPopUp();
@@ -99,8 +97,8 @@ public class Controller implements GameEventListener {
 				gui.showResult(event.getResult());
 				
 			} else if(e instanceof YourTurnEvent) {
-				YourTurnEvent event = (YourTurnEvent) e;
-				Player player = (Player) event.getClient();
+				YourTurnEvent<GameBoard> event = (YourTurnEvent<GameBoard>) e;
+				Player<GameBoard> player = (Player<GameBoard>) event.getClient();
 				
 				player.setHasTurn(true);
 				

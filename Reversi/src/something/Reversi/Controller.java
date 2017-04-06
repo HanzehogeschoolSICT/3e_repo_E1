@@ -1,15 +1,9 @@
 package something.Reversi;
 
-import java.util.Random;
-
 import javafx.application.Platform;
 import something.Client.event.GameEvent;
 import something.Client.event.GameEventListener;
-import something.Client.event.events.ChallengeReceiveEvent;
-import something.Client.event.events.MatchFinishEvent;
-import something.Client.event.events.MatchStartEvent;
-import something.Client.event.events.MoveEvent;
-import something.Client.event.events.YourTurnEvent;
+import something.Client.event.events.*;
 import something.Client.player.OfflinePlayer;
 import something.Client.player.OnlinePlayer;
 import something.Client.player.Player;
@@ -18,12 +12,15 @@ import something.Reversi.Gui.StartGui;
 import something.Reversi.player.AIPlayer;
 import something.Reversi.player.HumanPlayer;
 
-public class Controller implements GameEventListener {
+import java.util.Objects;
+import java.util.Random;
+
+public class Controller implements GameEventListener<ReversiBoard> {
 
 	private StartGui gui;
 	
-	private Player player1;
-	private Player player2;
+	private Player<ReversiBoard> player1;
+	private Player<ReversiBoard> player2;
 	
 	public Controller(StartGui startGui) {
 		this.gui = startGui;
@@ -44,36 +41,37 @@ public class Controller implements GameEventListener {
 	}
 	
 	public void processLogin(String playerMode, String opponentMode, String username) {
-    	PlayerType playerType = playerMode == "Me" ? new HumanPlayer() : new AIPlayer();
+    	System.out.println(playerMode);
+	    PlayerType<ReversiBoard> playerType = Objects.equals(playerMode, "Me") ? new HumanPlayer() : new AIPlayer(Tile.WHITE);	// TODO: AI player type, TODO: Let AI know it's color
     	
-        if (opponentMode == "Online") {
-            player1 = new OnlinePlayer(username, playerType);
+        if (Objects.equals(opponentMode, "Online")) {
+            player1 = new OnlinePlayer<>(username, playerType);
             player1.registerEventListener(this);
             
             gui.hideInitPopUp();
             gui.waitPopUp();
             
         } else {
-        	player1 = new OfflinePlayer(playerType);
+        	player1 = new OfflinePlayer<>(playerType);
             player1.registerEventListener(this);
-        	player2 = new OfflinePlayer(new HumanPlayer());
+        	player2 = new OfflinePlayer<>(new AIPlayer(Tile.BLACK));    // TODO: Fixme, was new HumanPlayer
             player2.registerEventListener(this);
 
-        	startOfflineMatch((OfflinePlayer) player1, (OfflinePlayer) player2, "Reversi");
+        	startOfflineMatch((OfflinePlayer<ReversiBoard>) player1, (OfflinePlayer<ReversiBoard>) player2, "Reversi");
         }
     }
 	
-	private void startOfflineMatch(OfflinePlayer player, OfflinePlayer player2, String game) {
-		OfflinePlayer hasMove =  new Random().nextInt(2) == 0 ? player : player2;
+	private void startOfflineMatch(OfflinePlayer<ReversiBoard> player, OfflinePlayer<ReversiBoard> player2, String game) {
+		OfflinePlayer<ReversiBoard> hasMove = new Random().nextInt(2) == 0 ? player : player2;
 		
 		player.setOpponent(player2);
 		player.callEvent(new MatchStartEvent(player, game, hasMove.getUsername(), player2.getUsername()));
 		player2.callEvent(new MatchStartEvent(player2, game, hasMove.getUsername(), player.getUsername()));
-		hasMove.callEvent(new YourTurnEvent(hasMove, ""));
+		hasMove.callEvent(new YourTurnEvent<>(hasMove, ""));
 	}
 	
 	@Override
-	public void handleEvent(GameEvent e) {
+	public void handleEvent(GameEvent<ReversiBoard> e) {
 		Platform.runLater(() -> {
 			System.out.println(e);
 			
@@ -94,8 +92,8 @@ public class Controller implements GameEventListener {
 				gui.showResult(event.getResult());
 				
 			} else if(e instanceof YourTurnEvent) {
-				YourTurnEvent event = (YourTurnEvent) e;
-				Player player = (Player) event.getClient();
+				YourTurnEvent<ReversiBoard> event = (YourTurnEvent<ReversiBoard>) e;
+				Player<ReversiBoard> player = (Player<ReversiBoard>) event.getClient();
 				
 				player.setHasTurn(true);
 				
