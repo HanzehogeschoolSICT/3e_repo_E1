@@ -1,7 +1,7 @@
 package something.Client.player;
 
-import something.Reversi.ReversiBoard;
+import something.Client.Board;
 
 public interface PlayerType {
-	int getMove(ReversiBoard board);
+	int getMove(Board board);
 }

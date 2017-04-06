@@ -56,7 +56,7 @@ public class Controller implements GameEventListener {
         } else {
         	player1 = new OfflinePlayer(playerType);
             player1.registerEventListener(this);
-        	player2 = new OfflinePlayer(new AIPlayer());
+        	player2 = new OfflinePlayer(new HumanPlayer());
             player2.registerEventListener(this);
 
         	startOfflineMatch((OfflinePlayer) player1, (OfflinePlayer) player2, "Reversi");

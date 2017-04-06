@@ -2,7 +2,9 @@ package something.Reversi;
 
 import java.util.ArrayList;
 
-public class ReversiBoard {
+import something.Client.Board;
+
+public class ReversiBoard extends Board {
     private Tile[] board;
 
     public ReversiBoard(){
