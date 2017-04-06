@@ -114,9 +114,11 @@ public class Controller implements GameEventListener {
 				
 				gui.getBoard().makeMove(Integer.parseInt(event.getMove()));
 				
-				Mark[] board = gui.getBoard().getTicTacToeBoard().getBoard();
-				if(AIPlayer.checkVictory(board) != 0 || AIPlayer.isFull(board)) {
-					player1.callEvent(new MatchFinishEvent(player1, "", "", "", ""));
+				if(player1 instanceof OfflinePlayer) {
+					Mark[] board = gui.getBoard().getTicTacToeBoard().getBoard();
+					if(AIPlayer.checkVictory(board) != 0 || AIPlayer.isFull(board)) {
+						player1.callEvent(new MatchFinishEvent(player1, "", "", "", ""));
+					}
 				}
 				
 			} else if(e instanceof ChallengeReceiveEvent) {

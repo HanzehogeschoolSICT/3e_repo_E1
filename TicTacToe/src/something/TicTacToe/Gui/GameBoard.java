@@ -75,11 +75,13 @@ public class GameBoard extends Board {
         canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-            	int index = getMoveIndex(event.getSceneX(), event.getSceneY());
-    			boolean success = makeMove(index);
-    			
-            	if(success) {
-            		controller.getPlayerOnTurn().makeMove(index);
+            	if(controller.getPlayerOnTurn() != null) {
+	            	int index = getMoveIndex(event.getSceneX(), event.getSceneY());
+	    			boolean success = makeMove(index);
+	    			
+	            	if(success) {
+	            		controller.getPlayerOnTurn().makeMove(index);
+	            	}
             	}
             }
         });
