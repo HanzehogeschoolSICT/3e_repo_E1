@@ -49,7 +49,7 @@ public class WaitPopUp {
         subscribe.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                controller.getClient().subscribe("Tic-tac-toe");
+                controller.getPlayer().subscribe("Tic-tac-toe");
             }
         });
         return subscribe;
@@ -62,7 +62,7 @@ public class WaitPopUp {
             public void handle(ActionEvent event) {
                 String opponent = playersListView.getSelectionModel().getSelectedItem();
                 if (opponent != null) {
-                    controller.getClient().challenge(opponent, "Tic-tac-toe");
+                    controller.getPlayer().challenge(opponent, "Tic-tac-toe");
                 } else {
                     throwAlert();
                 }
@@ -91,11 +91,11 @@ public class WaitPopUp {
     }
 
     private void updateListView () {
-    	String[] playerArray = controller.getClient().getPlayers();
+    	String[] playerArray = controller.getPlayer().getPlayers();
         
         ObservableList<String> observablePlayerList = FXCollections.observableArrayList();
         for (String player : playerArray) {
-        	if(!controller.getUsername().equals(player)) {
+        	if(!controller.getPlayer().getUsername().equals(player)) {
         		observablePlayerList.add(player);
         	}
         }

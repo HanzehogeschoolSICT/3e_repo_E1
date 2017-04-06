@@ -83,12 +83,15 @@ public class Controller implements GameEventListener {
 				gui.startGameStage();
 				
 			} else if(e instanceof MatchFinishEvent) {
+				MatchFinishEvent event = (MatchFinishEvent) e;
+				
 				gui.endGameStage();
 				if(player1 instanceof OfflinePlayer) {
 					gui.showInitPopUp();
 				} else {
 					gui.waitPopUp();
 				}
+				gui.showResult(event.getResult());
 				
 			} else if(e instanceof YourTurnEvent) {
 				YourTurnEvent event = (YourTurnEvent) e;

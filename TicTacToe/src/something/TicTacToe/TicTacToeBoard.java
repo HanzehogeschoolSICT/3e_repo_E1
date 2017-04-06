@@ -1,6 +1,8 @@
 package something.TicTacToe;
 
-public class TicTacToeBoard {
+import something.Client.Board;
+
+public class TicTacToeBoard extends Board {
 	private Mark[] board;
 
 	public TicTacToeBoard() {

@@ -138,4 +138,12 @@ public class StartGui extends Application{
             return false;
         }
     }
+    
+    public void showResult(String result) {
+        Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
+        resultInfo.setTitle("Game Result");
+        resultInfo.setHeaderText(result);
+        resultInfo.setContentText(null);
+        resultInfo.show();
+    }
 }
