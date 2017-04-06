@@ -124,7 +124,7 @@ public class ReversiBoard extends Board {
         if (tile == Tile.EMPTY) {throw new IllegalArgumentException("Illegal tile");}
         //check horizontal
         int startHor = (index - (index % 8));
-        if(checkLineBoard(startHor, startHor+7, 1, index, tile )) {return true;}
+        if(checkLineBoard(startHor, startHor+8, 1, index, tile )) {return true;}
         //check vertical
         int startVer = (index%8);
         int temp = startVer+56;
@@ -179,7 +179,7 @@ public class ReversiBoard extends Board {
 
     private boolean checkLineBoard(int startIndex, int endIndex, int stepSize, int index, Tile tile) {
         boolean ownStone = false; boolean otherStone = false; boolean afterIndex = false;
-        for (int i = startIndex; i != endIndex; i+=stepSize) {
+        for (int i = startIndex; i < endIndex; i+=stepSize) {
             if (index == i) {
                 ownStone = false; otherStone = false; afterIndex = true;
             } else if (board[i] == tile) {
