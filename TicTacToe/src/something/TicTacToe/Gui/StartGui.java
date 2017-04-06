@@ -45,16 +45,20 @@ public class StartGui extends Application{
     }
 
     public void startGameStage() {
-        gameStage = new Stage();
-        gameStage.setTitle("Tic Tac Toe");
-        gameStage.setScene((board = new GameBoard(controller)).scene);
-        gameStage.show();
-        addShutdownOnClose(gameStage);
+    	if(gameStage == null) {
+	        gameStage = new Stage();
+	        gameStage.setTitle("Tic Tac Toe");
+	        gameStage.setScene((board = new GameBoard(controller)).scene);
+	        gameStage.show();
+	        addShutdownOnClose(gameStage);
+    	}
     }
 
     public void endGameStage() {
-        gameStage.close();
-        gameStage = null;
+    	if(gameStage != null) {
+	        gameStage.close();
+	        gameStage = null;
+    	}
     }
     
     public GameBoard getBoard() {
@@ -70,8 +74,10 @@ public class StartGui extends Application{
     }
 
     public void closeWaitPopUp() {
-    	waitPopUp.close();
-    	waitPopUp = null;
+    	if(waitPopUp != null) {
+	    	waitPopUp.close();
+	    	waitPopUp = null;
+    	}
     }
 
     public void showResult(String result) {

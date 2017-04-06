@@ -1,18 +1,22 @@
 package something.TicTacToe.player;
 
+import something.Client.Board;
 import something.Client.player.PlayerType;
 import something.TicTacToe.Mark;
 import something.TicTacToe.Gui.GameBoard;
 
 public class AIPlayer implements PlayerType {
-    private boolean isCross;
-
-    public void setIsCross(boolean isCross) {
-        this.isCross = isCross;
-    }
     
+	boolean isCross = false;
+	
+	public void setIsCross(boolean isCross) {
+		this.isCross = isCross;
+	}
+	
     @Override
-    public int getMove(GameBoard gameBoard) {
+    public int getMove(Board b) {
+    	GameBoard gameBoard = (GameBoard) b;
+    	
     	Mark[] board = gameBoard.getTicTacToeBoard().getBoard();
     	
         int index = -1;

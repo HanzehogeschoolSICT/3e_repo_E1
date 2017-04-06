@@ -12,11 +12,12 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import something.Client.Board;
 import something.TicTacToe.Controller;
 import something.TicTacToe.Mark;
 import something.TicTacToe.TicTacToeBoard;
 
-public class GameBoard {
+public class GameBoard extends Board {
     Scene scene;
     Integer turn = 0;
     TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
@@ -52,7 +53,7 @@ public class GameBoard {
         forfeit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                boolean check = controller.getClient().forfeit();
+                boolean check = controller.getPlayer().forfeit();
                 if (!check) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Disconnecting failed");
@@ -74,13 +75,11 @@ public class GameBoard {
         canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-            	if(controller.getPlayer().hasTurn()) {
-	            	int index = getMoveIndex(event.getSceneX(), event.getSceneY());
-	    			boolean success = makeMove(index);
-	    			
-	            	if(success) {
-	            		controller.getPlayer().doMakeMove(index, controller);
-	            	}
+            	int index = getMoveIndex(event.getSceneX(), event.getSceneY());
+    			boolean success = makeMove(index);
+    			
+            	if(success) {
+            		controller.getPlayerOnTurn().makeMove(index);
             	}
             }
         });
