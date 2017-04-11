@@ -15,8 +15,9 @@ import something.Reversi.Tile;
 
 public class GuiSettings {
     Scene scene;
-    Integer turn = 0;
-    ReversiBoard reversiBoard = new ReversiBoard();
+    Tile yourTileColor;
+    Boolean turn;
+    ReversiBoard reversiBoard;
     private GraphicsContext graphicsContext;
     private Controller controller;
     private Integer canvasW, canvasH;
@@ -28,6 +29,19 @@ public class GuiSettings {
         } catch (Exception e){
             e.printStackTrace();
         }
+        reversiBoard = new ReversiBoard();
+        Tile[] tem = reversiBoard.getBoard();
+        for (Tile til : tem) {
+            System.out.print(til + ": ");
+        }
+        System.out.println("hier krijg ik nog niks");
+        Player temp = controller.getPlayerOnTurn();
+        if (temp != null) {
+            yourTileColor = Tile.BLACK;
+        } else {
+            yourTileColor = Tile.WHITE;
+        }
+        System.out.println(yourTileColor);
     }
 
     public ReversiBoard getReversiBoard() {
@@ -44,6 +58,7 @@ public class GuiSettings {
 
         canvasW = (int) canvas.getWidth();
         canvasH = (int) canvas.getHeight();
+
 
         canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
@@ -88,9 +103,7 @@ public class GuiSettings {
 
     }
 
-    private int setTurn(){
-        return turn%2;
-    }
+
 
     private int getMoveIndex(double x, double y) {
         int xCoord = (int) Math.floor(y / 75) * 8;
@@ -103,16 +116,15 @@ public class GuiSettings {
     }
 
     public boolean makeMove(int posOnBoard){
-        int getTurn = setTurn();
+
         boolean makeTurn = false;
         try {
-            makeTurn = reversiBoard.makeTurn(posOnBoard, getTurn);
+            makeTurn = reversiBoard.makeTurn(posOnBoard, yourTileColor);
         } catch (IllegalMoveException e) {
             e.printStackTrace();
         }
         if(makeTurn){
             redrawBoard();
-            turn = turn+1;
             return true;
         }
         else {
@@ -125,7 +137,9 @@ public class GuiSettings {
     }
 
     private void redrawBoard(){
+        System.out.println("before board init");
         Tile[] board = reversiBoard.getBoard();
+        System.out.println("lel");
         graphicsContext.clearRect(0,0,600,600);
         drawGrid(canvasW, canvasH);
 //        x = modulo, y = delen, vermenigvuldig met grootte tegel

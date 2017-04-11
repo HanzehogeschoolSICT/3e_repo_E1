@@ -31,14 +31,8 @@ public class ReversiBoard extends Board {
         return builder.toString();
     }
 
-    public boolean makeTurn(int posOnBoard, int turn) throws IllegalMoveException {
+    public boolean makeTurn(int posOnBoard, Tile tile) throws IllegalMoveException {
         if (this.board[posOnBoard] == Tile.EMPTY) {
-            Tile tile;
-            if (turn % 2 == 0) { //TODO: koppelen aan de client/server in plaats van een turn die steeds een opgehoogd wordt;
-                tile = Tile.BLACK;
-            } else {
-                tile = Tile.WHITE;
-            }
             if (checkMoveValidity(posOnBoard, tile) > 0) {
                 board[posOnBoard] = tile;
                 turnTiles(posOnBoard, tile);
