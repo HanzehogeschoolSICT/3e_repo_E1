@@ -77,7 +77,7 @@ public class Controller implements GameEventListener {
 		Platform.runLater(() -> {
 			System.out.println(e);
 			
-			if(e instanceof MatchStartEvent) {		
+			if(e instanceof MatchStartEvent) {
 				gui.hideInitPopUp();
 				gui.closeWaitPopUp();
 				gui.startGameStage();

@@ -8,6 +8,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import something.Client.event.GameEvent;
+import something.Client.event.events.MatchStartEvent;
 import something.Reversi.Controller;
 
 public class StartGui extends Application{
