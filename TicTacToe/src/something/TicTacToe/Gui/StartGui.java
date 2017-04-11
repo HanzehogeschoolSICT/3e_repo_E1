@@ -4,23 +4,21 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import something.TicTacToe.Controller;
+import something.TicTacToe.TicTacToeBoard;
 
 import java.util.Optional;
 
 
 public class StartGui extends Application{
     private Stage primaryStage, gameStage, waitPopUp;
-    private Controller controller;
-    private Alert confirmGame;
-    private GameBoard board;
-    
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         this.primaryStage = primaryStage;
-        controller = new Controller(this);
+        //controller = new Controller(this);
 
         showInitPopUp();
     }
@@ -35,7 +33,7 @@ public class StartGui extends Application{
     
     public void showInitPopUp() {
     	primaryStage.setTitle("menu");
-        primaryStage.setScene(new InitPopUp(controller).scene);
+        primaryStage.setScene(new InitPopUp(this).scene);
         primaryStage.show();
         addShutdownOnClose(primaryStage);
     }
@@ -44,11 +42,11 @@ public class StartGui extends Application{
         primaryStage.hide();
     }
 
-    public void startGameStage() {
+    public void startGameStage(TicTacToeBoard ticTacToeBoard, EventHandler<MouseEvent> mouseEventHandler) {
     	if(gameStage == null) {
 	        gameStage = new Stage();
 	        gameStage.setTitle("Tic Tac Toe");
-	        gameStage.setScene((board = new GameBoard(controller)).scene);
+            gameStage.setScene(new BoardGUI(ticTacToeBoard, mouseEventHandler).scene);
 	        gameStage.show();
 	        addShutdownOnClose(gameStage);
     	}
@@ -60,15 +58,11 @@ public class StartGui extends Application{
 	        gameStage = null;
     	}
     }
-    
-    public GameBoard getBoard() {
-    	return board;
-    }
 
     public void waitPopUp () {
     	waitPopUp = new Stage();
         waitPopUp.setTitle("Wait or Challenge");
-        waitPopUp.setScene(new WaitPopUp(controller).scene);
+        waitPopUp.setScene(new WaitPopUp().scene);
         waitPopUp.show();
         addShutdownOnClose(waitPopUp);
     }
@@ -89,13 +83,13 @@ public class StartGui extends Application{
     }
 
     public boolean confirmGameDialog(String opponentName) {
-        confirmGame = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmGame = new Alert(Alert.AlertType.CONFIRMATION);
         confirmGame.setTitle("You have been challenged");
         confirmGame.setHeaderText("Challenger: " + opponentName);
         confirmGame.setContentText("Would you like to accept this game?");
         
         Optional<ButtonType> result = confirmGame.showAndWait();
-        if (result.get() == ButtonType.OK) {
+        if (result.isPresent() && result.get() == ButtonType.OK) {
             return true;
         } else {
             return false;

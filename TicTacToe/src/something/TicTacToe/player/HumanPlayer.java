@@ -1,12 +1,9 @@
 package something.TicTacToe.player;
 
-import something.Client.player.PlayerType;
-import something.TicTacToe.Gui.GameBoard;
+import something.TicTacToe.Gui.BoardGUI;
 
-public class HumanPlayer implements PlayerType<GameBoard> {
-
-	@Override
-	public int getMove(GameBoard board) {
+public class HumanPlayer {
+	public int getMove(BoardGUI board) {
 		return 0;
 	}
 }

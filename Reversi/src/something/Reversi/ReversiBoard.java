@@ -1,6 +1,7 @@
 package something.Reversi;
 
-import something.Client.Board;
+import something.Core.Board;
+import something.Core.IllegalMoveException;
 
 import java.util.HashMap;
 
