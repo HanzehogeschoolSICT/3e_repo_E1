@@ -1,7 +1,5 @@
 package something.TicTacToe.Gui;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -12,18 +10,15 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import something.TicTacToe.Controller;
 
 /**
  * Created by samikroon on 3/31/17.
  */
 public class WaitPopUp {
     Scene scene;
-    Controller controller;
     private ListView<String> playersListView = new ListView<>();
 
-    public WaitPopUp(Controller controller) {
-        this.controller = controller;
+    public WaitPopUp() {
         try{
             this.scene = makeScene();
         } catch (Exception e){
@@ -49,7 +44,7 @@ public class WaitPopUp {
         subscribe.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                controller.getPlayer().subscribe("Tic-tac-toe");
+                //controller.getPlayer().subscribe("Tic-tac-toe");
             }
         });
         return subscribe;
@@ -62,7 +57,7 @@ public class WaitPopUp {
             public void handle(ActionEvent event) {
                 String opponent = playersListView.getSelectionModel().getSelectedItem();
                 if (opponent != null) {
-                    controller.getPlayer().challenge(opponent, "Tic-tac-toe");
+                    //controller.getPlayer().challenge(opponent, "Tic-tac-toe");
                 } else {
                     throwAlert();
                 }
@@ -91,15 +86,15 @@ public class WaitPopUp {
     }
 
     private void updateListView () {
-    	String[] playerArray = controller.getPlayer().getPlayers();
-        
-        ObservableList<String> observablePlayerList = FXCollections.observableArrayList();
-        for (String player : playerArray) {
-        	if(!controller.getPlayer().getUsername().equals(player)) {
-        		observablePlayerList.add(player);
-        	}
-        }
-        playersListView.setItems(observablePlayerList);
+//    	String[] playerArray = controller.getPlayer().getPlayers();
+//
+//        ObservableList<String> observablePlayerList = FXCollections.observableArrayList();
+//        for (String player : playerArray) {
+//        	if(!controller.getPlayer().getUsername().equals(player)) {
+//        		observablePlayerList.add(player);
+//        	}
+//        }
+//        playersListView.setItems(observablePlayerList);
     }
 
     private Scene makeScene(){

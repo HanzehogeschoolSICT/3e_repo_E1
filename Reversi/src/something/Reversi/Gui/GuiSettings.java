@@ -7,9 +7,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import something.Client.player.Player;
+import something.Core.player.Player;
 import something.Reversi.Controller;
-import something.Reversi.IllegalMoveException;
+import something.Core.IllegalMoveException;
 import something.Reversi.ReversiBoard;
 import something.Reversi.Tile;
 
