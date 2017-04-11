@@ -157,7 +157,7 @@ public class Client extends Listenable {
         return false;
     }
 
-    public boolean acceptChallenge(int challengeNum) {
+    public boolean acceptChallenge(String challengeNum) {
         if (!isLocked()) {
             try {
                 sendCommand("challenge accept " + challengeNum);

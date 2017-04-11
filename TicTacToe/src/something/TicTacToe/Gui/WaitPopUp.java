@@ -1,5 +1,7 @@
 package something.TicTacToe.Gui;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -10,21 +12,46 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import something.Core.Client;
+import something.Core.event.GameEvent;
+import something.Core.event.GameEventListener;
+import something.Core.event.events.client.ChallengeReceiveEvent;
+import something.Core.event.events.client.MatchStartEvent;
 
 /**
  * Created by samikroon on 3/31/17.
  */
 public class WaitPopUp {
     Scene scene;
+    private Client client;
+    private String username;
+    private GameEventListener listener;
     private ListView<String> playersListView = new ListView<>();
 
-    public WaitPopUp() {
+    public WaitPopUp(Client client, String username) {
+        this.username = username;
+        this.client = client;
         try{
             this.scene = makeScene();
         } catch (Exception e){
             e.printStackTrace();
         }
+        startListener();
     }
+
+    private void startListener() {
+        listener = new GameEventListener() {
+            @Override
+            public void handleEvent(GameEvent event) {
+                if (event instanceof ChallengeReceiveEvent) {
+                    ChallengeReceiveEvent cre = (ChallengeReceiveEvent) event;
+                    client.acceptChallenge(cre.getChallengeNumber());
+                }
+            }
+        };
+        client.registerEventListener(listener);
+    }
+
 
     private BorderPane makePane() {
         BorderPane borderPane = new BorderPane();
@@ -44,7 +71,7 @@ public class WaitPopUp {
         subscribe.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //controller.getPlayer().subscribe("Tic-tac-toe");
+                client.subscribe("Tic-tac-toe");
             }
         });
         return subscribe;
@@ -57,7 +84,7 @@ public class WaitPopUp {
             public void handle(ActionEvent event) {
                 String opponent = playersListView.getSelectionModel().getSelectedItem();
                 if (opponent != null) {
-                    //controller.getPlayer().challenge(opponent, "Tic-tac-toe");
+                    client.challenge(opponent, "Tic-tac-toe");
                 } else {
                     throwAlert();
                 }
@@ -86,15 +113,15 @@ public class WaitPopUp {
     }
 
     private void updateListView () {
-//    	String[] playerArray = controller.getPlayer().getPlayers();
-//
-//        ObservableList<String> observablePlayerList = FXCollections.observableArrayList();
-//        for (String player : playerArray) {
-//        	if(!controller.getPlayer().getUsername().equals(player)) {
-//        		observablePlayerList.add(player);
-//        	}
-//        }
-//        playersListView.setItems(observablePlayerList);
+    	String[] playerArray = client.getPlayers();
+
+        ObservableList<String> observablePlayerList = FXCollections.observableArrayList();
+        for (String player : playerArray) {
+        	if(!username.equals(player)) {
+        		observablePlayerList.add(player);
+        	}
+        }
+        playersListView.setItems(observablePlayerList);
     }
 
     private Scene makeScene(){

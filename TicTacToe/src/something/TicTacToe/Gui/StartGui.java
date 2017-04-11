@@ -7,6 +7,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import something.Core.Client;
 import something.TicTacToe.TicTacToeBoard;
 
 import java.util.Optional;
@@ -59,10 +60,10 @@ public class StartGui extends Application{
     	}
     }
 
-    public void waitPopUp () {
+    public void waitPopUp (Client client, String username) {
     	waitPopUp = new Stage();
         waitPopUp.setTitle("Wait or Challenge");
-        waitPopUp.setScene(new WaitPopUp().scene);
+        waitPopUp.setScene(new WaitPopUp(client, username).scene);
         waitPopUp.show();
         addShutdownOnClose(waitPopUp);
     }

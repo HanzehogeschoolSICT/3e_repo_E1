@@ -22,6 +22,8 @@ import something.Core.player.Player;
 import something.TicTacToe.TicTacToeBoard;
 import something.TicTacToe.player.TicTacToeAIPlayer;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Optional;
 
 import static something.TicTacToe.Gui.BoardGUI.getMoveIndex;
@@ -124,7 +126,7 @@ public class InitPopUp {
 
                     switch (playerTwo) {
                         case "Online":
-                            player2 = new OnlinePlayer<>(getClient());
+                            player2 = new OnlinePlayer<>(getClient(username.getText()));
                             break;
                         case "PC":
                             player2 = new TicTacToeAIPlayer();
@@ -170,9 +172,19 @@ public class InitPopUp {
         return scene;
     }
 
-    public Client getClient() {
+    public Client getClient(String username) {
         Client client = new Client();
-        // TODO Fixme!
+        InetAddress address = null;
+        try {
+            address = InetAddress.getByName("localhost");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        client.connect(address, 7789);
+        client.login(username);
+        startGui.hideInitPopUp();
+        startGui.waitPopUp(client, username);
         return client;
     }
 }
