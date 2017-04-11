@@ -10,11 +10,11 @@ import java.util.concurrent.BlockingQueue;
 public abstract class Player<GameType extends Board> extends Listenable {
     private BlockingQueue<GameEvent> eventQueue = new ArrayBlockingQueue<>(20);
     protected GameType board;
-    protected boolean isFirst;
+    protected boolean isPlayer1;
     private Thread eventThread;
 
     public void reset(GameType board, boolean isFirst) {
-        this.isFirst = isFirst;
+        this.isPlayer1 = isFirst;
         this.board = board;
         eventQueue.clear();
         if (eventThread != null) {

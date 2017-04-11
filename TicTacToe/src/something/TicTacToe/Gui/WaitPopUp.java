@@ -13,10 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import something.Core.Client;
-import something.Core.event.GameEvent;
 import something.Core.event.GameEventListener;
-import something.Core.event.events.client.ChallengeReceiveEvent;
-import something.Core.event.events.client.MatchStartEvent;
 
 /**
  * Created by samikroon on 3/31/17.
@@ -36,22 +33,7 @@ public class WaitPopUp {
         } catch (Exception e){
             e.printStackTrace();
         }
-        startListener();
     }
-
-    private void startListener() {
-        listener = new GameEventListener() {
-            @Override
-            public void handleEvent(GameEvent event) {
-                if (event instanceof ChallengeReceiveEvent) {
-                    ChallengeReceiveEvent cre = (ChallengeReceiveEvent) event;
-                    client.acceptChallenge(cre.getChallengeNumber());
-                }
-            }
-        };
-        client.registerEventListener(listener);
-    }
-
 
     private BorderPane makePane() {
         BorderPane borderPane = new BorderPane();
@@ -125,7 +107,6 @@ public class WaitPopUp {
     }
 
     private Scene makeScene(){
-        Scene scene = new Scene(makePane(), 300, 300, Color.WHEAT);
-        return scene;
+        return new Scene(makePane(), 300, 300, Color.WHEAT);
     }
 }

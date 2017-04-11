@@ -4,6 +4,7 @@ import something.Core.event.GameEvent;
 import something.Core.event.GameEventListener;
 import something.Core.event.events.common.MoveEvent;
 import something.Core.event.events.game.*;
+import something.Core.event.events.player.EnemyMoveEvent;
 import something.Core.event.events.player.YourTurnEvent;
 import something.Core.player.Player;
 
@@ -40,13 +41,15 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
         public void handleEvent(GameEvent event) {
             if (event instanceof MoveEvent) {
                 if (firstPlayerAtTurn == isPlayer1) {
-                    if (board.isMoveValid(((MoveEvent) event).move)) {
+                    if (board.isMoveValid(((MoveEvent) event).move, firstPlayerAtTurn)) {
                         try {
                             if (board.makeMove(((MoveEvent) event).move, firstPlayerAtTurn)) {
                                 firstPlayerAtTurn = !firstPlayerAtTurn;
                                 if (isPlayer1) {
+                                    player2.pushEvent(new EnemyMoveEvent(((MoveEvent) event).move));
                                     player2.pushEvent(new YourTurnEvent());
                                 } else {
+                                    player1.pushEvent(new EnemyMoveEvent(((MoveEvent) event).move));
                                     player1.pushEvent(new YourTurnEvent());
                                 }
                             } else {

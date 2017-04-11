@@ -4,6 +4,7 @@ import something.Core.Board;
 import something.Core.IllegalMoveException;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 public class ReversiBoard extends Board {
     private Tile[] board;
@@ -32,11 +33,12 @@ public class ReversiBoard extends Board {
         return builder.toString();
     }
 
-    public boolean makeTurn(int posOnBoard, Tile tile) throws IllegalMoveException {
-        if (this.board[posOnBoard] == Tile.EMPTY) {
-            if (checkMoveValidity(posOnBoard, tile) > 0) {
-                board[posOnBoard] = tile;
-                turnTiles(posOnBoard, tile);
+    public boolean makeMove(int move, boolean isPlayer1) throws IllegalMoveException {
+        Tile tile = isPlayer1 ? Tile.BLACK : Tile.WHITE;
+        if (this.board[move] == Tile.EMPTY) {
+            if (isMoveValid(move, isPlayer1)) {
+                board[move] = tile;
+                turnTiles(move, tile);
                 return true;
             }
         } /*else {
@@ -47,6 +49,11 @@ public class ReversiBoard extends Board {
             return false;
         }*/
         return false;
+    }
+
+    @Override
+    public Optional<Boolean> getVictor() throws IllegalStateException {
+        throw new IllegalStateException();
     }
 
     private void turnTiles(int index, Tile tile) {
@@ -103,10 +110,10 @@ public class ReversiBoard extends Board {
         }
     }
 
-    public HashMap<Integer, Integer> getValidMoves(Tile tile) {
+    public HashMap<Integer, Integer> getValidMoves(boolean isPlayer1) {
         HashMap<Integer, Integer> validMoves = new HashMap<>();
         for (int i = 0; i < 64; i++) {
-            int moveScore = checkMoveValidity(i, tile);
+            int moveScore = getMoveFlips(i, isPlayer1);
             if (moveScore > 0) {
                 validMoves.put(i, moveScore);
             }
@@ -114,12 +121,14 @@ public class ReversiBoard extends Board {
         return validMoves;
     }
 
+    @Override
+    public boolean isMoveValid(int move, boolean firstPlayerAtTurn) {
+        return getMoveFlips(move, firstPlayerAtTurn) > 0;
+    }
 
-    public int checkMoveValidity(int index, Tile tile) {
+    private int getMoveFlips(int index, boolean isPlayer1) {
+        Tile tile = isPlayer1 ? Tile.BLACK : Tile.WHITE;
         if (board[index] != Tile.EMPTY) return -1;
-        if (tile == Tile.EMPTY) {
-            throw new IllegalArgumentException("Illegal tile");
-        }
         //check horizontal
         int startHor = (index - (index % 8));
         int horizontal = checkLineBoard(startHor, startHor + 8, 1, index, tile);

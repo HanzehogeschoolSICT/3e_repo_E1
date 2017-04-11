@@ -186,7 +186,6 @@ public class Client extends Listenable {
                         		String eventStr = line.substring("SVR GAME ".length());
                         		String eventType = eventStr.split(" \\{")[0];
                         		HashMap<String, String> data = StringUtils.stringToMap("{" + eventStr.split(" \\{")[1]);
-                        		
                         		switch(eventType) {
                         			case "MATCH":
                         				fireEvent(new MatchStartEvent(client, data.get("GAMETYPE"), data.get("PLAYERTOMOVE"), data.get("OPPONENT")));

@@ -60,12 +60,13 @@ public class StartGui extends Application{
     	}
     }
 
-    public void waitPopUp (Client client, String username) {
+    public Stage waitPopUp (Client client, String username) {
     	waitPopUp = new Stage();
         waitPopUp.setTitle("Wait or Challenge");
         waitPopUp.setScene(new WaitPopUp(client, username).scene);
         waitPopUp.show();
         addShutdownOnClose(waitPopUp);
+        return waitPopUp;
     }
 
     public void closeWaitPopUp() {

@@ -3,7 +3,13 @@ package something.Core;
 import java.util.Optional;
 
 public abstract class Board extends Listenable {
-    public abstract boolean isMoveValid(int move);
+    /**
+     *
+     * @param move
+     * @param firstPlayerAtTurn
+     * @return
+     */
+    public abstract boolean isMoveValid(int move, boolean firstPlayerAtTurn);
 
     /**
      * Executes a move on this board
