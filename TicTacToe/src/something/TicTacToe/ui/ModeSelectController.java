@@ -1,6 +1,7 @@
 package something.TicTacToe.ui;
 
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
@@ -27,6 +28,15 @@ public class ModeSelectController {
 
     public void startOnline(ActionEvent actionEvent) {
         Stage stage = (Stage) rootPane.getScene().getWindow();
-        WaitPopUp testUser = new WaitPopUp(stage, "TestUser");
+        if (usernameField.getText() != "") {
+            WaitPopUp testUser = new WaitPopUp(stage, usernameField.getText());
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText("Please fill in an username");
+            alert.setContentText(null);
+            alert.show();
+        }
+
     }
 }
