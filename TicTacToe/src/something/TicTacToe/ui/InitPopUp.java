@@ -18,13 +18,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import something.Core.AbstractGameController;
+import something.Core.Board;
 import something.Core.event.events.game.GameFinishedEvent;
 import something.Core.player.ManualPlayer;
 import something.Core.player.Player;
 import something.TicTacToe.TicTacToeBoard;
 import something.TicTacToe.player.TicTacToeAIPlayer;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 
@@ -114,7 +114,7 @@ public class InitPopUp {
                     }
 
                     switch (playerTwo) {
-                        case "Human":   // TODO: bind controls
+                        case "Human":
                             ManualPlayer<TicTacToeBoard> manualPlayer = (ManualPlayer<TicTacToeBoard>) (player2 = new ManualPlayer<>());
                             mouseConsumers[1] = mouseEvent -> manualPlayer.makeMove(BoardGUI.getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
                             break;
@@ -130,7 +130,7 @@ public class InitPopUp {
                     EventHandler<MouseEvent> mouseEventHandler = event1 -> {
                         for (Consumer<MouseEvent> mouseConsumer : mouseConsumers) mouseConsumer.accept(event1);
                     };TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
-                    AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2, true);
+                    AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
                     Platform.runLater(() -> {
                         parent.setTitle("Tic Tac Toe");
                         parent.setScene(new BoardGUI(ticTacToeBoard, mouseEventHandler).scene);
@@ -140,13 +140,11 @@ public class InitPopUp {
                         if (controllerEvent instanceof GameFinishedEvent) {
                             Platform.runLater(() -> {
                                 String victoryText = "Tie";
-                                Optional<Boolean> victor = ((GameFinishedEvent) controllerEvent).getVictor();
-                                if (victor.isPresent()) {
-                                    if (victor.get()) {
-                                        victoryText = "Cross wins!";
-                                    } else {
-                                        victoryText = "Nought wins!";
-                                    }
+                                Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
+                                if (victor == Board.Victor.PLAYER1) {
+                                    victoryText = "Cross wins!";
+                                } else if (victor == Board.Victor.PLAYER2) {
+                                    victoryText = "Nought wins!";
                                 }
                                 Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
                                 resultInfo.setTitle("Game Result");

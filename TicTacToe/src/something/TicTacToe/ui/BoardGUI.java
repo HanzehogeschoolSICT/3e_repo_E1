@@ -23,14 +23,15 @@ public class BoardGUI extends Listenable {
     private GraphicsContext graphicsContext;
 
     public BoardGUI(TicTacToeBoard ticTacToeBoard, EventHandler<MouseEvent> mouseEventEventHandler){
-        this.ticTacToeBoard = ticTacToeBoard;
-        this.mouseEventEventHandler = mouseEventEventHandler;
-        this.scene = makeScene();
         ticTacToeBoard.registerEventListener(event -> {
             if (event instanceof BoardUpdateEvent) {
                 redrawBoard();
             }
         });
+        this.ticTacToeBoard = ticTacToeBoard;
+        this.mouseEventEventHandler = mouseEventEventHandler;
+        this.scene = makeScene();
+
     }
 
     public TicTacToeBoard getTicTacToeBoard() {

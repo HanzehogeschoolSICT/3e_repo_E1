@@ -141,7 +141,6 @@ public class Client extends Listenable {
                 try {
                     while (true) {
                         String line = br.readLine();
-
                         if (line != null && (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {
                             //Received event
                             if (line.startsWith("SVR GAME ")) {
@@ -156,7 +155,7 @@ public class Client extends Listenable {
                                         fireEvent(new YourTurnEvent());
                                         break;
                                     case "MOVE":
-                                        fireEvent(new MoveEvent(Integer.valueOf(data.get("MOVE"))));
+                                        fireEvent(new MoveEvent(data.get("PLAYER"), Integer.valueOf(data.get("MOVE"))));
                                         break;
                                     case "WIN":
                                     case "LOSS":
