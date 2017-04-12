@@ -31,6 +31,11 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
         player1.pushEvent(new YourTurnEvent());
     }
 
+    public void interrupt() {
+        player1.interruptEvents();
+        player2.interruptEvents();
+    }
+
     private class GameControllerEventListener implements GameEventListener {
         private boolean isPlayer1;
 
