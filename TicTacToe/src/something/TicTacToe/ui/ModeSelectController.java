@@ -16,16 +16,13 @@ public class ModeSelectController {
     public Button testButton;
     public Pane rootPane;
     public TextField usernameField;
-    public ChoiceBox playerSelect;
+    public ChoiceBox<PlayerType> playerSelect;
 
 
     @FXML
     protected void initialize() {
-        ObservableList items = playerSelect.getItems();
-        for (PlayerType player:
-             PlayerType.values()) {
-            items.add(player.toString());
-        }
+        ObservableList<PlayerType> items = playerSelect.getItems();
+        items.addAll(PlayerType.values());
     }
 
     public void startTest(ActionEvent actionEvent) {
@@ -40,7 +37,7 @@ public class ModeSelectController {
 
     public void startOnline(ActionEvent actionEvent) {
         Stage stage = (Stage) rootPane.getScene().getWindow();
-        PlayerType type = (PlayerType) playerSelect.getValue();
+        PlayerType type = playerSelect.getValue();
         if (usernameField.getText().length() > 0 && type != null) {
             WaitPopUp waitPopUp = new WaitPopUp(stage, usernameField.getText(), type);
         } else {

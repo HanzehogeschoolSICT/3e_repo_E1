@@ -38,7 +38,6 @@ public abstract class Player<GameType extends Board> extends Listenable {
 
     public void pushEvent(GameEvent event) {
         if (eventThread != null) {
-
             try {
                 eventQueue.put(event);
             } catch (InterruptedException e) {
@@ -52,5 +51,9 @@ public abstract class Player<GameType extends Board> extends Listenable {
     public void interruptEvents() {
         eventThread.interrupt();
         eventThread = null;
+    }
+
+    public boolean isPlayer1() {
+        return isPlayer1;
     }
 }

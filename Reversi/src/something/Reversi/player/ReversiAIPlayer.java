@@ -14,7 +14,7 @@ public class ReversiAIPlayer extends AIPlayer<ReversiBoard> {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        HashMap<Integer, Integer> validMoves = board.getValidMoves(isPlayer1);
+        HashMap<Integer, Integer> validMoves = board.getValidMoves(isPlayer1());
         int optimalMove = -1;
         int optimalScore = -1;
         for (Map.Entry<Integer, Integer> moveScoreEntry : validMoves.entrySet()) {

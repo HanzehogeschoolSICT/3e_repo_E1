@@ -16,7 +16,7 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
     private final Player<GameType> player2;
     private boolean firstPlayerAtTurn;
 
-    public AbstractGameController(GameType board, Player<GameType> player1, Player<GameType> player2) {
+    public AbstractGameController(GameType board, Player<GameType> player1, Player<GameType> player2, boolean autoStart) {
         this.board = board;
         this.player1 = player1;
         this.player2 = player2;
@@ -28,7 +28,7 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
         player2.registerEventListener(new GameControllerEventListener(false));
 
         fireEvent(new GameStartEvent());
-        player1.pushEvent(new YourTurnEvent());
+        if (autoStart) { player1.pushEvent(new YourTurnEvent()); }
     }
 
     public void interrupt() {

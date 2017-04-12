@@ -21,17 +21,17 @@ public class OnlinePlayer<GameType extends Board> extends Player<GameType> {
             if (event instanceof YourTurnEvent) {
                 if (!isReady) {
                     isReady = true;
-                    this.isPlayer1 = true;
-                    fireEvent(new GameStartEvent());
+                    this.isPlayer1 = false;
+                    this.fireEvent(new GameStartEvent());
                 }
             }
             if (event instanceof MoveEvent) {
                 if (!isReady) {
                     isReady = true;
-                    this.isPlayer1 = false;
-                } else {
-                    fireEvent(event);
+                    this.isPlayer1 = true;
+                    this.fireEvent(new GameStartEvent());
                 }
+                this.fireEvent(event);
             }
         });
 	}

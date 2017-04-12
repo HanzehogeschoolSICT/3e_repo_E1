@@ -130,7 +130,7 @@ public class InitPopUp {
                     EventHandler<MouseEvent> mouseEventHandler = event1 -> {
                         for (Consumer<MouseEvent> mouseConsumer : mouseConsumers) mouseConsumer.accept(event1);
                     };TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
-                    AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
+                    AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2, true);
                     Platform.runLater(() -> {
                         parent.setTitle("Tic Tac Toe");
                         parent.setScene(new BoardGUI(ticTacToeBoard, mouseEventHandler).scene);

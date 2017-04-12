@@ -71,12 +71,12 @@ public class TicTacToeAIPlayer extends something.Core.player.AIPlayer<TicTacToeB
         Mark[] marks = board.getMarks().clone();
 
         int index = -1;
-        int value = isPlayer1 ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        int value = isPlayer1() ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         for (int i = 0; i < marks.length; i++) {
             if (marks[i] == Mark.EMPTY) {
-                marks[i] = isPlayer1 ? Mark.CROSS : Mark.NOUGHT;
-                int newValue = miniMax(marks, 0, !isPlayer1);
-                if ((isPlayer1 && newValue > value) || (!isPlayer1 && newValue < value)) {
+                marks[i] = isPlayer1() ? Mark.CROSS : Mark.NOUGHT;
+                int newValue = miniMax(marks, 0, !isPlayer1());
+                if ((isPlayer1() && newValue > value) || (!isPlayer1() && newValue < value)) {
                     value = newValue;
                     index = i;
                 }
