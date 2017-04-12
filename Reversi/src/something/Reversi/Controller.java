@@ -5,7 +5,6 @@ import something.Core.event.GameEvent;
 import something.Core.event.GameEventListener;
 import something.Core.event.events.client.ChallengeReceiveEvent;
 import something.Core.event.events.client.MatchFinishEvent;
-import something.Core.event.events.client.MatchStartEvent;
 import something.Core.event.events.common.MoveEvent;
 import something.Core.event.events.player.YourTurnEvent;
 import something.Core.player.ManualPlayer;

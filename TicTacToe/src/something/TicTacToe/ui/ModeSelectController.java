@@ -3,11 +3,10 @@ package something.TicTacToe.ui;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import something.TicTacToe.Gui.InitPopUp;
-import something.TicTacToe.Gui.WaitPopUp;
 
 public class ModeSelectController {
     public Button onlineButton;
@@ -15,6 +14,7 @@ public class ModeSelectController {
     public Button testButton;
     public Pane rootPane;
     public TextField usernameField;
+    public ChoiceBox playerSelect;
 
     public void startTest(ActionEvent actionEvent) {
         System.out.println(actionEvent);
@@ -28,8 +28,8 @@ public class ModeSelectController {
 
     public void startOnline(ActionEvent actionEvent) {
         Stage stage = (Stage) rootPane.getScene().getWindow();
-        if (usernameField.getText() != "") {
-            WaitPopUp testUser = new WaitPopUp(stage, usernameField.getText());
+        if (usernameField.getText().length() > 0) {
+            WaitPopUp waitPopUp = new WaitPopUp(stage, usernameField.getText());
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Warning");

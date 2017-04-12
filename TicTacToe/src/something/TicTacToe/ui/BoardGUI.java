@@ -1,4 +1,4 @@
-package something.TicTacToe.Gui;
+package something.TicTacToe.ui;
 
 import javafx.event.EventHandler;
 import javafx.scene.Group;

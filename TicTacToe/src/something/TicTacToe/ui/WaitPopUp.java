@@ -1,4 +1,4 @@
-package something.TicTacToe.Gui;
+package something.TicTacToe.ui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,8 +13,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import something.Core.Client;
+import something.Core.event.GameEvent;
+import something.Core.event.GameEventListener;
+import something.Core.player.OnlinePlayer;
+import something.TicTacToe.TicTacToeBoard;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -41,10 +44,41 @@ public class WaitPopUp {
             client.connect(address, 7789);
             client.login(username);
             parent.setScene(makeScene());
-            parent.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            parent.setOnCloseRequest(event -> client.disconnect());
+            OnlinePlayer<TicTacToeBoard> onlinePlayer = new OnlinePlayer<>(client);
+            onlinePlayer.registerEventListener(new GameEventListener() {
                 @Override
-                public void handle(WindowEvent event) {
-                    client.disconnect();
+                public void handleEvent(GameEvent event) {
+//                    if (event instanceof GameStartEvent) {
+//
+//                        TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
+//                        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
+//                        Platform.runLater(() -> {
+//                            parent.setTitle("Tic Tac Toe");
+//                            parent.setScene(new BoardGUI(ticTacToeBoard, ).scene);
+//                            parent.setOnCloseRequest(event12 -> controller.interrupt());
+//                        });
+//                        controller.registerEventListener(controllerEvent -> {
+//                            if (controllerEvent instanceof GameFinishedEvent) {
+//                                Platform.runLater(() -> {
+//                                    String victoryText = "Tie";
+//                                    Optional<Boolean> victor = ((GameFinishedEvent) controllerEvent).getVictor();
+//                                    if (victor.isPresent()) {
+//                                        if (victor.get()) {
+//                                            victoryText = "Cross wins!";
+//                                        } else {
+//                                            victoryText = "Nought wins!";
+//                                        }
+//                                    }
+//                                    Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
+//                                    resultInfo.setTitle("Game Result");
+//                                    resultInfo.setHeaderText(victoryText);
+//                                    resultInfo.setContentText(null);
+//                                    resultInfo.show();
+//                                });
+//                            }
+//                        });
+//                    }
                 }
             });
         } catch (IOException e) {

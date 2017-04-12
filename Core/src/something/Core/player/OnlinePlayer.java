@@ -4,26 +4,41 @@ import something.Core.Board;
 import something.Core.Client;
 import something.Core.event.GameEvent;
 import something.Core.event.events.common.MoveEvent;
+import something.Core.event.events.game.GameStartEvent;
 import something.Core.event.events.player.EnemyMoveEvent;
+import something.Core.event.events.player.YourTurnEvent;
 
 public class OnlinePlayer<GameType extends Board> extends Player<GameType> {
-    public final Client client;
-
+    private final Client client;
+    private boolean isReady;
     public OnlinePlayer(Client client) {
         this.client = client;
-
+        this.isReady = false;
         //Gameserver IP: 145.33.225.170
         //client.connect(InetAddress.getByName("localhost"), 7789);
 
         this.client.registerEventListener(event -> {
+            if (event instanceof YourTurnEvent) {
+                if (!isReady) {
+                    isReady = true;
+                    this.isPlayer1 = true;
+                    fireEvent(new GameStartEvent());
+                }
+            }
             if (event instanceof MoveEvent) {
-                fireEvent(event);
+                if (!isReady) {
+                    isReady = true;
+                    this.isPlayer1 = false;
+                } else {
+                    fireEvent(event);
+                }
             }
         });
 	}
 
     @Override
     protected void reset() {
+        isReady = false;
         // TODO: check match state
     }
 

@@ -44,7 +44,7 @@ public class TicTacToeBoard extends Board {
             }
         }
 		fireEvent(new BoardUpdateEvent());
-		return !(getVictor().isPresent() || isFull());
+		return getVictor() != null;
 	}
 
     @Override
@@ -61,7 +61,7 @@ public class TicTacToeBoard extends Board {
 
         if (board[0] == Mark.NOUGHT && board[4] == Mark.NOUGHT && board[8] == Mark.NOUGHT) return Optional.of(false);
         if (board[2] == Mark.NOUGHT && board[4] == Mark.NOUGHT && board[6] == Mark.NOUGHT) return Optional.of(false);
-        return Optional.empty();
+        return isFull() ? Optional.empty() : null;
     }
 
     public boolean isFull() {

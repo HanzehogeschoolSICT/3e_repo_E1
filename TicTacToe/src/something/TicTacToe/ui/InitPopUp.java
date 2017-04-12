@@ -1,4 +1,4 @@
-package something.TicTacToe.Gui;
+package something.TicTacToe.ui;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -26,8 +26,6 @@ import something.TicTacToe.player.TicTacToeAIPlayer;
 
 import java.util.Optional;
 import java.util.function.Consumer;
-
-import static something.TicTacToe.Gui.BoardGUI.getMoveIndex;
 
 
 public class InitPopUp {
@@ -103,7 +101,7 @@ public class InitPopUp {
                     switch (playerOne) {
                         case "Me":
                             ManualPlayer<TicTacToeBoard> manualPlayer = (ManualPlayer<TicTacToeBoard>) (player1 = new ManualPlayer<>());
-                            mouseConsumers[0] = mouseEvent -> manualPlayer.makeMove(getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
+                            mouseConsumers[0] = mouseEvent -> manualPlayer.makeMove(BoardGUI.getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
                             break;
                         case "PC":
                             player1 = new TicTacToeAIPlayer();
@@ -118,7 +116,7 @@ public class InitPopUp {
                     switch (playerTwo) {
                         case "Human":   // TODO: bind controls
                             ManualPlayer<TicTacToeBoard> manualPlayer = (ManualPlayer<TicTacToeBoard>) (player2 = new ManualPlayer<>());
-                            mouseConsumers[1] = mouseEvent -> manualPlayer.makeMove(getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
+                            mouseConsumers[1] = mouseEvent -> manualPlayer.makeMove(BoardGUI.getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
                             break;
                         case "PC":
                             player2 = new TicTacToeAIPlayer();
@@ -131,12 +129,9 @@ public class InitPopUp {
                     }
                     EventHandler<MouseEvent> mouseEventHandler = event1 -> {
                         for (Consumer<MouseEvent> mouseConsumer : mouseConsumers) mouseConsumer.accept(event1);
-                    };
-                    TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
-
+                    };TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
                     AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
                     Platform.runLater(() -> {
-
                         parent.setTitle("Tic Tac Toe");
                         parent.setScene(new BoardGUI(ticTacToeBoard, mouseEventHandler).scene);
                         parent.setOnCloseRequest(event12 -> controller.interrupt());
