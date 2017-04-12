@@ -39,21 +39,24 @@ public class ReversiBoard extends Board {
             if (isMoveValid(move, isPlayer1)) {
                 board[move] = tile;
                 turnTiles(move, tile);
-                return true;
             }
-        } /*else {
-            if (getValidMoves(Tile.BLACK).size() == 0 && getValidMoves(Tile.WHITE).size() == 0) {
-                return false;
-            }
-            //throw new IllegalMoveException("Non-valid move");
-            return false;
-        }*/
-        return false;
+        }
+        return !(getValidMoves(true).size() == 0 && getValidMoves(false).size() == 0);
     }
+
 
     @Override
     public Optional<Boolean> getVictor() throws IllegalStateException {
-        throw new IllegalStateException();
+        int player1Count = 0;
+        int player2Count = 0;
+        for (Tile tile : board) {
+            if (tile == Tile.BLACK) player1Count++;
+            if (tile == Tile.WHITE) player2Count++;
+        }
+        if (player1Count > player2Count) return Optional.of(true);
+        if (player2Count > player1Count) return Optional.of(false);
+        if (player1Count == player2Count) return Optional.of(null);
+        return Optional.of(null);
     }
 
     private void turnTiles(int index, Tile tile) {
