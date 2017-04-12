@@ -30,8 +30,10 @@ public class WaitPopUp {
     private Client client;
     private String username;
     private ListView<String> playersListView = new ListView<>();
+    private PlayerType type;
 
-    public WaitPopUp(Stage parent, String username) {
+    public WaitPopUp(Stage parent, String username, PlayerType type) {
+        this.type = type;
         this.username = username;
         this.client = new Client();
         InetAddress address;
