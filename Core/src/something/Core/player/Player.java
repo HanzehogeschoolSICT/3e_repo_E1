@@ -37,11 +37,20 @@ public abstract class Player<GameType extends Board> extends Listenable {
     protected abstract void reset();
 
     public void pushEvent(GameEvent event) {
-        try {
-            eventQueue.put(event);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (eventThread != null) {
+
+            try {
+                eventQueue.put(event);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            throw new IllegalStateException("Events are interrupted!");
         }
     }
 
+    public void interruptEvents() {
+        eventThread.interrupt();
+        eventThread = null;
+    }
 }

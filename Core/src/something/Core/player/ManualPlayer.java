@@ -19,7 +19,7 @@ public class ManualPlayer<GameType extends Board> extends Player<GameType> {
     }
 
     public void makeMove(int move) {
-        if (!canMove) throw new IllegalStateException("Move not allowed now!");
+        if (!canMove) return;
         fireEvent(new MoveEvent(move));
         canMove = false;
     }
