@@ -2,6 +2,7 @@ package something.TicTacToe.ui;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import something.TicTacToe.Gui.InitPopUp;
@@ -12,6 +13,7 @@ public class ModeSelectController {
     public Button offlineButton;
     public Button testButton;
     public Pane rootPane;
+    public TextField usernameField;
 
     public void startTest(ActionEvent actionEvent) {
         System.out.println(actionEvent);
