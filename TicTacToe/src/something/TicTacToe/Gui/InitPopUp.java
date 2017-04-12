@@ -15,56 +15,31 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import something.Core.AbstractGameController;
-import something.Core.Client;
-import something.Core.event.GameEvent;
-import something.Core.event.GameEventListener;
-import something.Core.event.events.client.ChallengeReceiveEvent;
-import something.Core.event.events.client.MatchStartEvent;
-import something.Core.event.events.common.MoveEvent;
 import something.Core.event.events.game.GameFinishedEvent;
-import something.Core.event.events.player.YourTurnEvent;
 import something.Core.player.ManualPlayer;
-import something.Core.player.OnlinePlayer;
 import something.Core.player.Player;
 import something.TicTacToe.TicTacToeBoard;
 import something.TicTacToe.player.TicTacToeAIPlayer;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import static something.TicTacToe.Gui.BoardGUI.getMoveIndex;
 
 
 public class InitPopUp {
-    Scene scene;
-    private TextField username;
+    private Scene scene;
     private final ToggleGroup playerOneGroup = new ToggleGroup();
     private final ToggleGroup playerTwoGroup = new ToggleGroup();
-    private StartGui startGui;
-    private Consumer<Boolean> plannedMatch;
-    private Runnable showGui;
 
-    public InitPopUp(StartGui startGui) {
-        this.startGui = startGui;
-        try {
-            this.scene = makeScene();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public InitPopUp(Stage parent) {
+        this.scene = makeScene();
+        parent.setScene(scene);
     }
-
 
     private BorderPane makePane() {
         BorderPane borderPane = new BorderPane();
 
         HBox usernameBar = new HBox(20);
-        Text usernameText = new Text();
-        usernameText.setFont(new Font(15));
-        usernameText.setText("Username:");
-        username = new TextField();
-        usernameBar.getChildren().addAll(usernameText, username);
         borderPane.setTop(usernameBar);
 
         VBox playerOne = new VBox(10);
@@ -88,8 +63,8 @@ public class InitPopUp {
         RadioButton playerOnePC = new RadioButton("PC");
         playerOnePC.setUserData("PC");
 
-        RadioButton playerTwoOnline = new RadioButton("Online");
-        playerTwoOnline.setUserData("Online");
+        RadioButton playerTwoOnline = new RadioButton("Human");
+        playerTwoOnline.setUserData("Human");
         playerTwoOnline.setSelected(true);
         RadioButton playerTwoPC = new RadioButton("PC");
         playerTwoPC.setUserData("PC");
@@ -111,14 +86,12 @@ public class InitPopUp {
         submit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (playerOneGroup.getSelectedToggle() != null && playerTwoGroup.getSelectedToggle() != null && username.getText().length() > 0) {
+                if (playerOneGroup.getSelectedToggle() != null && playerTwoGroup.getSelectedToggle() != null) {
                     String playerOne = playerOneGroup.getSelectedToggle().getUserData().toString();
                     String playerTwo = playerTwoGroup.getSelectedToggle().getUserData().toString();
-                    //controller.processLogin(playerOne, playerTwo, username.getText());
 
                     final Player<TicTacToeBoard> player1;
                     final Player<TicTacToeBoard> player2;
-
                     EventHandler<MouseEvent> mouseEventHandler = null;
 
                     switch (playerOne) {
@@ -135,8 +108,8 @@ public class InitPopUp {
                     }
 
                     switch (playerTwo) {
-                        case "Online":
-                            player2 = new OnlinePlayer<>(getClient(username.getText()));
+                        case "Human":   // TODO: bind controls
+                            player2 = new ManualPlayer<>();
                             break;
                         case "PC":
                             player2 = new TicTacToeAIPlayer();
@@ -145,43 +118,37 @@ public class InitPopUp {
                             player2 = null;
                             break;
                     }
-
-                    if (mouseEventHandler == null) mouseEventHandler = event1 -> {};
                     EventHandler<MouseEvent> finalMouseEventHandler = mouseEventHandler;
                     TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
 
-                    showGui = () -> Platform.runLater(() -> startGui.startGameStage(ticTacToeBoard, finalMouseEventHandler));
-                    plannedMatch = aBoolean -> {
-                        Player<TicTacToeBoard> playerOne1 = player1;
-                        Player<TicTacToeBoard> playerTwo1 = player2;
-                        if (aBoolean) {
-                            Player<TicTacToeBoard> temp = playerTwo1;
-                            playerTwo1 = playerOne1;
-                            playerOne1 = temp;
-                        }
-                        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, playerOne1, playerTwo1);
-                        controller.registerEventListener(controllerEvent -> {
-                            if (controllerEvent instanceof GameFinishedEvent) {
-                                Platform.runLater(() -> {
-                                    String victoryText = "Tie";
-                                    Optional<Boolean> victor = ((GameFinishedEvent) controllerEvent).getVictor();
-                                    if (victor.isPresent()) {
-                                        if (victor.get()) {
-                                            victoryText = "Player 1 wins!";
-                                        } else {
-                                            victoryText = "Player 2 wins!";
-                                        }
-                                    }
-                                    startGui.showResult(victoryText);
-                                });
-                            }
-                        });
-                    };
+                    Platform.runLater(() -> {
+                        Stage gameStage = new Stage();
+                        gameStage.setTitle("Tic Tac Toe");
+                        gameStage.setScene(new BoardGUI(ticTacToeBoard, finalMouseEventHandler).scene);
+                        gameStage.show();
+                    });
 
-                    if (!(player2 instanceof OnlinePlayer)) {
-                        plannedMatch.accept(false);
-                        plannedMatch = null;
-                    }
+                    AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
+                    controller.registerEventListener(controllerEvent -> {
+                        if (controllerEvent instanceof GameFinishedEvent) {
+                            Platform.runLater(() -> {
+                                String victoryText = "Tie";
+                                Optional<Boolean> victor = ((GameFinishedEvent) controllerEvent).getVictor();
+                                if (victor.isPresent()) {
+                                    if (victor.get()) {
+                                        victoryText = "Player 1 wins!";
+                                    } else {
+                                        victoryText = "Player 2 wins!";
+                                    }
+                                }
+                                Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
+                                resultInfo.setTitle("Game Result");
+                                resultInfo.setHeaderText(victoryText);
+                                resultInfo.setContentText(null);
+                                resultInfo.show();
+                            });
+                        }
+                    });
 
                 } else {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -197,55 +164,11 @@ public class InitPopUp {
         return borderPane;
     }
 
-    public Client getClient(String username) {
-        System.out.println(username);
-        Client client = new Client();
-        InetAddress address = null;
-        try {
-            address = InetAddress.getByName("localhost");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-
-        client.connect(address, 7789);
-        client.login(username);
-        startGui.hideInitPopUp();
-        Stage waitPopUp = startGui.waitPopUp(client, username);
-        client.registerEventListener(new GameEventListener() {
-            private boolean ready = false;
-            @Override
-            public void handleEvent(GameEvent event) {
-                System.out.println(event);
-                if (event instanceof ChallengeReceiveEvent) {
-                    ChallengeReceiveEvent cre = (ChallengeReceiveEvent) event;
-                    client.acceptChallenge(cre.getChallengeNumber());
-                    ready = true;
-                    Platform.runLater(waitPopUp::close);
-                    showGui.run();
-                }
-                if (event instanceof MatchStartEvent) {
-                    ready = true;
-                    Platform.runLater(waitPopUp::close);
-                    showGui.run();
-                }
-                if (event instanceof MoveEvent && ready) {
-                    if (plannedMatch != null) {
-                        plannedMatch.accept(true);
-                        System.out.println("Running planned match!");
-                    }
-                }
-                if (event instanceof YourTurnEvent && ready) {
-                    if (plannedMatch != null) {
-                        plannedMatch.accept(false);
-                        System.out.println("Running planned match!");
-                    }
-                }
-            }
-        });
-        return client;
-    }
-
     private Scene makeScene() {
         return new Scene(makePane(), 250, 250, Color.WHEAT);
+    }
+
+    public Scene getScene() {
+        return scene;
     }
 }

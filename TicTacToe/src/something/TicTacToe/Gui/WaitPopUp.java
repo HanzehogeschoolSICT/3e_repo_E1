@@ -12,30 +12,47 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import something.Core.Client;
-import something.Core.event.GameEventListener;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Created by samikroon on 3/31/17.
  */
 public class WaitPopUp {
-    Scene scene;
     private Client client;
     private String username;
-    private GameEventListener listener;
     private ListView<String> playersListView = new ListView<>();
 
-    public WaitPopUp(Client client, String username) {
+    public WaitPopUp(Stage parent, String username) {
         this.username = username;
-        this.client = client;
-        try{
-            this.scene = makeScene();
-        } catch (Exception e){
-            e.printStackTrace();
+        this.client = new Client();
+        InetAddress address;
+        try {
+            address = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            client.connect(address, 7789);
+            client.login(username);
+            parent.setScene(makeScene());
+            parent.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+                    client.disconnect();
+                }
+            });
+        } catch (IOException e) {
+            displayConnectionError(e);
         }
     }
 
-    private BorderPane makePane() {
+    private BorderPane makePane() throws IOException {
         BorderPane borderPane = new BorderPane();
         playersListView.setPrefSize(200, 100);
         updateListView();
@@ -53,10 +70,22 @@ public class WaitPopUp {
         subscribe.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                client.subscribe("Tic-tac-toe");
+                try {
+                    client.subscribe("Tic-tac-toe");
+                } catch (IOException e) {
+                    displayConnectionError(e);
+                }
             }
         });
         return subscribe;
+    }
+
+    private void displayConnectionError(IOException e) {
+        Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
+        resultInfo.setTitle("ERROR");
+        resultInfo.setHeaderText("Network error!\n" + e.getMessage());
+        resultInfo.setContentText(null);
+        resultInfo.show();
     }
 
     private Button challengeButton() {
@@ -66,7 +95,11 @@ public class WaitPopUp {
             public void handle(ActionEvent event) {
                 String opponent = playersListView.getSelectionModel().getSelectedItem();
                 if (opponent != null) {
-                    client.challenge(opponent, "Tic-tac-toe");
+                    try {
+                        client.challenge(opponent, "Tic-tac-toe");
+                    } catch (IOException e) {
+                        displayConnectionError(e);
+                    }
                 } else {
                     throwAlert();
                 }
@@ -80,7 +113,11 @@ public class WaitPopUp {
         refresh.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                updateListView();
+                try {
+                    updateListView();
+                } catch (IOException e) {
+                    displayConnectionError(e);
+                }
             }
         });
         return refresh;
@@ -94,19 +131,20 @@ public class WaitPopUp {
         noSelection.show();
     }
 
-    private void updateListView () {
-    	String[] playerArray = client.getPlayers();
+    private void updateListView() throws IOException {
+        String[] playerArray = client.getPlayers();
 
         ObservableList<String> observablePlayerList = FXCollections.observableArrayList();
         for (String player : playerArray) {
-        	if(!username.equals(player)) {
-        		observablePlayerList.add(player);
-        	}
+            if (!username.equals(player)) {
+                observablePlayerList.add(player);
+            }
         }
         playersListView.setItems(observablePlayerList);
     }
 
-    private Scene makeScene(){
+    private Scene makeScene() throws IOException {
         return new Scene(makePane(), 300, 300, Color.WHEAT);
     }
+
 }

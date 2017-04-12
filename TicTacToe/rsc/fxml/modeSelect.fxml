@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane fx:controller="something.TicTacToe.ui.ModeSelectController" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button fx:id="onlineButton" layoutX="75.0" layoutY="86.0" mnemonicParsing="false" text="Online" onAction="#startOnline"/>
+      <Button fx:id="offlineButton" layoutX="74.0" layoutY="138.0" mnemonicParsing="false" text="Offline" onAction="#startOffline" />
+      <Button fx:id="testButton" layoutX="81.0" layoutY="193.0" mnemonicParsing="false" text="Test" onAction="#startTest"/>
+      <Label layoutX="67.0" layoutY="14.0" text="Mode select" />
+   </children>
+</Pane>

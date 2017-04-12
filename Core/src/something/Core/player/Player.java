@@ -25,7 +25,7 @@ public abstract class Player<GameType extends Board> extends Listenable {
                 try {
                     handleEvent(eventQueue.take());
                 } catch (InterruptedException e) {
-                    break;
+                    break; // Exit immediately
                 }
             }
         })).start();

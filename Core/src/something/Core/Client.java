@@ -1,4 +1,5 @@
 package something.Core;
+
 import something.Core.event.events.client.ChallengeCancelledEvent;
 import something.Core.event.events.client.ChallengeReceiveEvent;
 import something.Core.event.events.client.MatchFinishEvent;
@@ -13,7 +14,7 @@ import java.net.Socket;
 import java.util.HashMap;
 
 public class Client extends Listenable {
-		
+
     private Socket socket;
     private BufferedWriter bw;
     private BufferedReader br;
@@ -22,95 +23,68 @@ public class Client extends Listenable {
     private boolean success = false;
     private String[] gameList;
     private String[] playerList;
-    
+
     public void guardedLock() {
         while (ct != null) {
             try {
                 synchronized (this) {
                     this.wait();
                 }
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         }
     }
 
-    public boolean connect(InetAddress inetAddress, int port) {
-        try {
-            this.socket = new Socket(inetAddress, port);
-            this.bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        	startListening();
+    public void connect(InetAddress inetAddress, int port) throws IOException {
+        this.socket = new Socket(inetAddress, port);
+        this.bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        startListening();
+    }
 
-            return true;
-            
-        } catch (Exception e) {
-            e.printStackTrace();
+    public boolean login(String username) throws IOException {
+        if (!isLocked()) {
+            sendCommand("login " + username);
+            setCommandType(CommandType.LOGIN);
+            guardedLock();
+            return success;
         }
         return false;
     }
 
-    public boolean login(String username) {
+    public void logout() throws IOException {
         if (!isLocked()) {
-            try {
-                sendCommand("login " + username);
-                setCommandType(CommandType.LOGIN);
-                guardedLock();
-                return success;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    public void logout() {
-        if (!isLocked()) {
-            try {
-                sendCommand("bye");
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            sendCommand("bye");
+            socket.close();
         }
     }
 
-    public String[] getGameList() {
+    public String[] getGameList() throws IOException {
         if (!isLocked()) {
-            try {
-                sendCommand("get gamelist");
-                setCommandType(CommandType.GETGAMELIST);
-                guardedLock();
-                return gameList;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            sendCommand("get gamelist");
+            setCommandType(CommandType.GETGAMELIST);
+            guardedLock();
+            return gameList;
         }
         return gameList;
     }
 
-    public String[] getPlayers() {
+    public String[] getPlayers() throws IOException {
         if (!isLocked()) {
-            try {
-                sendCommand("get playerlist");
-                setCommandType(CommandType.GETPLAYERS);
-                guardedLock();
-                return playerList;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            sendCommand("get playerlist");
+            setCommandType(CommandType.GETPLAYERS);
+            guardedLock();
+            return playerList;
         }
-		return playerList;
+        return playerList;
     }
 
-    public boolean subscribe(String game) {
+    public boolean subscribe(String game) throws IOException {
         if (!isLocked()) {
-            try {
-                sendCommand("subscribe " + game);
-                setCommandType(CommandType.SUBSCRIBE);
-                guardedLock();
-                return success;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            sendCommand("subscribe " + game);
+            setCommandType(CommandType.SUBSCRIBE);
+            guardedLock();
+            return success;
         }
         return false;
     }
@@ -129,48 +103,36 @@ public class Client extends Listenable {
         return false;
     }
 
-    public boolean forfeit() {
+    public boolean forfeit() throws IOException {
         if (!isLocked()) {
-            try {
-                sendCommand("forfeit");
-                setCommandType(CommandType.FORFEIT);
-                guardedLock();
-                return success;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            sendCommand("forfeit");
+            setCommandType(CommandType.FORFEIT);
+            guardedLock();
+            return success;
         }
         return false;
     }
 
-    public boolean challenge(String player, String game) {
+    public boolean challenge(String player, String game) throws IOException {
         if (!isLocked()) {
-            try {
-                sendCommand("challenge \"" + player + "\" \"" + game + "\"");
-                setCommandType(CommandType.CHALLENGE);
-                guardedLock();
-                return success;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            sendCommand("challenge \"" + player + "\" \"" + game + "\"");
+            setCommandType(CommandType.CHALLENGE);
+            guardedLock();
+            return success;
         }
         return false;
     }
 
-    public boolean acceptChallenge(String challengeNum) {
+    public boolean acceptChallenge(String challengeNum) throws IOException {
         if (!isLocked()) {
-            try {
-                sendCommand("challenge accept " + challengeNum);
-                setCommandType(CommandType.ACCEPTCHALLENGE);
-                guardedLock();
-                return success;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            sendCommand("challenge accept " + challengeNum);
+            setCommandType(CommandType.ACCEPTCHALLENGE);
+            guardedLock();
+            return success;
         }
         return false;
     }
-    
+
     public void startListening() {
         Client client = this;
 
@@ -179,45 +141,45 @@ public class Client extends Listenable {
                 try {
                     while (true) {
                         String line = br.readLine();
-                                                            
+
                         if (line != null && (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {
-                        	//Received event
-                        	if(line.startsWith("SVR GAME ")) {
-                        		String eventStr = line.substring("SVR GAME ".length());
-                        		String eventType = eventStr.split(" \\{")[0];
-                        		HashMap<String, String> data = StringUtils.stringToMap("{" + eventStr.split(" \\{")[1]);
-                        		switch(eventType) {
-                        			case "MATCH":
-                        				fireEvent(new MatchStartEvent(client, data.get("GAMETYPE"), data.get("PLAYERTOMOVE"), data.get("OPPONENT")));
-                        				break;
-                        			case "YOURTURN":
-                        				fireEvent(new YourTurnEvent());
-                        				break;
-                        			case "MOVE":
-                        				fireEvent(new MoveEvent(Integer.valueOf(data.get("MOVE"))));
-                        				break;
-                        			case "WIN":
-                        			case "LOSS":
-                        			case "DRAW":
-                        				fireEvent(new MatchFinishEvent(client, eventType, data.get("PLAYERONESCORE"), data.get("PLAYERTWOSCORE"), data.get("COMMENT")));
-                        				break;
-                        			case "CHALLENGE":
-                        				fireEvent(new ChallengeReceiveEvent(client, data.get("CHALLENGER"), data.get("GAMETYPE"), data.get("CHALLENGENUMBER")));
-                        				break;
-                        			case "CHALLENGE CANCELLED":
-                        				fireEvent(new ChallengeCancelledEvent(client, data.get("CHALLENGENUMBER")));
-                        				break;
-                        		}
-                        		
-                        	//Received command response
-                        	} else if (ct != null) {
+                            //Received event
+                            if (line.startsWith("SVR GAME ")) {
+                                String eventStr = line.substring("SVR GAME ".length());
+                                String eventType = eventStr.split(" \\{")[0];
+                                HashMap<String, String> data = StringUtils.stringToMap("{" + eventStr.split(" \\{")[1]);
+                                switch (eventType) {
+                                    case "MATCH":
+                                        fireEvent(new MatchStartEvent(client, data.get("GAMETYPE"), data.get("PLAYERTOMOVE"), data.get("OPPONENT")));
+                                        break;
+                                    case "YOURTURN":
+                                        fireEvent(new YourTurnEvent());
+                                        break;
+                                    case "MOVE":
+                                        fireEvent(new MoveEvent(Integer.valueOf(data.get("MOVE"))));
+                                        break;
+                                    case "WIN":
+                                    case "LOSS":
+                                    case "DRAW":
+                                        fireEvent(new MatchFinishEvent(client, eventType, data.get("PLAYERONESCORE"), data.get("PLAYERTWOSCORE"), data.get("COMMENT")));
+                                        break;
+                                    case "CHALLENGE":
+                                        fireEvent(new ChallengeReceiveEvent(client, data.get("CHALLENGER"), data.get("GAMETYPE"), data.get("CHALLENGENUMBER")));
+                                        break;
+                                    case "CHALLENGE CANCELLED":
+                                        fireEvent(new ChallengeCancelledEvent(client, data.get("CHALLENGENUMBER")));
+                                        break;
+                                }
+
+                                //Received command response
+                            } else if (ct != null) {
                                 switch (ct) {
                                     case LOGIN:
                                     case SUBSCRIBE:
                                     case MOVE:
                                     case FORFEIT:
                                     case CHALLENGE:
-                                    case ACCEPTCHALLENGE:                                    	
+                                    case ACCEPTCHALLENGE:
                                         success = line.startsWith("OK");
                                         break;
                                     case GETGAMELIST:
@@ -226,8 +188,8 @@ public class Client extends Listenable {
                                         break;
                                     case GETPLAYERS:
                                         line = br.readLine();
-                                                                                
-                                        playerList = StringUtils.stringToArray(line.substring("SVR PLAYERLIST ".length()));                   
+
+                                        playerList = StringUtils.stringToArray(line.substring("SVR PLAYERLIST ".length()));
                                         break;
                                 }
                                 ct = null;
@@ -238,28 +200,36 @@ public class Client extends Listenable {
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    // Exit immediately & cleanly
                 }
             }
         });
         listen.start();
     }
 
-    public void sendCommand(String writable) throws IOException {      	
-    	if(bw == null) {
-    		throw new NullPointerException("Client not connected");
-    	}
-    	
-    	bw.write(writable);
+    public void sendCommand(String writable) throws IOException {
+        if (bw == null) {
+            throw new NullPointerException("Client not connected");
+        }
+
+        bw.write(writable);
         bw.newLine();
         bw.flush();
     }
-    
+
     private void setCommandType(CommandType type) {
-    	ct = type;
+        ct = type;
     }
-    
+
     private boolean isLocked() {
-    	return ct != null;
+        return ct != null;
+    }
+
+    public void disconnect() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
