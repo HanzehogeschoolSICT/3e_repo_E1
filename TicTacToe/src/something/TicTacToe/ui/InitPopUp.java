@@ -29,15 +29,13 @@ import java.util.function.Consumer;
 
 
 public class InitPopUp {
-    private Scene scene;
     private final ToggleGroup playerOneGroup = new ToggleGroup();
     private final ToggleGroup playerTwoGroup = new ToggleGroup();
     private Stage parent;
 
     public InitPopUp(Stage parent) {
         this.parent = parent;
-        this.scene = makeScene();
-        parent.setScene(scene);
+        parent.setScene(makeScene());
     }
 
     private BorderPane makePane() {
@@ -135,7 +133,10 @@ public class InitPopUp {
                     Platform.runLater(() -> {
                         parent.setTitle("Tic Tac Toe");
                         parent.setScene(new BoardGUI(ticTacToeBoard, mouseEventHandler).scene);
-                        parent.setOnCloseRequest(event12 -> controller.interrupt());
+                        parent.setOnCloseRequest(event12 -> {
+                            controller.interrupt();
+                            StartGUI.shutdown();
+                        });
                     });
                     controller.registerEventListener(controllerEvent -> {
                         if (controllerEvent instanceof GameFinishedEvent) {
@@ -174,7 +175,4 @@ public class InitPopUp {
         return new Scene(makePane(), 250, 250, Color.WHEAT);
     }
 
-    public Scene getScene() {
-        return scene;
-    }
 }

@@ -42,7 +42,7 @@ public class TicTacToeBoard extends Board {
             }
         }
 		fireEvent(new BoardUpdateEvent());
-		return getVictor() != null;
+		return getVictor() == Victor.NONE;
 	}
 
     @Override

@@ -30,6 +30,7 @@ import something.TicTacToe.TicTacToeBoard;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 /**
  * Created by samikroon on 3/31/17.
@@ -40,7 +41,6 @@ public class WaitPopUp {
     private ListView<String> playersListView = new ListView<>();
 
     public WaitPopUp(Stage parent, String username, PlayerType type) {
-        System.out.println(type);
         this.username = username;
         this.client = new Client();
         InetAddress address;
@@ -52,9 +52,15 @@ public class WaitPopUp {
         try {
             client.connect(address, 7789);
             client.login(username);
-            parent.setScene(makeScene());
-            parent.setOnCloseRequest(event -> client.disconnect());
             client.registerEventListener(System.out::println);
+
+            parent.setScene(makeScene());
+            parent.setOnCloseRequest(event -> {
+                client.disconnect();
+                StartGUI.shutdown();
+            });
+
+            ArrayList<AbstractGameController> gameControllers = new ArrayList<>();
 
             client.registerEventListener(new GameEventListener() {
                 @Override
@@ -67,43 +73,49 @@ public class WaitPopUp {
 
                         Player<TicTacToeBoard> player1;
                         Player<TicTacToeBoard> player2;
-                        if (!isPlayer1) {
-                            player1 = onlinePlayer;
-                            player2 = player;
-                        } else {
+                        if (isPlayer1) {
                             player1 = player;
                             player.setPlayer1(true);
                             player2 = onlinePlayer;
+                        } else {
+                            player1 = onlinePlayer;
+                            player2 = player;
                         }
 
                         player1.setPlayer1(true);
                         player2.setPlayer1(false);
-
                         TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
+                        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
+
                         Platform.runLater(() -> {
+                            Stage gameStage = new Stage();
+                            gameStage.setOnCloseRequest(event12 -> controller.interrupt());
+
                             System.out.println("Starting: " + player);
-                            parent.setTitle("Tic Tac Toe");
+                            gameStage.setTitle("Tic Tac Toe");
                             EventHandler<MouseEvent> mouseEventEventHandler;
                             if (player instanceof ManualPlayer) {
                                 mouseEventEventHandler = mouseEvent -> ((ManualPlayer) player).makeMove(BoardGUI.getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
                             } else {
-                                mouseEventEventHandler = mouseEvent -> {};
+                                mouseEventEventHandler = mouseEvent -> {
+                                };
                             }
-                            parent.setScene(new BoardGUI(ticTacToeBoard, mouseEventEventHandler).scene);
+                            gameStage.setScene(new BoardGUI(ticTacToeBoard, mouseEventEventHandler).scene);
+                            gameStage.show();
                         });
 
-                        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
                         if (player.isPlayer1()) controller.start();
                         controller.registerEventListener(controllerEvent -> {
                             if (controllerEvent instanceof GameFinishedEvent) {
                                 Platform.runLater(() -> {
-                                    String victoryText = "Tie";
                                     Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
-                                    if (victor == Board.Victor.PLAYER1) {
-                                        victoryText = "Cross wins!";
-                                    } else if (victor == Board.Victor.PLAYER2) {
-                                        victoryText = "Nought wins!";
-                                    }
+                                    String victoryText = victor.toString();
+
+//                                    if (victor == Board.Victor.PLAYER1) {
+//                                        victoryText = "Cross wins!";
+//                                    } else if (victor == Board.Victor.PLAYER2) {
+//                                        victoryText = "Nought wins!";
+//                                    }
                                     Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
                                     resultInfo.setTitle("Game Result");
                                     resultInfo.setHeaderText(victoryText);
@@ -111,10 +123,6 @@ public class WaitPopUp {
                                     resultInfo.show();
                                 });
                             }
-                        });
-                        parent.setOnCloseRequest(event12 -> {
-                            controller.interrupt();
-                            client.disconnect();
                         });
                     }
                 }

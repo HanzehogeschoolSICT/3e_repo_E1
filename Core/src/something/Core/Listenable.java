@@ -27,4 +27,8 @@ public class Listenable {
             }
         }
     }
+
+    protected void clearListeners() {
+        eventListeners.clear();
+    }
 }
