@@ -137,6 +137,7 @@ public class ReversiBoard extends Board {
         int startHor = (index - (index % 8));
         int horizontal = checkLineBoard(startHor, startHor + 8, 1, index, tile);
         if (horizontal > 0) {
+            System.out.println(horizontal);
             return horizontal;
         }
         //check vertical
@@ -144,20 +145,24 @@ public class ReversiBoard extends Board {
         int temp = startVer + 56;
         int vert = checkLineBoard(startVer, 56 + startVer, 8, index, tile);
         if (vert > 0) {
+            System.out.println(vert);
             return vert;
         }
         //check diagonal 1
         int[] diag1Coordinates = determineDownwardsDiagonal(index);
         int diag1 = checkLineBoard(diag1Coordinates[0], diag1Coordinates[1], 9, index, tile);
         if (diag1 > 0) {
+            System.out.println(diag1);
             return diag1;
         }
         //check diagonal 2
         int[] diag2Coordinates = determineUpwardsDiagonal(index);
         int diag2 = checkLineBoard(diag2Coordinates[0], diag2Coordinates[1], 7, index, tile);
         if (diag2 > 0) {
+            System.out.println(diag2);
             return diag2;
         }
+        System.out.println("-1");
         return -1;
     }
 

@@ -6,10 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -20,6 +17,7 @@ import something.Core.Board;
 import something.Core.Client;
 import something.Core.event.GameEvent;
 import something.Core.event.GameEventListener;
+import something.Core.event.events.client.ChallengeReceiveEvent;
 import something.Core.event.events.client.MatchStartEvent;
 import something.Core.event.events.game.GameFinishedEvent;
 import something.Core.player.ManualPlayer;
@@ -124,6 +122,24 @@ public class WaitPopUp {
                             }
                         });
                     }
+                }
+            });
+            client.registerEventListener(new GameEventListener() {
+                @Override
+                public void handleEvent(GameEvent event) {
+                    if(event instanceof ChallengeReceiveEvent) {
+                        Platform.runLater(() ->{
+                            Alert acceptChallenge = new Alert(Alert.AlertType.CONFIRMATION);
+                            acceptChallenge.setTitle("Accept challenge?");
+                            acceptChallenge.setHeaderText("Would you like to accept a challenge from: "+((ChallengeReceiveEvent) event).getChallenger());
+                            acceptChallenge.showAndWait();
+                            String challengenumber = ((ChallengeReceiveEvent) event).getChallengeNumber();
+                            if (acceptChallenge.getResult() == ButtonType.OK){
+                                System.out.println("printstatement");
+                                try{client.acceptChallenge(challengenumber);}
+                                catch (IOException e) {e.printStackTrace();}
+                            }
+                        });}
                 }
             });
         } catch (IOException e) {
