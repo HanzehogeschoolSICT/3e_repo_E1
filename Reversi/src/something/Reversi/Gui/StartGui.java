@@ -1,30 +1,31 @@
 package something.Reversi.Gui;
 
-import java.util.Optional;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
-import something.Reversi.Controller;
+import java.io.IOException;
+
 
 public class StartGui extends Application{
-    private Stage primaryStage;
-    private Stage gameStage;
-    private Stage waitPopUp;
-    private Controller controller;
-    private Alert confirmGame;
-    private BoardGUI boardGUI;
+    public static void main(String[] args) throws IOException {
+        launch(args);
+    }
     
     @Override
-    public void start(Stage primaryStage) throws Exception{
-        this.primaryStage = primaryStage;
-        this.controller = new Controller(this);
-        
-		showInitPopUp();
+    public void start(Stage stage) throws Exception {
+        Parent modeSelect = FXMLLoader.load(StartGui.class.getResource("/fxml/modeSelect.fxml"));
+
+
+        Scene scene = new Scene(modeSelect, 200, 300);
+
+        stage.setTitle("Game mode select");
+        stage.setScene(scene);
+        stage.show();
+    }
 
 /*
         final PhongMaterial redmaterial = new PhongMaterial();
@@ -68,9 +69,10 @@ public class StartGui extends Application{
         primaryStage.setTitle("An Example with Predefined 3D Shapes");
         // Display the Stage
         primaryStage.show();
-*/
-    }
 
+    }*/
+
+    /*
     public BoardGUI getGUI() {
     	return boardGUI;
     }
@@ -146,5 +148,5 @@ public class StartGui extends Application{
         resultInfo.setHeaderText(result);
         resultInfo.setContentText(null);
         resultInfo.show();
-    }
+    }*/
 }

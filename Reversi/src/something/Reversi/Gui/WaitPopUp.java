@@ -1,6 +1,5 @@
 package something.Reversi.Gui;
 
-import com.sun.org.apache.regexp.internal.RE;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

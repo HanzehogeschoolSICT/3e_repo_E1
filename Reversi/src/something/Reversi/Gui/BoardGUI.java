@@ -1,26 +1,29 @@
 package something.Reversi.Gui;
 
+
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import something.Core.Listenable;
 import something.Core.event.events.common.BoardUpdateEvent;
-import something.Core.player.Player;
-import something.Reversi.Controller;
 import something.Core.IllegalMoveException;
+import something.Core.event.events.game.ForfeitEvent;
 import something.Reversi.ReversiBoard;
 import something.Reversi.Tile;
 
-public class BoardGUI {
+public class BoardGUI extends Listenable {
     Scene scene;
     ReversiBoard reversiBoard;
     private EventHandler<MouseEvent> mouseEventEventHandler;
     private GraphicsContext graphicsContext;
-    private Integer canvasW, canvasH;
+    private Integer canvasH, canvasW;
     
     public BoardGUI(ReversiBoard reversiBoard, EventHandler<MouseEvent> mouseEventEventHandler){
         this.reversiBoard = reversiBoard;
@@ -42,16 +45,23 @@ public class BoardGUI {
         BorderPane borderPane = new BorderPane();
         Canvas canvas = makeCanvas();
         borderPane.setCenter(canvas);
-        rootGroup.getChildren().add(canvas);
+        rootGroup.getChildren().add(borderPane);
+
+        ToolBar toolBar = new ToolBar();
+        Button forfeit = new Button("Forfeit");
+        forfeit.setOnAction(event -> fireEvent(new ForfeitEvent()));
+
+        toolBar.getItems().add(forfeit);
+        borderPane.setBottom(toolBar);
+
+        canvasH = (int)canvas.getHeight();
+        canvasW = (int)canvas.getWidth();
 
         graphicsContext = canvas.getGraphicsContext2D();
 
-        canvasW = (int) canvas.getWidth();
-        canvasH = (int) canvas.getHeight();
-
+        canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEventEventHandler);
 
         drawGrid(canvasW, canvasH);
-        redrawBoard();
 
         return rootGroup;
     }
@@ -77,7 +87,7 @@ public class BoardGUI {
 
 
 
-    private int getMoveIndex(double x, double y) {
+    public static int getMoveIndex(double x, double y) {
         int xCoord = (int) Math.floor(y / 75) * 8;
         int yCoord = (int) Math.floor(x / 75);
         int posOnBoard = xCoord + yCoord;
@@ -91,7 +101,7 @@ public class BoardGUI {
 
         boolean makeTurn = false;
         try {
-            makeTurn = reversiBoard.makeTurn(posOnBoard, yourTileColor);
+            makeTurn = reversiBoard.makeMove(posOnBoard, false); //TODO: which player is on turn?
         } catch (IllegalMoveException e) {
             e.printStackTrace();
         }
@@ -109,9 +119,7 @@ public class BoardGUI {
     }
 
     private void redrawBoard(){
-        System.out.println("before board init");
         Tile[] board = reversiBoard.getBoard();
-        System.out.println("lel");
         graphicsContext.clearRect(0,0,600,600);
         drawGrid(canvasW, canvasH);
 //        x = modulo, y = delen, vermenigvuldig met grootte tegel
