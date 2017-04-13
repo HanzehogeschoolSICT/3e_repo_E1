@@ -91,7 +91,7 @@ public class WaitPopUp {
                             gameStage.setOnCloseRequest(event12 -> controller.interrupt());
 
                             System.out.println("Starting: " + player);
-                            gameStage.setTitle("Tic Tac Toe");
+                            gameStage.setTitle("Reversi");
                             EventHandler<MouseEvent> mouseEventEventHandler;
                             if (player instanceof ManualPlayer) {
                                 mouseEventEventHandler = mouseEvent -> ((ManualPlayer) player).makeMove(BoardGUI.getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
@@ -150,7 +150,7 @@ public class WaitPopUp {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    client.subscribe("Tic-tac-toe");
+                    client.subscribe("Reversi");
                 } catch (IOException e) {
                     displayConnectionError(e);
                 }
@@ -175,7 +175,7 @@ public class WaitPopUp {
                 String opponent = playersListView.getSelectionModel().getSelectedItem();
                 if (opponent != null) {
                     try {
-                        client.challenge(opponent, "Tic-tac-toe");
+                        client.challenge(opponent, "Reversi");
                     } catch (IOException e) {
                         displayConnectionError(e);
                     }
