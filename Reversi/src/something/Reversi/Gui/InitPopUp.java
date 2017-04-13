@@ -132,7 +132,7 @@ public class InitPopUp {
                     AbstractGameController<ReversiBoard> controller = new AbstractGameController<>(reversiBoard, player1, player2);
                     controller.start();
                     Platform.runLater(() -> {
-                        parent.setTitle("Tic Tac Toe");
+                        parent.setTitle("REVERSI!~~");
                         parent.setScene(new BoardGUI(reversiBoard, mouseEventHandler).scene);
                         parent.setOnCloseRequest(event12 -> {
                             controller.interrupt();
@@ -145,9 +145,9 @@ public class InitPopUp {
                                 String victoryText = "Tie";
                                 Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
                                 if (victor == Board.Victor.PLAYER1) {
-                                    victoryText = "Cross wins!";
+                                    victoryText = "Black wins!";
                                 } else if (victor == Board.Victor.PLAYER2) {
-                                    victoryText = "Nought wins!";
+                                    victoryText = "White wins!";
                                 }
                                 Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
                                 resultInfo.setTitle("Game Result");

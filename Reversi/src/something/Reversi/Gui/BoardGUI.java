@@ -63,12 +63,10 @@ public class BoardGUI extends Listenable {
     }
 
     private void redrawBoard() {
-        System.out.println("before board init");
+        System.out.println("Board Redrawn");
         Tile[] board = reversiBoard.getBoard();
-        System.out.println("lel");
         graphicsContext.clearRect(0, 0, 600, 600);
         drawGrid(canvasW, canvasH);
-//        x = modulo, y = delen, vermenigvuldig met grootte tegel
         for (int i = 0; i < board.length; i++) {
             int xCoord = i % 8 * 75;
             int yCoord = i / 8 * 75;
