@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import something.Reversi.Controller;
 
 public class InitPopUp {
@@ -19,7 +20,7 @@ public class InitPopUp {
     final ToggleGroup playerTwoGroup = new ToggleGroup();
     private Controller controller;
     
-    public InitPopUp(Controller controller){
+    public InitPopUp(Stage stage){
     	this.controller = controller;
         try {
             this.scene = makeScene();

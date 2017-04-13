@@ -6,42 +6,31 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import something.Core.event.events.common.BoardUpdateEvent;
 import something.Core.player.Player;
 import something.Reversi.Controller;
 import something.Core.IllegalMoveException;
 import something.Reversi.ReversiBoard;
 import something.Reversi.Tile;
 
-public class GuiSettings {
+public class BoardGUI {
     Scene scene;
-    Tile yourTileColor;
-    Boolean turn;
     ReversiBoard reversiBoard;
+    private EventHandler<MouseEvent> mouseEventEventHandler;
     private GraphicsContext graphicsContext;
-    private Controller controller;
     private Integer canvasW, canvasH;
     
-    public GuiSettings(Controller controller){
-    	this.controller = controller;
-        try{
-            this.scene = makeScene();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        reversiBoard = new ReversiBoard();
-        Tile[] tem = reversiBoard.getBoard();
-        for (Tile til : tem) {
-            System.out.print(til + ": ");
-        }
-        System.out.println("hier krijg ik nog niks");
-        Player temp = controller.getPlayerOnTurn();
-        if (temp != null) {
-            yourTileColor = Tile.BLACK;
-        } else {
-            yourTileColor = Tile.WHITE;
-        }
-        System.out.println(yourTileColor);
+    public BoardGUI(ReversiBoard reversiBoard, EventHandler<MouseEvent> mouseEventEventHandler){
+        this.reversiBoard = reversiBoard;
+        this.mouseEventEventHandler = mouseEventEventHandler;
+        this.scene = makeScene();
+        reversiBoard.registerEventListener(event -> {
+            if (event instanceof BoardUpdateEvent) {
+                redrawBoard();
+            }
+        });
     }
 
     public ReversiBoard getReversiBoard() {
@@ -50,8 +39,9 @@ public class GuiSettings {
     
     private Group makeRootGroup(){
         Group rootGroup = new Group();
-
+        BorderPane borderPane = new BorderPane();
         Canvas canvas = makeCanvas();
+        borderPane.setCenter(canvas);
         rootGroup.getChildren().add(canvas);
 
         graphicsContext = canvas.getGraphicsContext2D();
@@ -59,24 +49,6 @@ public class GuiSettings {
         canvasW = (int) canvas.getWidth();
         canvasH = (int) canvas.getHeight();
 
-
-        canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                int index = getMoveIndex(event.getSceneX(), event.getSceneY());
-
-                Player player = controller.getPlayerOnTurn();
-                if(player != null) {
-                	boolean success = makeMove(index);
-                	
-                	if(success) {
-                		player.makeMove(index);
-                	}
-                }
-                
-                System.out.println(reversiBoard.toString());
-            }
-        });
 
         drawGrid(canvasW, canvasH);
         redrawBoard();

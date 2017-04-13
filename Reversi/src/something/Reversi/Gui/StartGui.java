@@ -17,7 +17,7 @@ public class StartGui extends Application{
     private Stage waitPopUp;
     private Controller controller;
     private Alert confirmGame;
-    private GuiSettings guiSettings;
+    private BoardGUI boardGUI;
     
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -71,8 +71,8 @@ public class StartGui extends Application{
 */
     }
 
-    public GuiSettings getGUI() {
-    	return guiSettings;
+    public BoardGUI getGUI() {
+    	return boardGUI;
     }
     
     public void addShutdownOnClose(Stage stage){
@@ -114,7 +114,7 @@ public class StartGui extends Application{
     	if(gameStage == null) {
 	        gameStage = new Stage();
 	        gameStage.setTitle("REVERSI!~~~");
-	        gameStage.setScene((guiSettings = new GuiSettings(controller)).scene);
+	        gameStage.setScene((boardGUI = new BoardGUI(controller)).scene);
 	        gameStage.setResizable(false);
 	        gameStage.show();
 	        addShutdownOnClose(gameStage);

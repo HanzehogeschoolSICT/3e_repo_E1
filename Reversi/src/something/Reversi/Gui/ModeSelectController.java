@@ -1,4 +1,4 @@
-package something.TicTacToe.ui;
+package something.Reversi.Gui;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;

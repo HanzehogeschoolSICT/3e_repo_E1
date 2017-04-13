@@ -10,6 +10,7 @@ import java.util.List;
 public class Listenable {
     private List<WeakReference<GameEventListener>> eventListeners = new ArrayList<>();
     private List<WeakReference<GameEventListener>> removeList = new ArrayList<>();
+
     public synchronized void registerEventListener(GameEventListener eventListener) {
         eventListeners.add(new WeakReference<>(eventListener));
     }
