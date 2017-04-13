@@ -140,8 +140,7 @@ public class BoardGUI extends Listenable {
     }
 
     private Canvas makeCanvas(){
-        Canvas canvas = new Canvas(500,450);
-        return canvas;
+        return new Canvas(500,450);
     }
 
     private void drawGrid(int height, int width) {

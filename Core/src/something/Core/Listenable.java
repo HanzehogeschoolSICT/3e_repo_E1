@@ -2,14 +2,14 @@ package something.Core;
 
 import something.Core.event.GameEvent;
 import something.Core.event.GameEventListener;
-import something.Core.util.ConcurrentListDebug;
+import something.Core.debug.ConcurrentListDebug;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Listenable {
-    private final List<WeakReference<GameEventListener>> eventListeners = new ArrayList<>(); //ConcurrentListDebug.getProxy(new ArrayList<>());
+    private final List<WeakReference<GameEventListener>> eventListeners = ConcurrentListDebug.getProxy(new ArrayList<>());
 
     public void registerEventListener(GameEventListener eventListener) {
         synchronized (eventListeners) {
@@ -26,5 +26,9 @@ public class Listenable {
                 }
             }
         }
+    }
+
+    protected void clearListeners() {
+        eventListeners.clear();
     }
 }

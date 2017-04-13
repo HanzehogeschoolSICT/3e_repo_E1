@@ -23,7 +23,7 @@ public abstract class Board extends Listenable {
     public enum Victor {
         PLAYER1,
         PLAYER2,
-        DRAW,
+        TIE,
         NONE
     }
 }

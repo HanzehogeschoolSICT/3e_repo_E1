@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import something.Core.GameTask;
 
 import java.io.IOException;
 
@@ -15,6 +16,7 @@ public class StartGUI extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        GameTask.start();
         Parent modeSelect = FXMLLoader.load(StartGUI.class.getResource("/fxml/modeSelect.fxml"));
 
         Scene scene = new Scene(modeSelect, 200, 300);
@@ -22,5 +24,10 @@ public class StartGUI extends Application {
         stage.setTitle("Game mode select");
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void shutdown() {
+        GameTask.stop();
+        System.exit(0);
     }
 }

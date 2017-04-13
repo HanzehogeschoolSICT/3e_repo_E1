@@ -23,7 +23,7 @@ public class ManualPlayer<GameType extends Board> extends Player<GameType> {
             fireEvent(new MoveEvent(null, move));
             canMove = false;
         } else {
-            System.err.println("Not your turn!");
+            System.err.println("Not your turn: " + isPlayer1);
         }
     }
 }

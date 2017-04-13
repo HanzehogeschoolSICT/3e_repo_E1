@@ -24,18 +24,30 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
 
         player1.registerEventListener(new GameControllerEventListener(true));
         player2.registerEventListener(new GameControllerEventListener(false));
+    }
 
-        fireEvent(new GameStartEvent());
+    public void start() {
         player1.pushEvent(new YourTurnEvent());
+        fireEvent(new GameStartEvent());
     }
 
     public void interrupt() {
         System.out.println("Interrupting!");
-        player1.interruptEvents();
-        player2.interruptEvents();
+        GameTask.submit(() -> {
+            player1.interruptEvents();
+            player2.interruptEvents();
+        });
     }
 
-    public void stopGame(Board.Victor victor) {
+    public void finish(Board.Victor victor) {
+        if (victor != Board.Victor.TIE) {
+            boolean firstWon = victor == Board.Victor.PLAYER1;
+            player1.pushEvent(firstWon ? new VictoryEvent() : new LossEvent());
+            player2.pushEvent(firstWon ? new LossEvent() : new VictoryEvent());
+        } else {
+            player1.pushEvent(new TieEvent());
+            player2.pushEvent(new TieEvent());
+        }
         fireEvent(new GameFinishedEvent(victor));
         interrupt();
     }
@@ -52,31 +64,31 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
                 if (firstPlayerAtTurn == isPlayer1) {
                     if (board.isMoveValid(((MoveEvent) event).move, firstPlayerAtTurn)) {
                         try {
-                            if (board.makeMove(((MoveEvent) event).move, firstPlayerAtTurn)) {
-                                firstPlayerAtTurn = !firstPlayerAtTurn;
+                            boolean gameContinuous = board.makeMove(((MoveEvent) event).move, firstPlayerAtTurn);
+                            firstPlayerAtTurn = !firstPlayerAtTurn;
+                            if (isPlayer1) {
+                                player2.pushEvent(new EnemyMoveEvent(((MoveEvent) event).move));
+                            } else {
+                                player1.pushEvent(new EnemyMoveEvent(((MoveEvent) event).move));
+                            }
+                            if (gameContinuous) {
                                 if (isPlayer1) {
-                                    player2.pushEvent(new EnemyMoveEvent(((MoveEvent) event).move));
                                     player2.pushEvent(new YourTurnEvent());
                                 } else {
-                                    player1.pushEvent(new EnemyMoveEvent(((MoveEvent) event).move));
                                     player1.pushEvent(new YourTurnEvent());
                                 }
                             } else {
-                                Board.Victor victor = board.getVictor();
-                                if (victor != Board.Victor.DRAW) {
-                                    boolean firstWon = victor == Board.Victor.PLAYER1;
-                                    player1.pushEvent(firstWon ? new VictoryEvent() : new LossEvent());
-                                    player2.pushEvent(firstWon ? new LossEvent() : new VictoryEvent());
-                                } else {
-                                    player1.pushEvent(new TieEvent());
-                                    player2.pushEvent(new TieEvent());
-                                }
-                                AbstractGameController.this.fireEvent(new GameFinishedEvent(victor));
-                                AbstractGameController.this.interrupt();
+                                finish(board.getVictor());
                             }
                         } catch (IllegalMoveException e) {
                             e.printStackTrace();
                             System.exit(-1);    // This should _never_ happen.
+                        }
+                    } else {
+                        if (isPlayer1) {
+                            player1.pushEvent(new YourTurnEvent());
+                        } else {
+                            player2.pushEvent(new YourTurnEvent());
                         }
                     }
                 }

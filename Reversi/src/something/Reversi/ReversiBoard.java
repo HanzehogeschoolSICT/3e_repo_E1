@@ -2,9 +2,9 @@ package something.Reversi;
 
 import something.Core.Board;
 import something.Core.IllegalMoveException;
+import something.Core.event.events.common.BoardUpdateEvent;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 public class ReversiBoard extends Board {
     private Tile[] board;
@@ -41,22 +41,23 @@ public class ReversiBoard extends Board {
                 turnTiles(move, tile);
             }
         }
+        fireEvent(new BoardUpdateEvent());
         return !(getValidMoves(true).size() == 0 && getValidMoves(false).size() == 0);
     }
 
 
     @Override
-    public Optional<Boolean> getVictor() throws IllegalStateException {
+    public Victor getVictor() throws IllegalStateException {
         int player1Count = 0;
         int player2Count = 0;
         for (Tile tile : board) {
             if (tile == Tile.BLACK) player1Count++;
             if (tile == Tile.WHITE) player2Count++;
         }
-        if (player1Count > player2Count) return Optional.of(true);
-        if (player2Count > player1Count) return Optional.of(false);
-        if (player1Count == player2Count) return Optional.of(null);
-        return Optional.of(null);
+        if (player1Count > player2Count) return Victor.PLAYER1;
+        if (player2Count > player1Count) return Victor.PLAYER2;
+        if (player1Count == player2Count) return Victor.TIE;
+        return Victor.NONE;
     }
 
     private void turnTiles(int index, Tile tile) {
@@ -87,6 +88,7 @@ public class ReversiBoard extends Board {
                 otherStone = true;
             } else if (board[iterator] == tile && otherStone) {
                 flipStones(index, iterator, stepSize, tile);
+                break;
             } else {
                 break;
             }
@@ -121,12 +123,16 @@ public class ReversiBoard extends Board {
                 validMoves.put(i, moveScore);
             }
         }
+        System.out.println(validMoves);
         return validMoves;
+
     }
 
     @Override
     public boolean isMoveValid(int move, boolean firstPlayerAtTurn) {
-        return getMoveFlips(move, firstPlayerAtTurn) > 0;
+        int test = getMoveFlips(move, firstPlayerAtTurn);
+        System.out.println(test);
+        return test > 0;
     }
 
     private int getMoveFlips(int index, boolean isPlayer1) {
@@ -164,7 +170,6 @@ public class ReversiBoard extends Board {
         int[] temp = {Integer.MAX_VALUE, Integer.MAX_VALUE};
         int startIndex = index;
         while (temp[0] == Integer.MAX_VALUE) {
-            startIndex = startIndex - 9;
             if (startIndex < 0) {
                 temp[0] = index;
             } else if (startIndex < 8) {
@@ -172,10 +177,10 @@ public class ReversiBoard extends Board {
             } else if (startIndex % 8 == 0) {
                 temp[0] = startIndex;
             }
+            startIndex = startIndex - 9;
         }
         startIndex = index;
         while (temp[1] == Integer.MAX_VALUE) {
-            startIndex = startIndex + 9;
             if (startIndex > 63) {
                 temp[1] = index;
             } else if (startIndex > 56) {
@@ -183,6 +188,7 @@ public class ReversiBoard extends Board {
             } else if ((startIndex - 7) % 8 == 0) {
                 temp[1] = startIndex;
             }
+            startIndex = startIndex + 9;
         }
         return temp;
     }
@@ -191,7 +197,6 @@ public class ReversiBoard extends Board {
         int[] temp = {Integer.MAX_VALUE, Integer.MAX_VALUE};
         int startIndex = index;
         while (temp[0] == Integer.MAX_VALUE) {
-            startIndex = startIndex - 7;
             if (startIndex < 0) {
                 temp[0] = index;
             } else if (startIndex < 8) {
@@ -199,10 +204,10 @@ public class ReversiBoard extends Board {
             } else if ((startIndex - 7) % 8 == 0) {
                 temp[0] = startIndex;
             }
+            startIndex = startIndex - 7;
         }
         startIndex = index;
         while (temp[1] == Integer.MAX_VALUE) {
-            startIndex = startIndex + 7;
             if (startIndex > 63) {
                 temp[1] = index;
             } else if (startIndex > 56) {
@@ -210,6 +215,7 @@ public class ReversiBoard extends Board {
             } else if (startIndex % 8 == 0) {
                 temp[1] = startIndex;
             }
+            startIndex = startIndex + 7;
         }
         return temp;
     }
@@ -218,14 +224,12 @@ public class ReversiBoard extends Board {
     private int checkLineBoard(int startIndex, int endIndex, int stepSize, int index, Tile tile) {
         boolean ownStone = false;
         boolean otherStone = false;
-        boolean afterIndex = false;
         int step = 0;
         for (int i = startIndex; i < endIndex; i += stepSize) {
-            step++;
             if (index == i) {
                 ownStone = false;
                 otherStone = false;
-                afterIndex = true;
+                step = 0;
             } else if (board[i] == tile) {
                 if (otherStone && i > index) {
                     return step;
@@ -233,51 +237,26 @@ public class ReversiBoard extends Board {
                 ownStone = true;
                 if (otherStone && i < index) {
                     otherStone = false;
+                    step = 0;
                 }
             } else if (board[i] != tile && board[i] != Tile.EMPTY) {
+                step++;
                 if (ownStone && i == index - stepSize && i < index) {
                     return step;
                 }
                 otherStone = true;
                 if (i > index && ownStone) {
-                    return step;
+                    return -1;
                 }
-            } else if (board[i] == Tile.EMPTY && afterIndex) {
+            } else if (board[i] == Tile.EMPTY && i > index) {
                 return -1;
+            } else if (board[i] == Tile.EMPTY) {
+                step = 0; ownStone = false; otherStone = false;
             }
+
         }
         return -1;
     }
-
-    /*
-    public static void main(String[] args) {
-        ReversiBoard test = new ReversiBoard();
-        try {
-            test.makeTurn(9, 2);
-        } catch (IllegalMoveException e) {
-            e.printStackTrace();
-        }
-        int counter = 0;
-        for (Tile t : test.board) {
-            if (counter % 8 == 0) {
-                System.out.print("\n");
-            }
-            if (t == Tile.WHITE) {
-                System.out.print("W ");
-            }
-            if (t == Tile.BLACK) {
-                System.out.print("B ");
-            }
-            if (t == Tile.EMPTY) {
-                System.out.print("E ");
-            }
-
-            counter++;
-
-        }
-    }
-    */
-
 }
 
 

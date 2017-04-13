@@ -38,4 +38,15 @@ public class MatchFinishEvent implements GameEvent {
 	public String getComment() {
 		return comment;
 	}
+
+	@Override
+	public String toString() {
+		return "MatchFinishEvent{" +
+				"client=" + client +
+				", result='" + result + '\'' +
+				", playerOneScore='" + playerOneScore + '\'' +
+				", playerTwoScore='" + playerTwoScore + '\'' +
+				", comment='" + comment + '\'' +
+				'}';
+	}
 }

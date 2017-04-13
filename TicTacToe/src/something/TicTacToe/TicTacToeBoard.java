@@ -27,7 +27,7 @@ public class TicTacToeBoard extends Board {
 
     @Override
     public boolean isMoveValid(int move, boolean firstPlayerAtTurn) {
-        return move >= 0 && board[move] == Mark.EMPTY;
+        return board[move] == Mark.EMPTY;
     }
 
     public boolean makeMove(int posOnBoard, boolean turn) {
@@ -42,7 +42,7 @@ public class TicTacToeBoard extends Board {
             }
         }
 		fireEvent(new BoardUpdateEvent());
-		return getVictor() != null;
+		return getVictor() == Victor.NONE;
 	}
 
     @Override
@@ -59,7 +59,7 @@ public class TicTacToeBoard extends Board {
 
         if (board[0] == Mark.NOUGHT && board[4] == Mark.NOUGHT && board[8] == Mark.NOUGHT) return Victor.PLAYER2;
         if (board[2] == Mark.NOUGHT && board[4] == Mark.NOUGHT && board[6] == Mark.NOUGHT) return Victor.PLAYER2;
-        return isFull() ? Victor.DRAW :  Victor.NONE;
+        return isFull() ? Victor.TIE :  Victor.NONE;
     }
 
     public boolean isFull() {

@@ -6,10 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -20,10 +17,9 @@ import something.Core.Board;
 import something.Core.Client;
 import something.Core.event.GameEvent;
 import something.Core.event.GameEventListener;
-import something.Core.event.events.client.MatchFinishEvent;
+import something.Core.event.events.client.ChallengeReceiveEvent;
 import something.Core.event.events.client.MatchStartEvent;
 import something.Core.event.events.game.GameFinishedEvent;
-import something.Core.event.events.player.YourTurnEvent;
 import something.Core.player.ManualPlayer;
 import something.Core.player.OnlinePlayer;
 import something.Core.player.Player;
@@ -32,22 +28,18 @@ import something.TicTacToe.TicTacToeBoard;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 /**
  * Created by samikroon on 3/31/17.
  */
 public class WaitPopUp {
     private Client client;
-    private Scene scene;
-    private final Stage parent;
     private String username;
-    private final PlayerType type;
     private ListView<String> playersListView = new ListView<>();
 
     public WaitPopUp(Stage parent, String username, PlayerType type) {
-        this.parent = parent;
         this.username = username;
-        this.type = type;
         this.client = new Client();
         InetAddress address;
         try {
@@ -58,98 +50,102 @@ public class WaitPopUp {
         try {
             client.connect(address, 7789);
             client.login(username);
-            scene = makeScene();
-            parent.setScene(scene);
-            parent.setOnCloseRequest(event -> client.disconnect());
+            client.registerEventListener(System.out::println);
+
+            parent.setScene(makeScene());
+            parent.setOnCloseRequest(event -> {
+                client.disconnect();
+                StartGUI.shutdown();
+            });
+
+            ArrayList<AbstractGameController> gameControllers = new ArrayList<>();
+
             client.registerEventListener(new GameEventListener() {
                 @Override
                 public void handleEvent(GameEvent event) {
                     if (event instanceof MatchStartEvent) {
-                        new Thread(() -> WaitPopUp.this.startMatch((MatchStartEvent) event)).start();
+                        boolean isPlayer1 = username.equals(((MatchStartEvent) event).getPlayerToMove());
+
+                        Player<TicTacToeBoard> player = type.getPlayer();
+                        OnlinePlayer<TicTacToeBoard> onlinePlayer = new OnlinePlayer<>(client, username);
+
+                        Player<TicTacToeBoard> player1;
+                        Player<TicTacToeBoard> player2;
+                        if (isPlayer1) {
+                            player1 = player;
+                            player.setPlayer1(true);
+                            player2 = onlinePlayer;
+                        } else {
+                            player1 = onlinePlayer;
+                            player2 = player;
+                        }
+
+                        player1.setPlayer1(true);
+                        player2.setPlayer1(false);
+                        TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
+                        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
+
+                        Platform.runLater(() -> {
+                            Stage gameStage = new Stage();
+                            gameStage.setOnCloseRequest(event12 -> controller.interrupt());
+
+                            System.out.println("Starting: " + player);
+                            gameStage.setTitle("Tic Tac Toe");
+                            EventHandler<MouseEvent> mouseEventEventHandler;
+                            if (player instanceof ManualPlayer) {
+                                mouseEventEventHandler = mouseEvent -> ((ManualPlayer) player).makeMove(BoardGUI.getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
+                            } else {
+                                mouseEventEventHandler = mouseEvent -> {
+                                };
+                            }
+                            gameStage.setScene(new BoardGUI(ticTacToeBoard, mouseEventEventHandler).scene);
+                            gameStage.show();
+                        });
+
+                        if (player.isPlayer1()) controller.start();
+                        controller.registerEventListener(controllerEvent -> {
+                            if (controllerEvent instanceof GameFinishedEvent) {
+                                Platform.runLater(() -> {
+                                    Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
+                                    String victoryText = victor.toString();
+
+//                                    if (victor == Board.Victor.PLAYER1) {
+//                                        victoryText = "Cross wins!";
+//                                    } else if (victor == Board.Victor.PLAYER2) {
+//                                        victoryText = "Nought wins!";
+//                                    }
+                                    Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
+                                    resultInfo.setTitle("Game Result");
+                                    resultInfo.setHeaderText(victoryText);
+                                    resultInfo.setContentText(null);
+                                    resultInfo.show();
+                                });
+                            }
+                        });
                     }
+                }
+            });
+            client.registerEventListener(new GameEventListener() {
+                @Override
+                public void handleEvent(GameEvent event) {
+                    if(event instanceof ChallengeReceiveEvent) {
+                        Platform.runLater(() ->{
+                        Alert acceptChallenge = new Alert(Alert.AlertType.CONFIRMATION);
+                        acceptChallenge.setTitle("Accept challenge?");
+                        acceptChallenge.setHeaderText("Would you like to accept a challenge from: "+((ChallengeReceiveEvent) event).getChallenger());
+                        acceptChallenge.showAndWait();
+                        String challengenumber = ((ChallengeReceiveEvent) event).getChallengeNumber();
+                        if (acceptChallenge.getResult() == ButtonType.OK){
+                            System.out.println("printstatement");
+                            try{client.acceptChallenge(challengenumber);}
+                            catch (IOException e) {e.printStackTrace();}
+                        }
+                    });}
                 }
             });
         } catch (IOException e) {
             displayConnectionError(e);
         }
-    }
-
-    private void startMatch(MatchStartEvent event) {
-        boolean isPlayer1 = username.equals(event.getPlayerToMove());
-        Player<TicTacToeBoard> player = type.getPlayer();
-        OnlinePlayer<TicTacToeBoard> onlinePlayer = new OnlinePlayer<>(client, username);
-
-        Player<TicTacToeBoard> player1;
-        Player<TicTacToeBoard> player2;
-        if (isPlayer1) {
-            player1 = player;
-            player2 = onlinePlayer;
-        } else {
-            player1 = onlinePlayer;
-            player2 = player;
-        }
-
-        player.setPlayer1(true);
-        player2.setPlayer1(false);
-
-        TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
-        Platform.runLater(() -> {
-            System.out.println("Starting: " + player);
-            parent.setTitle("Tic Tac Toe");
-            EventHandler<MouseEvent> mouseEventEventHandler = mouseEvent -> {};
-            if (player instanceof ManualPlayer) {
-                mouseEventEventHandler = mouseEvent -> ((ManualPlayer) player).makeMove(BoardGUI.getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
-            }
-            parent.setScene(new BoardGUI(ticTacToeBoard, mouseEventEventHandler).scene);
-        });
-
-        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
-        if (isPlayer1) player.pushEvent(new YourTurnEvent());
-        controller.registerEventListener(controllerEvent -> {
-            if (controllerEvent instanceof GameFinishedEvent) {
-                Platform.runLater(() -> {
-                    String victoryText = "Tie";
-                    Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
-                    if (victor == Board.Victor.PLAYER1) {
-                        victoryText = "Cross wins!";
-                    } else if (victor == Board.Victor.PLAYER2) {
-                        victoryText = "Nought wins!";
-                    }
-                    Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
-                    resultInfo.setTitle("Game Result");
-                    resultInfo.setHeaderText(victoryText);
-                    resultInfo.setContentText(null);
-                    resultInfo.show();
-
-                    parent.setScene(scene);
-                    parent.setOnCloseRequest(event1 -> client.disconnect());
-                });
-            }
-        });
-        parent.setOnCloseRequest(event12 -> {
-            controller.interrupt();
-            client.disconnect();
-        });
-
-        client.registerEventListener(new GameEventListener() {
-            @Override
-            public void handleEvent(GameEvent event) {
-                if (event instanceof MatchFinishEvent) {
-                    String result = ((MatchFinishEvent) event).getResult();
-                    switch (result) {
-                        case "WIN":
-                            controller.stopGame(isPlayer1 ? Board.Victor.PLAYER1 : Board.Victor.PLAYER2);
-                            break;
-                        case "LOSS":
-                            controller.stopGame(isPlayer1 ? Board.Victor.PLAYER2 : Board.Victor.PLAYER1);
-                            break;
-                        case "DRAW":
-                            controller.stopGame(Board.Victor.DRAW);
-                            break;
-                    }
-                }
-            }
-        });
     }
 
     private BorderPane makePane() throws IOException {

@@ -1,96 +1,163 @@
 package something.Reversi.Gui;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import something.Reversi.Controller;
+import javafx.stage.Stage;
+import something.Core.AbstractGameController;
+import something.Core.Board;
+import something.Core.event.events.game.GameFinishedEvent;
+import something.Core.player.ManualPlayer;
+import something.Core.player.Player;
+import something.Reversi.ReversiBoard;
+import something.Reversi.player.ReversiAIPlayer;
+
+import java.util.function.Consumer;
+
 
 public class InitPopUp {
-    Scene scene;
-    private TextField username;
-    final ToggleGroup playerOneGroup = new ToggleGroup();
-    final ToggleGroup playerTwoGroup = new ToggleGroup();
-    private Controller controller;
-    
-    public InitPopUp(Controller controller){
-    	this.controller = controller;
-        try {
-            this.scene = makeScene();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+    private final ToggleGroup playerOneGroup = new ToggleGroup();
+    private final ToggleGroup playerTwoGroup = new ToggleGroup();
+    private Stage parent;
 
-    private Scene makeScene() {
-        Scene scene = new Scene(makePane(), 250, 250);
-        return scene;
+    public InitPopUp(Stage parent) {
+        this.parent = parent;
+        parent.setScene(makeScene());
     }
 
     private BorderPane makePane() {
         BorderPane borderPane = new BorderPane();
 
-        HBox usernameBarRev = new HBox(20);
-        Text usernameTextRev = new Text();
-        usernameTextRev.setFont(new Font(15));
-        usernameTextRev.setText("Username:");
-        username = new TextField();
-        usernameBarRev.getChildren().addAll(usernameTextRev, username);
-        borderPane.setTop(usernameBarRev);
+        HBox usernameBar = new HBox(20);
+        borderPane.setTop(usernameBar);
 
-        VBox playerOneRev = new VBox(10);
-        VBox playerTwoRev = new VBox(10);
+        VBox playerOne = new VBox(10);
+        VBox playerTwo = new VBox(10);
 
         Insets insets = new Insets(30, 15, 10, 15);
-        playerOneRev.setPadding(insets);
-        playerTwoRev.setPadding(insets);
+        playerOne.setPadding(insets);
+        playerTwo.setPadding(insets);
 
-        Text playerOneTextRev = new Text();
-        playerOneTextRev.setFont(new Font(15));
-        playerOneTextRev.setText("Player 1");
+        Text playerOneText = new Text();
+        playerOneText.setFont(new Font(15));
+        playerOneText.setText("Player 1");
 
-        Text playerTwoTextRev = new Text();
-        playerTwoTextRev.setFont(new Font(15));
-        playerTwoTextRev.setText("Player 2");
+        Text playerTwoText = new Text();
+        playerTwoText.setFont(new Font(15));
+        playerTwoText.setText("Player 2");
 
-        RadioButton playerOneSelfRev = new RadioButton("Me");
-        playerOneSelfRev.setUserData("Me");
-        RadioButton playerOnePCRev = new RadioButton("PC");
-        playerOnePCRev.setUserData("PC");
+        RadioButton playerOneSelf = new RadioButton("Me");
+        playerOneSelf.setUserData("Me");
+        playerOneSelf.setSelected(true);
+        RadioButton playerOnePC = new RadioButton("PC");
+        playerOnePC.setUserData("PC");
 
-        RadioButton playerTwoOnlineRev = new RadioButton("Online");
-        playerTwoOnlineRev.setUserData("Online");
-        RadioButton playerTwoPCRev = new RadioButton("PC");
-        playerTwoPCRev.setUserData("PC");
+        RadioButton playerTwoOnline = new RadioButton("Human");
+        playerTwoOnline.setUserData("Human");
+        playerTwoOnline.setSelected(true);
+        RadioButton playerTwoPC = new RadioButton("PC");
+        playerTwoPC.setUserData("PC");
 
-        playerOneSelfRev.setToggleGroup(playerOneGroup);
-        playerOnePCRev.setToggleGroup(playerOneGroup);
+        playerOneSelf.setToggleGroup(playerOneGroup);
+        playerOnePC.setToggleGroup(playerOneGroup);
 
-        playerTwoOnlineRev.setToggleGroup(playerTwoGroup);
-        playerTwoPCRev.setToggleGroup(playerTwoGroup);
+        playerTwoOnline.setToggleGroup(playerTwoGroup);
+        playerTwoPC.setToggleGroup(playerTwoGroup);
 
-        playerOneRev.getChildren().addAll(playerOneTextRev, playerOneSelfRev, playerOnePCRev);
-        playerTwoRev.getChildren().addAll(playerTwoTextRev, playerTwoOnlineRev, playerTwoPCRev);
 
-        borderPane.setLeft(playerOneRev);
-        borderPane.setRight(playerTwoRev);
+        playerOne.getChildren().addAll(playerOneText, playerOneSelf, playerOnePC);
+        playerTwo.getChildren().addAll(playerTwoText, playerTwoOnline, playerTwoPC);
+
+        borderPane.setLeft(playerOne);
+        borderPane.setRight(playerTwo);
 
         Button submit = new Button("Login");
         submit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (playerOneGroup.getSelectedToggle() != null && playerTwoGroup.getSelectedToggle() != null && username.getText() != "") {
+                if (playerOneGroup.getSelectedToggle() != null && playerTwoGroup.getSelectedToggle() != null) {
                     String playerOne = playerOneGroup.getSelectedToggle().getUserData().toString();
                     String playerTwo = playerTwoGroup.getSelectedToggle().getUserData().toString();
-                                        
-                    controller.processLogin(playerOne, playerTwo, username.getText());
-                    
+
+                    final Player<ReversiBoard> player1;
+                    final Player<ReversiBoard> player2;
+                    @SuppressWarnings("unchecked")
+                    Consumer<MouseEvent>[] mouseConsumers = new Consumer[2];
+                    switch (playerOne) {
+                        case "Me":
+                            ManualPlayer<ReversiBoard> manualPlayer = (ManualPlayer<ReversiBoard>) (player1 = new ManualPlayer<>());
+                            mouseConsumers[0] = mouseEvent -> manualPlayer.makeMove(BoardGUI.getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
+                            break;
+                        case "PC":
+                            player1 = new ReversiAIPlayer();
+                            mouseConsumers[0] = mouseEvent -> {};
+                            break;
+                        default:
+                            player1 = null;
+                            mouseConsumers[0] = mouseEvent -> {};
+                            break;
+                    }
+
+                    switch (playerTwo) {
+                        case "Human":
+                            ManualPlayer<ReversiBoard> manualPlayer = (ManualPlayer<ReversiBoard>) (player2 = new ManualPlayer<>());
+                            mouseConsumers[1] = mouseEvent -> manualPlayer.makeMove(BoardGUI.getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
+                            break;
+                        case "PC":
+                            player2 = new ReversiAIPlayer();
+                            mouseConsumers[1] = mouseEvent -> {};
+                            break;
+                        default:
+                            player2 = null;
+                            mouseConsumers[1] = mouseEvent -> {};
+                            break;
+                    }
+                    EventHandler<MouseEvent> mouseEventHandler = event1 -> {
+                        for (Consumer<MouseEvent> mouseConsumer : mouseConsumers) mouseConsumer.accept(event1);
+                    };
+                    ReversiBoard reversiBoard = new ReversiBoard();
+                    AbstractGameController<ReversiBoard> controller = new AbstractGameController<>(reversiBoard, player1, player2);
+                    controller.start();
+                    Platform.runLater(() -> {
+                        parent.setTitle("REVERSI!~~");
+                        parent.setScene(new BoardGUI(reversiBoard, mouseEventHandler).scene);
+                        parent.setOnCloseRequest(event12 -> {
+                            controller.interrupt();
+                            StartGui.shutdown();
+                        });
+                    });
+                    controller.registerEventListener(controllerEvent -> {
+                        if (controllerEvent instanceof GameFinishedEvent) {
+                            Platform.runLater(() -> {
+                                String victoryText = "Tie";
+                                Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
+                                if (victor == Board.Victor.PLAYER1) {
+                                    victoryText = "Black wins!";
+                                } else if (victor == Board.Victor.PLAYER2) {
+                                    victoryText = "White wins!";
+                                }
+                                Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
+                                resultInfo.setTitle("Game Result");
+                                resultInfo.setHeaderText(victoryText);
+                                resultInfo.setContentText(null);
+                                resultInfo.show();
+                            });
+                        }
+                    });
+
                 } else {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("An error occurred!");
@@ -104,4 +171,9 @@ public class InitPopUp {
 
         return borderPane;
     }
+
+    private Scene makeScene() {
+        return new Scene(makePane(), 250, 250, Color.WHEAT);
+    }
+
 }

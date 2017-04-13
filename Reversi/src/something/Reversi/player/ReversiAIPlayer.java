@@ -10,7 +10,7 @@ public class ReversiAIPlayer extends AIPlayer<ReversiBoard> {
     @Override
     public int decideMove() {
         try {
-            Thread.sleep(200);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
