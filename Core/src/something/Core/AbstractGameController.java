@@ -84,6 +84,12 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
                             e.printStackTrace();
                             System.exit(-1);    // This should _never_ happen.
                         }
+                    } else {
+                        if (isPlayer1) {
+                            player1.pushEvent(new YourTurnEvent());
+                        } else {
+                            player2.pushEvent(new YourTurnEvent());
+                        }
                     }
                 }
             }

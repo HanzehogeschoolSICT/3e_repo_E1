@@ -2,9 +2,9 @@ package something.Reversi;
 
 import something.Core.Board;
 import something.Core.IllegalMoveException;
+import something.Core.event.events.common.BoardUpdateEvent;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 public class ReversiBoard extends Board {
     private Tile[] board;
@@ -41,22 +41,23 @@ public class ReversiBoard extends Board {
                 turnTiles(move, tile);
             }
         }
+        fireEvent(new BoardUpdateEvent());
         return !(getValidMoves(true).size() == 0 && getValidMoves(false).size() == 0);
     }
 
 
     @Override
-    public Optional<Boolean> getVictor() throws IllegalStateException {
+    public Victor getVictor() throws IllegalStateException {
         int player1Count = 0;
         int player2Count = 0;
         for (Tile tile : board) {
             if (tile == Tile.BLACK) player1Count++;
             if (tile == Tile.WHITE) player2Count++;
         }
-        if (player1Count > player2Count) return Optional.of(true);
-        if (player2Count > player1Count) return Optional.of(false);
-        if (player1Count == player2Count) return Optional.of(null);
-        return Optional.of(null);
+        if (player1Count > player2Count) return Victor.PLAYER1;
+        if (player2Count > player1Count) return Victor.PLAYER2;
+        if (player1Count == player2Count) return Victor.TIE;
+        return Victor.NONE;
     }
 
     private void turnTiles(int index, Tile tile) {
@@ -248,36 +249,6 @@ public class ReversiBoard extends Board {
         }
         return -1;
     }
-
-    /*
-    public static void main(String[] args) {
-        ReversiBoard test = new ReversiBoard();
-        try {
-            test.makeTurn(9, 2);
-        } catch (IllegalMoveException e) {
-            e.printStackTrace();
-        }
-        int counter = 0;
-        for (Tile t : test.board) {
-            if (counter % 8 == 0) {
-                System.out.print("\n");
-            }
-            if (t == Tile.WHITE) {
-                System.out.print("W ");
-            }
-            if (t == Tile.BLACK) {
-                System.out.print("B ");
-            }
-            if (t == Tile.EMPTY) {
-                System.out.print("E ");
-            }
-
-            counter++;
-
-        }
-    }
-    */
-
 }
 
 
