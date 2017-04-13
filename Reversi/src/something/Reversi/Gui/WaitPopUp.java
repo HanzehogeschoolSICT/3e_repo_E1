@@ -108,11 +108,11 @@ public class WaitPopUp {
                                     Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
                                     String victoryText = victor.toString();
 
-//                                    if (victor == Board.Victor.PLAYER1) {
-//                                        victoryText = "Cross wins!";
-//                                    } else if (victor == Board.Victor.PLAYER2) {
-//                                        victoryText = "Nought wins!";
-//                                    }
+                                    if (victor == Board.Victor.PLAYER1) {
+                                        victoryText = "Black wins!";
+                                    } else if (victor == Board.Victor.PLAYER2) {
+                                        victoryText = "White wins!";
+                                    }
                                     Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
                                     resultInfo.setTitle("Game Result");
                                     resultInfo.setHeaderText(victoryText);

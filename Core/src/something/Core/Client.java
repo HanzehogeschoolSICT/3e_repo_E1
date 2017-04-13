@@ -141,6 +141,7 @@ public class Client extends Listenable {
                 try {
                     while (true) {
                         String line = br.readLine();
+                        System.out.println(line);
                         if (line != null && (line.startsWith("OK") || line.startsWith("ERR") || line.startsWith("SVR"))) {
                             //Received event
                             if (line.startsWith("SVR GAME ")) {
