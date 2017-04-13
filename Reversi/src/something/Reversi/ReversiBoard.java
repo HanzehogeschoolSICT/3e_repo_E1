@@ -219,14 +219,12 @@ public class ReversiBoard extends Board {
     private int checkLineBoard(int startIndex, int endIndex, int stepSize, int index, Tile tile) {
         boolean ownStone = false;
         boolean otherStone = false;
-        boolean afterIndex = false;
         int step = 0;
         for (int i = startIndex; i < endIndex; i += stepSize) {
-            step++;
             if (index == i) {
                 ownStone = false;
                 otherStone = false;
-                afterIndex = true;
+                step = 0;
             } else if (board[i] == tile) {
                 if (otherStone && i > index) {
                     return step;
@@ -234,16 +232,18 @@ public class ReversiBoard extends Board {
                 ownStone = true;
                 if (otherStone && i < index) {
                     otherStone = false;
+                    step = 0;
                 }
             } else if (board[i] != tile && board[i] != Tile.EMPTY) {
+                step++;
                 if (ownStone && i == index - stepSize && i < index) {
                     return step;
                 }
                 otherStone = true;
                 if (i > index && ownStone) {
-                    return step;
+                    return -1;
                 }
-            } else if (board[i] == Tile.EMPTY && afterIndex) {
+            } else if (board[i] == Tile.EMPTY && i > index) {
                 return -1;
             }
         }
