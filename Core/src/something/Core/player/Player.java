@@ -25,6 +25,7 @@ public abstract class Player<GameType extends Board> extends Listenable {
                 try {
                     handleEvent(eventQueue.take());
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
                     break; // Exit immediately
                 }
             }
@@ -55,5 +56,9 @@ public abstract class Player<GameType extends Board> extends Listenable {
 
     public boolean isPlayer1() {
         return isPlayer1;
+    }
+
+    public void setPlayer1(boolean player1) {
+        isPlayer1 = player1;
     }
 }

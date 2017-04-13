@@ -16,11 +16,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import something.Core.AbstractGameController;
+import something.Core.Board;
 import something.Core.Client;
 import something.Core.event.GameEvent;
 import something.Core.event.GameEventListener;
+import something.Core.event.events.client.MatchStartEvent;
 import something.Core.event.events.game.GameFinishedEvent;
-import something.Core.event.events.game.GameStartEvent;
 import something.Core.player.ManualPlayer;
 import something.Core.player.OnlinePlayer;
 import something.Core.player.Player;
@@ -29,7 +30,6 @@ import something.TicTacToe.TicTacToeBoard;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Optional;
 
 /**
  * Created by samikroon on 3/31/17.
@@ -54,43 +54,55 @@ public class WaitPopUp {
             client.login(username);
             parent.setScene(makeScene());
             parent.setOnCloseRequest(event -> client.disconnect());
-            Player<TicTacToeBoard> player = type.getPlayer();
-            OnlinePlayer<TicTacToeBoard> onlinePlayer = new OnlinePlayer<>(client);
-            onlinePlayer.registerEventListener(new GameEventListener() {
+            client.registerEventListener(System.out::println);
+
+            client.registerEventListener(new GameEventListener() {
                 @Override
                 public void handleEvent(GameEvent event) {
-                    if (event instanceof GameStartEvent) {
+                    if (event instanceof MatchStartEvent) {
+                        boolean isPlayer1 = username.equals(((MatchStartEvent) event).getPlayerToMove());
+
+                        Player<TicTacToeBoard> player = type.getPlayer();
+                        OnlinePlayer<TicTacToeBoard> onlinePlayer = new OnlinePlayer<>(client, username);
+
                         Player<TicTacToeBoard> player1;
                         Player<TicTacToeBoard> player2;
-                        if (onlinePlayer.isPlayer1()) {
+                        if (!isPlayer1) {
                             player1 = onlinePlayer;
                             player2 = player;
                         } else {
                             player1 = player;
+                            player.setPlayer1(true);
                             player2 = onlinePlayer;
                         }
+
+                        player1.setPlayer1(true);
+                        player2.setPlayer1(false);
+
                         TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
-                        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2, false);
                         Platform.runLater(() -> {
+                            System.out.println("Starting: " + player);
                             parent.setTitle("Tic Tac Toe");
-                            EventHandler<MouseEvent> mouseEventEventHandler = null;
+                            EventHandler<MouseEvent> mouseEventEventHandler;
                             if (player instanceof ManualPlayer) {
                                 mouseEventEventHandler = mouseEvent -> ((ManualPlayer) player).makeMove(BoardGUI.getMoveIndex(mouseEvent.getSceneX(), mouseEvent.getSceneY()));
+                            } else {
+                                mouseEventEventHandler = mouseEvent -> {};
                             }
                             parent.setScene(new BoardGUI(ticTacToeBoard, mouseEventEventHandler).scene);
-                            parent.setOnCloseRequest(event12 -> controller.interrupt());
                         });
+
+                        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
+                        if (player.isPlayer1()) controller.start();
                         controller.registerEventListener(controllerEvent -> {
                             if (controllerEvent instanceof GameFinishedEvent) {
                                 Platform.runLater(() -> {
                                     String victoryText = "Tie";
-                                    Optional<Boolean> victor = ((GameFinishedEvent) controllerEvent).getVictor();
-                                    if (victor.isPresent()) {
-                                        if (victor.get()) {
-                                            victoryText = "Cross wins!";
-                                        } else {
-                                            victoryText = "Nought wins!";
-                                        }
+                                    Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
+                                    if (victor == Board.Victor.PLAYER1) {
+                                        victoryText = "Cross wins!";
+                                    } else if (victor == Board.Victor.PLAYER2) {
+                                        victoryText = "Nought wins!";
                                     }
                                     Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
                                     resultInfo.setTitle("Game Result");
@@ -99,6 +111,10 @@ public class WaitPopUp {
                                     resultInfo.show();
                                 });
                             }
+                        });
+                        parent.setOnCloseRequest(event12 -> {
+                            controller.interrupt();
+                            client.disconnect();
                         });
                     }
                 }

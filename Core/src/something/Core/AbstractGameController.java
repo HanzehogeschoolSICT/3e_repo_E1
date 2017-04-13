@@ -8,15 +8,13 @@ import something.Core.event.events.player.EnemyMoveEvent;
 import something.Core.event.events.player.YourTurnEvent;
 import something.Core.player.Player;
 
-import java.util.Optional;
-
 public class AbstractGameController<GameType extends Board> extends Listenable {
     private final GameType board;
     private final Player<GameType> player1;
     private final Player<GameType> player2;
     private boolean firstPlayerAtTurn;
 
-    public AbstractGameController(GameType board, Player<GameType> player1, Player<GameType> player2, boolean autoStart) {
+    public AbstractGameController(GameType board, Player<GameType> player1, Player<GameType> player2) {
         this.board = board;
         this.player1 = player1;
         this.player2 = player2;
@@ -28,15 +26,19 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
         player2.registerEventListener(new GameControllerEventListener(false));
 
         fireEvent(new GameStartEvent());
-        if (autoStart) { player1.pushEvent(new YourTurnEvent()); }
+    }
+
+    public void start() {
+        player1.pushEvent(new YourTurnEvent());
     }
 
     public void interrupt() {
+        System.out.println("Interrupting!");
         player1.interruptEvents();
         player2.interruptEvents();
     }
 
-    private class GameControllerEventListener implements GameEventListener {
+    public class GameControllerEventListener implements GameEventListener {
         private boolean isPlayer1;
 
         public GameControllerEventListener(boolean isPlayer1) {
@@ -58,9 +60,9 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
                                     player1.pushEvent(new YourTurnEvent());
                                 }
                             } else {
-                                Optional<Boolean> victor = board.getVictor();
-                                if (victor.isPresent()) {
-                                    boolean firstWon = victor.get();
+                                Board.Victor victor = board.getVictor();
+                                if (victor != Board.Victor.TIE) {
+                                    boolean firstWon = victor == Board.Victor.PLAYER1;
                                     player1.pushEvent(firstWon ? new VictoryEvent() : new LossEvent());
                                     player2.pushEvent(firstWon ? new LossEvent() : new VictoryEvent());
                                 } else {
@@ -74,8 +76,6 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
                             e.printStackTrace();
                             System.exit(-1);    // This should _never_ happen.
                         }
-                    } else {
-                        // TODO: Exception
                     }
                 }
             }

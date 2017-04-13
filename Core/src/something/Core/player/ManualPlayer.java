@@ -19,8 +19,11 @@ public class ManualPlayer<GameType extends Board> extends Player<GameType> {
     }
 
     public void makeMove(int move) {
-        if (!canMove) return;
-        fireEvent(new MoveEvent(move));
-        canMove = false;
+        if (canMove) {
+            fireEvent(new MoveEvent(null, move));
+            canMove = false;
+        } else {
+            System.err.println("Not your turn!");
+        }
     }
 }

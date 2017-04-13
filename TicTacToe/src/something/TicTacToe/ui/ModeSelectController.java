@@ -23,6 +23,7 @@ public class ModeSelectController {
     protected void initialize() {
         ObservableList<PlayerType> items = playerSelect.getItems();
         items.addAll(PlayerType.values());
+        playerSelect.getSelectionModel().select(0);
     }
 
     public void startTest(ActionEvent actionEvent) {

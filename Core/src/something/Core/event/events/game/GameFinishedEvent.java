@@ -1,17 +1,16 @@
 package something.Core.event.events.game;
 
+import something.Core.Board;
 import something.Core.event.GameEvent;
 
-import java.util.Optional;
-
 public class GameFinishedEvent implements GameEvent {
-    private Optional<Boolean> victor;
+    private Board.Victor victor;
 
-    public GameFinishedEvent(Optional<Boolean> victor) {
+    public GameFinishedEvent(Board.Victor victor) {
         this.victor = victor;
     }
 
-    public Optional<Boolean> getVictor() {
+    public Board.Victor getVictor() {
         return victor;
     }
 }

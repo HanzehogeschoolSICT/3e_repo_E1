@@ -1,7 +1,5 @@
 package something.Core;
 
-import java.util.Optional;
-
 public abstract class Board extends Listenable {
     /**
      *
@@ -20,10 +18,12 @@ public abstract class Board extends Listenable {
      */
     public abstract boolean makeMove(int move, boolean firstPlayerAtTurn) throws IllegalMoveException;
 
-    /**
-     * Returns the victor of this match, or throws an IllegalStateException if no-one has won yet.
-     * @return Optional of the victor of this match: True if player 1 won. False if player 2 won. Null if the match was a tie
-     * @throws IllegalStateException No-one has won yet.
-     */
-    public abstract Optional<Boolean> getVictor() throws IllegalStateException;
+    public abstract Victor getVictor() throws IllegalStateException;
+
+    public enum Victor {
+        PLAYER1,
+        PLAYER2,
+        TIE,
+        NONE
+    }
 }

@@ -9,7 +9,7 @@ public abstract class AIPlayer<GameType extends Board> extends Player<GameType> 
     @Override
     public void handleEvent(GameEvent event) {
         if (event instanceof YourTurnEvent) {
-            fireEvent(new MoveEvent(decideMove()));
+            fireEvent(new MoveEvent(null, decideMove()));
         }
     }
 

@@ -3,8 +3,6 @@ package something.TicTacToe;
 import something.Core.Board;
 import something.Core.event.events.common.BoardUpdateEvent;
 
-import java.util.Optional;
-
 public class TicTacToeBoard extends Board {
 	private Mark[] board;
 
@@ -48,20 +46,20 @@ public class TicTacToeBoard extends Board {
 	}
 
     @Override
-    public Optional<Boolean> getVictor() throws IllegalStateException {
+    public Victor getVictor() {
         for (int i = 0; i < 3; i++) {
-            if (board[i*3] == Mark.CROSS && board[i*3 + 1] == Mark.CROSS && board[i*3 + 2] == Mark.CROSS) return Optional.of(true);
-            if (board[i] == Mark.CROSS && board[i + 3] == Mark.CROSS && board[i + 6] == Mark.CROSS) return Optional.of(true);
+            if (board[i*3] == Mark.CROSS && board[i*3 + 1] == Mark.CROSS && board[i*3 + 2] == Mark.CROSS) return Victor.PLAYER1;
+            if (board[i] == Mark.CROSS && board[i + 3] == Mark.CROSS && board[i + 6] == Mark.CROSS) return Victor.PLAYER1;
 
-            if (board[i*3] == Mark.NOUGHT && board[i*3 + 1] == Mark.NOUGHT && board[i*3 + 2] == Mark.NOUGHT) return Optional.of(false);
-            if (board[i] == Mark.NOUGHT && board[i + 3] == Mark.NOUGHT && board[i + 6] == Mark.NOUGHT) return Optional.of(false);
+            if (board[i*3] == Mark.NOUGHT && board[i*3 + 1] == Mark.NOUGHT && board[i*3 + 2] == Mark.NOUGHT) return Victor.PLAYER2;
+            if (board[i] == Mark.NOUGHT && board[i + 3] == Mark.NOUGHT && board[i + 6] == Mark.NOUGHT) return Victor.PLAYER2;
         }
-        if (board[0] == Mark.CROSS && board[4] == Mark.CROSS && board[8] == Mark.CROSS) return Optional.of(true);
-        if (board[2] == Mark.CROSS && board[4] == Mark.CROSS && board[6] == Mark.CROSS) return Optional.of(true);
+        if (board[0] == Mark.CROSS && board[4] == Mark.CROSS && board[8] == Mark.CROSS) return Victor.PLAYER1;
+        if (board[2] == Mark.CROSS && board[4] == Mark.CROSS && board[6] == Mark.CROSS) return Victor.PLAYER1;
 
-        if (board[0] == Mark.NOUGHT && board[4] == Mark.NOUGHT && board[8] == Mark.NOUGHT) return Optional.of(false);
-        if (board[2] == Mark.NOUGHT && board[4] == Mark.NOUGHT && board[6] == Mark.NOUGHT) return Optional.of(false);
-        return isFull() ? Optional.empty() : null;
+        if (board[0] == Mark.NOUGHT && board[4] == Mark.NOUGHT && board[8] == Mark.NOUGHT) return Victor.PLAYER2;
+        if (board[2] == Mark.NOUGHT && board[4] == Mark.NOUGHT && board[6] == Mark.NOUGHT) return Victor.PLAYER2;
+        return isFull() ? Victor.TIE :  Victor.NONE;
     }
 
     public boolean isFull() {
