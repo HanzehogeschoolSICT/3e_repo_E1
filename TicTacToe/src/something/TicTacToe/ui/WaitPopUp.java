@@ -108,7 +108,6 @@ public class WaitPopUp {
                                 Platform.runLater(() -> {
                                     Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
                                     String victoryText = victor.toString();
-
 //                                    if (victor == Board.Victor.PLAYER1) {
 //                                        victoryText = "Cross wins!";
 //                                    } else if (victor == Board.Victor.PLAYER2) {

@@ -9,7 +9,8 @@ import something.TicTacToe.player.TicTacToeAIPlayer;
 import java.util.function.Supplier;
 
 public enum PlayerType {
-    Human(ManualPlayer::new), SimpleAI(TicTacToeAIPlayer::new);
+    Human(ManualPlayer::new),
+    SimpleAI(TicTacToeAIPlayer::new);
 
     private Supplier<Player<TicTacToeBoard>> supplier;
 
