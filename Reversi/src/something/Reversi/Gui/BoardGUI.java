@@ -44,8 +44,6 @@ public class BoardGUI extends Listenable {
     private VBox vBox;
     private int turnCount;
     private Player player1, player2;
-    private Label smallSpacing = new Label("\n");
-    private Label bigSpacing = new Label("\n\n\n");
 
     public BoardGUI(ReversiBoard reversiBoard, EventHandler<MouseEvent> mouseEventEventHandler, Player<ReversiBoard> player1, Player<ReversiBoard> player2) {
         this.reversiBoard = reversiBoard;
