@@ -25,6 +25,7 @@ import something.Core.Client;
 import something.Core.Listenable;
 import something.Core.event.events.common.BoardUpdateEvent;
 import something.Core.event.events.game.ForfeitEvent;
+import something.Core.player.ManualPlayer;
 import something.Core.player.Player;
 import something.Reversi.ReversiBoard;
 import something.Reversi.Tile;
@@ -40,10 +41,16 @@ public class BoardGUI extends Listenable {
     private BorderPane borderPane;
     private Label scoreBlack, scoreWhite;
     private Circle turn;
+    private VBox vBox;
     private int turnCount;
+    private Player player1, player2;
+    private Label smallSpacing = new Label("\n");
+    private Label bigSpacing = new Label("\n\n\n");
 
     public BoardGUI(ReversiBoard reversiBoard, EventHandler<MouseEvent> mouseEventEventHandler, Player<ReversiBoard> player1, Player<ReversiBoard> player2) {
         this.reversiBoard = reversiBoard;
+        this.player1 = player1;
+        this.player2 = player2;
         reversiBoard.registerEventListener(event -> {
             if (event instanceof BoardUpdateEvent) {
                 redrawBoard();
@@ -142,7 +149,7 @@ public class BoardGUI extends Listenable {
     }
 
     private void setSideBar() {
-        VBox vBox = new VBox();
+        vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
         vBox.getChildren().add(new Rectangle(200, 50, Color.GREEN));
         Label turnLabel = new Label("Turn:");
@@ -157,8 +164,20 @@ public class BoardGUI extends Listenable {
         scoreWhiteLabel.setFont(Font.font("Helvetica", 18));
         scoreWhite = new Label("2");
         scoreWhite.setFont(Font.font("Helvetica", 18));
-        vBox.getChildren().addAll(turnLabel, turn, new Label("\n\n\n") , scoreBlackLabel, scoreBlack, scoreWhiteLabel, scoreWhite);
+        vBox.getChildren().addAll(turnLabel, new Label("\n"), turn, new Label("\n\n\n"), scoreBlackLabel, scoreBlack, scoreWhiteLabel, scoreWhite);
         borderPane.setRight(vBox);
+    }
+
+    public void setPlayerColor() {
+        Circle yourColor = new Circle(30);
+        if (player1.isPlayer1() && player1 instanceof ManualPlayer) {
+            yourColor.setFill(Color.BLACK);
+        } else {
+            yourColor.setFill(Color.WHITE);
+        }
+        Label yourColorLabel = new Label("Your color:");
+        yourColorLabel.setFont(Font.font("Helvetica", 18));
+        vBox.getChildren().addAll(new Label("\n\n\n"), yourColorLabel, new Label("\n"), yourColor);
     }
 
     public void setToolbar(Client client) {

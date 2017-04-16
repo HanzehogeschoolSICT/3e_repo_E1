@@ -100,6 +100,7 @@ public class WaitPopUp {
                             BoardGUI boardGUI = new BoardGUI(reversiBoard, mouseEventEventHandler, player1, player2);
                             gameStage.setScene(boardGUI.scene);
                             boardGUI.setToolbar(client);
+                            boardGUI.setPlayerColor();
                             gameStage.show();
                         });
 
