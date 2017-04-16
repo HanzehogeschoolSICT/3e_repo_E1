@@ -97,7 +97,7 @@ public class WaitPopUp {
                                 mouseEventEventHandler = mouseEvent -> {
                                 };
                             }
-                            BoardGUI boardGUI = new BoardGUI(reversiBoard, mouseEventEventHandler);
+                            BoardGUI boardGUI = new BoardGUI(reversiBoard, mouseEventEventHandler, player1, player2);
                             gameStage.setScene(boardGUI.scene);
                             boardGUI.setToolbar(client);
                             gameStage.show();

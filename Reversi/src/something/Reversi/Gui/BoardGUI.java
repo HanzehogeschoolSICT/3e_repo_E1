@@ -25,6 +25,7 @@ import something.Core.Client;
 import something.Core.Listenable;
 import something.Core.event.events.common.BoardUpdateEvent;
 import something.Core.event.events.game.ForfeitEvent;
+import something.Core.player.Player;
 import something.Reversi.ReversiBoard;
 import something.Reversi.Tile;
 
@@ -41,7 +42,7 @@ public class BoardGUI extends Listenable {
     private Circle turn;
     private int turnCount;
 
-    public BoardGUI(ReversiBoard reversiBoard, EventHandler<MouseEvent> mouseEventEventHandler) {
+    public BoardGUI(ReversiBoard reversiBoard, EventHandler<MouseEvent> mouseEventEventHandler, Player<ReversiBoard> player1, Player<ReversiBoard> player2) {
         this.reversiBoard = reversiBoard;
         reversiBoard.registerEventListener(event -> {
             if (event instanceof BoardUpdateEvent) {
@@ -56,7 +57,6 @@ public class BoardGUI extends Listenable {
         });
         this.mouseEventEventHandler = mouseEventEventHandler;
         this.scene = makeScene();
-
     }
 
 

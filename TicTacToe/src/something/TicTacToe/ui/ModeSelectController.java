@@ -108,9 +108,5 @@ public class ModeSelectController {
             alert.setContentText(null);
             alert.show();
         }
-
     }
-
-
-
 }
