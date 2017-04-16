@@ -8,6 +8,8 @@ import something.Core.event.events.player.EnemyMoveEvent;
 import something.Core.event.events.player.YourTurnEvent;
 import something.Core.player.Player;
 
+import java.io.IOException;
+
 public class AbstractGameController<GameType extends Board> extends Listenable {
     private final GameType board;
     private final Player<GameType> player1;
@@ -60,6 +62,8 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
         }
 
         public void handleEvent(GameEvent event) {
+            System.out.println("MOOOOOOVEEEE");
+            System.out.println(event);
             if (event instanceof MoveEvent) {
                 if (firstPlayerAtTurn == isPlayer1) {
                     if (board.isMoveValid(((MoveEvent) event).move, firstPlayerAtTurn)) {
@@ -91,6 +95,14 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
                             player2.pushEvent(new YourTurnEvent());
                         }
                     }
+                }
+            }
+            if (event instanceof ForfeitEvent) {
+                System.out.println("FORFEITING");
+                if (isPlayer1) {
+                    player2.pushEvent(new ForfeitEvent());
+                } else {
+                    player1.pushEvent(new ForfeitEvent());
                 }
             }
         }

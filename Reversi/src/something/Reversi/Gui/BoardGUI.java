@@ -1,16 +1,34 @@
 package something.Reversi.Gui;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import something.Core.Client;
 import something.Core.Listenable;
 import something.Core.event.events.common.BoardUpdateEvent;
+import something.Core.event.events.game.ForfeitEvent;
 import something.Reversi.ReversiBoard;
 import something.Reversi.Tile;
+
+import java.io.IOException;
 
 public class BoardGUI extends Listenable {
     final Scene scene;
@@ -18,18 +36,29 @@ public class BoardGUI extends Listenable {
     private EventHandler<MouseEvent> mouseEventEventHandler;
     private GraphicsContext graphicsContext;
     private int canvasW, canvasH;
+    private BorderPane borderPane;
+    private Label scoreBlack, scoreWhite;
+    private Circle turn;
+    private int turnCount;
 
     public BoardGUI(ReversiBoard reversiBoard, EventHandler<MouseEvent> mouseEventEventHandler) {
         this.reversiBoard = reversiBoard;
         reversiBoard.registerEventListener(event -> {
             if (event instanceof BoardUpdateEvent) {
                 redrawBoard();
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        redrawScore();
+                    }
+                });
             }
         });
         this.mouseEventEventHandler = mouseEventEventHandler;
         this.scene = makeScene();
 
     }
+
 
 
     public static int getMoveIndex(double x, double y) {
@@ -79,27 +108,82 @@ public class BoardGUI extends Listenable {
         }
     }
 
+    private void redrawScore() {
+        int[] score = reversiBoard.getScore();
+        scoreBlack.setText(Integer.toString(score[0]));
+        scoreWhite.setText(Integer.toString(score[1]));
+        if (turnCount%2 == 0) {
+            turn.setFill(Color.BLACK);
+        } else {
+            turn.setFill(Color.WHITE);
+        }
+        turnCount++;
+    }
+
     private Canvas makeCanvas() {
         return new Canvas(600,600);
     }
 
     private Group makeRootGroup() {
         Group rootGroup = new Group();
-
+        borderPane = new BorderPane();
+        borderPane.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
         Canvas canvas = makeCanvas();
-        rootGroup.getChildren().add(canvas);
-
+        borderPane.setCenter(canvas);
+        rootGroup.getChildren().add(borderPane);
         graphicsContext = canvas.getGraphicsContext2D();
-
         canvasW = (int) canvas.getWidth();
         canvasH = (int) canvas.getHeight();
-
         canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEventEventHandler);
-
         drawGrid(canvasW, canvasH);
+        setSideBar();
         redrawBoard();
-
         return rootGroup;
+    }
+
+    private void setSideBar() {
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        vBox.getChildren().add(new Rectangle(200, 50, Color.GREEN));
+        Label turnLabel = new Label("Turn:");
+        turnLabel.setFont(Font.font("Helvetica", 18));
+        turn = new Circle(30, Color.BLACK);
+        turnCount = 1;
+        Label scoreBlackLabel = new Label("Score black:");
+        scoreBlackLabel.setFont(Font.font("Helvetica", 18));
+        scoreBlack = new Label("2");
+        scoreBlack.setFont(Font.font("Helvetica", 18));
+        Label scoreWhiteLabel = new Label("Score white:");
+        scoreWhiteLabel.setFont(Font.font("Helvetica", 18));
+        scoreWhite = new Label("2");
+        scoreWhite.setFont(Font.font("Helvetica", 18));
+        vBox.getChildren().addAll(turnLabel, turn, new Label("\n\n\n") , scoreBlackLabel, scoreBlack, scoreWhiteLabel, scoreWhite);
+        borderPane.setRight(vBox);
+    }
+
+    public void setToolbar(Client client) {
+        ToolBar toolBar = new ToolBar();
+        Button forfeit = new Button("Forfeit");
+        forfeit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    client.forfeit();
+                } catch (IOException e) {
+                    displayConnectionError(e);
+                }
+            }
+        });
+        toolBar.getItems().add(forfeit);
+        borderPane.setBottom(toolBar);
+    }
+
+    private void displayConnectionError(IOException e) {
+        Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
+        resultInfo.setTitle("ERROR");
+        resultInfo.setHeaderText("Network error!\n" + e.getMessage());
+        resultInfo.setContentText(null);
+        resultInfo.show();
     }
 
     private void drawGrid(int canvasW, int canvasH) {
@@ -122,6 +206,6 @@ public class BoardGUI extends Listenable {
     }
 
     private Scene makeScene() {
-        return new Scene(makeRootGroup(), 600, 600, Color.LIGHTGRAY);
+        return new Scene(makeRootGroup(), 800, 640, Color.LIGHTGRAY);
     }
 }

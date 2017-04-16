@@ -5,7 +5,11 @@ import something.Core.Client;
 import something.Core.GameTask;
 import something.Core.event.GameEvent;
 import something.Core.event.events.common.MoveEvent;
+import something.Core.event.events.game.ForfeitEvent;
 import something.Core.event.events.player.EnemyMoveEvent;
+
+import java.io.IOException;
+
 
 public class OnlinePlayer<GameType extends Board> extends Player<GameType> {
     private final Client client;
@@ -34,6 +38,10 @@ public class OnlinePlayer<GameType extends Board> extends Player<GameType> {
     public void handleEvent(GameEvent event) {
         if (event instanceof EnemyMoveEvent) {
             client.makeMove(((EnemyMoveEvent) event).move);
+        } else if (event instanceof ForfeitEvent) {
+            try {
+                client.forfeit();
+            } catch (IOException e) {e.printStackTrace();}
         }
     }
 }

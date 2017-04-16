@@ -44,11 +44,9 @@ public class BoardGUI extends Listenable {
         Canvas canvas = makeCanvas();
         borderPane.setCenter(canvas);
         rootGroup.getChildren().add(borderPane);
-
         ToolBar toolBar = new ToolBar();
         Button forfeit = new Button("Forfeit");
         forfeit.setOnAction(event -> fireEvent(new ForfeitEvent()));
-
         toolBar.getItems().add(forfeit);
         borderPane.setBottom(toolBar);
 

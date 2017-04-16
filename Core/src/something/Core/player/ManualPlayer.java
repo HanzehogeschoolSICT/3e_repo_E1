@@ -5,6 +5,7 @@ import something.Core.event.GameEvent;
 import something.Core.event.events.common.MoveEvent;
 import something.Core.event.events.player.YourTurnEvent;
 
+
 public class ManualPlayer<GameType extends Board> extends Player<GameType> {
     private boolean canMove = false;
 

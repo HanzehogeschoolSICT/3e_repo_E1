@@ -4,6 +4,7 @@ import something.Core.Board;
 import something.Core.IllegalMoveException;
 import something.Core.event.events.common.BoardUpdateEvent;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public class ReversiBoard extends Board {
@@ -102,6 +103,19 @@ public class ReversiBoard extends Board {
             iterator += stepSize;
             board[iterator] = tile;
         }
+    }
+
+    public int[] getScore() {
+        int[] score = new int[2];
+        for (Tile tile : board) {
+            if (tile == Tile.BLACK) {
+                score[0]++;
+            }
+            if (tile == Tile.WHITE) {
+                score[1]++;
+            }
+        }
+        return score;
     }
 
 
