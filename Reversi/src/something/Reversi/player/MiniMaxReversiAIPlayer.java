@@ -62,6 +62,7 @@ public class MiniMaxReversiAIPlayer extends AIPlayer<ReversiBoard> {
             System.out.println("Planning for: " + (TOTAL_TIME-spentTime));
             return future.get(TOTAL_TIME-spentTime, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | TimeoutException | ExecutionException e1) {
+            future.cancel(true);
             e1.printStackTrace();
             HashMap<Integer, Integer> validMoves = board.getValidMoves(isPlayer1());
             int bestMove = -1;
