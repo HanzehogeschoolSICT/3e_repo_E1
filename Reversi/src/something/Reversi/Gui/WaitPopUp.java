@@ -18,6 +18,7 @@ import something.Core.Client;
 import something.Core.event.GameEvent;
 import something.Core.event.GameEventListener;
 import something.Core.event.events.client.ChallengeReceiveEvent;
+import something.Core.event.events.client.MatchFinishEvent;
 import something.Core.event.events.client.MatchStartEvent;
 import something.Core.event.events.game.GameFinishedEvent;
 import something.Core.player.ManualPlayer;
@@ -43,14 +44,13 @@ public class WaitPopUp {
         this.client = new Client();
         InetAddress address;
         try {
-            address = InetAddress.getLocalHost();
+            address = InetAddress.getByName("schoolpi.easthome.nl");
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
         try {
             client.connect(address, 7789);
             client.login(username);
-            client.registerEventListener(System.out::println);
 
             parent.setScene(makeScene());
             parent.setOnCloseRequest(event -> {
@@ -63,7 +63,17 @@ public class WaitPopUp {
             client.registerEventListener(new GameEventListener() {
                 @Override
                 public void handleEvent(GameEvent event) {
-                    if (event instanceof MatchStartEvent) {
+                    if (event instanceof MatchFinishEvent) {
+                        if (((MatchFinishEvent) event).getComment().contains("timelimit")) {
+                            Platform.runLater(() -> {
+                                Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
+                                resultInfo.setTitle("Game timeout!");
+                                resultInfo.setHeaderText(((MatchFinishEvent) event).getResult());
+                                resultInfo.setContentText(null);
+                                resultInfo.show();
+                            });
+                        }
+                    } else if (event instanceof MatchStartEvent) {
                         boolean isPlayer1 = username.equals(((MatchStartEvent) event).getPlayerToMove());
 
                         Player<ReversiBoard> player = type.getPlayer();
@@ -82,7 +92,7 @@ public class WaitPopUp {
                         player1.setPlayer1(true);
                         player2.setPlayer1(false);
                         ReversiBoard reversiBoard = new ReversiBoard();
-                        AbstractGameController<ReversiBoard> controller = new AbstractGameController<>(reversiBoard, player1, player2);
+                        AbstractGameController<ReversiBoard> controller = new AbstractGameController<>(reversiBoard, player1, player2, true);
 
                         Platform.runLater(() -> {
                             Stage gameStage = new Stage();
@@ -109,7 +119,6 @@ public class WaitPopUp {
                                 Platform.runLater(() -> {
                                     Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
                                     String victoryText = victor.toString();
-
                                     if (victor == Board.Victor.PLAYER1) {
                                         victoryText = "Black wins!";
                                     } else if (victor == Board.Victor.PLAYER2) {

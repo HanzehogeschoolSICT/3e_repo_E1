@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="334.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="something.Reversi.Gui.ModeSelectController">
+<Pane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="something.Reversi.Gui.ModeSelectController">
    <children>
       <Button fx:id="onlineButton" layoutX="25.0" layoutY="104.0" mnemonicParsing="false" onAction="#startOnline" prefHeight="25.0" prefWidth="65.0" text="Online" />
       <Button fx:id="offlineButton" layoutX="108.0" layoutY="104.0" mnemonicParsing="false" onAction="#startOffline" prefHeight="25.0" prefWidth="65.0" text="Offline" />

@@ -19,7 +19,7 @@ public class StartGui extends Application {
         GameTask.start();
         Parent modeSelect = FXMLLoader.load(StartGui.class.getResource("/fxml/modeSelect.fxml"));
 
-        Scene scene = new Scene(modeSelect, 200, 300);
+        Scene scene = new Scene(modeSelect, 200, 350);
 
         stage.setTitle("Game mode select");
         stage.setScene(scene);

@@ -6,24 +6,24 @@ import something.Reversi.ReversiBoard;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReversiAIPlayer extends AIPlayer<ReversiBoard> {
+public class TileGreedyReversiAIPlayer extends AIPlayer<ReversiBoard> {
     @Override
     public int decideMove() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         HashMap<Integer, Integer> validMoves = board.getValidMoves(isPlayer1());
-        int optimalMove = -1;
-        int optimalScore = -1;
+        int bestMove = -1;
+        int bestScore = -1;
         for (Map.Entry<Integer, Integer> moveScoreEntry : validMoves.entrySet()) {
-            if (optimalScore < moveScoreEntry.getValue()) {
-                optimalMove = moveScoreEntry.getKey();
-                optimalScore = moveScoreEntry.getValue();
+            if (bestScore < moveScoreEntry.getValue()) {
+                bestMove = moveScoreEntry.getKey();
+                bestScore = moveScoreEntry.getValue();
             }
         }
-        return optimalMove;
+        return bestMove;
     }
 
     @Override

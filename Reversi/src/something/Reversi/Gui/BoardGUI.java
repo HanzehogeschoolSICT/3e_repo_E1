@@ -19,12 +19,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import something.Core.Client;
 import something.Core.Listenable;
 import something.Core.event.events.common.BoardUpdateEvent;
-import something.Core.event.events.game.ForfeitEvent;
 import something.Core.player.Player;
 import something.Reversi.ReversiBoard;
 import something.Reversi.Tile;
@@ -92,7 +89,6 @@ public class BoardGUI extends Listenable {
     }
 
     private void redrawBoard() {
-        System.out.println("Board Redrawn");
         Tile[] board = reversiBoard.getBoard();
         graphicsContext.clearRect(0, 0, 600, 600);
         drawGrid(canvasW, canvasH);
@@ -109,9 +105,8 @@ public class BoardGUI extends Listenable {
     }
 
     private void redrawScore() {
-        int[] score = reversiBoard.getScore();
-        scoreBlack.setText(Integer.toString(score[0]));
-        scoreWhite.setText(Integer.toString(score[1]));
+        scoreBlack.setText(Integer.toString(reversiBoard.getScore(true)));
+        scoreWhite.setText(Integer.toString(reversiBoard.getScore(false)));
         if (turnCount%2 == 0) {
             turn.setFill(Color.BLACK);
         } else {

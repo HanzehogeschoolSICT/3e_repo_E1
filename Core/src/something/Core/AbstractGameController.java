@@ -14,12 +14,14 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
     private final GameType board;
     private final Player<GameType> player1;
     private final Player<GameType> player2;
+    private final boolean skipOnError;
     private boolean firstPlayerAtTurn;
 
-    public AbstractGameController(GameType board, Player<GameType> player1, Player<GameType> player2) {
+    public AbstractGameController(GameType board, Player<GameType> player1, Player<GameType> player2, boolean skipOnError) {
         this.board = board;
         this.player1 = player1;
         this.player2 = player2;
+        this.skipOnError = skipOnError;
         this.firstPlayerAtTurn = true;
         player1.reset(board, true);
         player2.reset(board, false);
@@ -34,7 +36,6 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
     }
 
     public void interrupt() {
-        System.out.println("Interrupting!");
         GameTask.submit(() -> {
             player1.interruptEvents();
             player2.interruptEvents();
@@ -62,8 +63,6 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
         }
 
         public void handleEvent(GameEvent event) {
-            System.out.println("MOOOOOOVEEEE");
-            System.out.println(event);
             if (event instanceof MoveEvent) {
                 if (firstPlayerAtTurn == isPlayer1) {
                     if (board.isMoveValid(((MoveEvent) event).move, firstPlayerAtTurn)) {
@@ -89,16 +88,24 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
                             System.exit(-1);    // This should _never_ happen.
                         }
                     } else {
-                        if (isPlayer1) {
-                            player1.pushEvent(new YourTurnEvent());
+                        if (skipOnError) {
+                            firstPlayerAtTurn = !firstPlayerAtTurn;
+                            if (isPlayer1) {
+                                player2.pushEvent(new YourTurnEvent());
+                            } else {
+                                player1.pushEvent(new YourTurnEvent());
+                            }
                         } else {
-                            player2.pushEvent(new YourTurnEvent());
+                            if (isPlayer1) {
+                                player1.pushEvent(new YourTurnEvent());
+                            } else {
+                                player2.pushEvent(new YourTurnEvent());
+                            }
                         }
                     }
                 }
             }
             if (event instanceof ForfeitEvent) {
-                System.out.println("FORFEITING");
                 if (isPlayer1) {
                     player2.pushEvent(new ForfeitEvent());
                 } else {

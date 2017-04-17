@@ -38,8 +38,7 @@ public class ModeSelectController {
     }
 
     public void startTest(ActionEvent actionEvent) {
-        System.out.println(actionEvent);
-
+        // TODO if spare time
     }
 
     public void startOffline(ActionEvent actionEvent) {
@@ -66,7 +65,7 @@ public class ModeSelectController {
         }
 
         TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
-        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
+        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2, false);
         controller.start();
         Platform.runLater(() -> {
             stage.setTitle("Tic Tac Toe");

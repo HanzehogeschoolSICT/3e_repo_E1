@@ -4,10 +4,9 @@ import something.Core.Board;
 import something.Core.IllegalMoveException;
 import something.Core.event.events.common.BoardUpdateEvent;
 
-import java.util.Collection;
 import java.util.HashMap;
 
-public class ReversiBoard extends Board {
+public class ReversiBoard extends Board implements Cloneable {
     private Tile[] board;
 
     public ReversiBoard() {
@@ -19,6 +18,15 @@ public class ReversiBoard extends Board {
         board[28] = Tile.BLACK;
         board[35] = Tile.BLACK;
         board[36] = Tile.WHITE;
+    }
+
+    public ReversiBoard(Tile[] board) {
+        this.board = board;
+    }
+
+    @Override
+    public ReversiBoard clone() {
+        return new ReversiBoard(this.board.clone());
     }
 
     public String toString() {
@@ -105,14 +113,25 @@ public class ReversiBoard extends Board {
         }
     }
 
-    public int[] getScore() {
-        int[] score = new int[2];
-        for (Tile tile : board) {
-            if (tile == Tile.BLACK) {
-                score[0]++;
+    private static int[] positionValues = {
+            7, 2, 5, 4, 4, 5, 2, 7,
+            2, 1, 3, 3, 3, 3, 1, 2,
+            5, 3, 6, 5, 5, 6, 3, 5,
+            4, 3, 5, 6, 6, 5, 3, 4,
+            4, 3, 5, 6, 6, 5, 3, 4,
+            5, 3, 6, 5, 5, 6, 3, 5,
+            2, 1, 3, 3, 3, 3, 1, 2,
+            7, 2, 5, 4, 4, 5, 2, 7
+    };
+
+    public int getScore(boolean isPlayer1) {
+        int score = 0;
+        for (int i = 0; i < board.length; i++) {
+            if (isPlayer1 && board[i] == Tile.BLACK) {
+                score+=positionValues[i];
             }
-            if (tile == Tile.WHITE) {
-                score[1]++;
+            if (!isPlayer1 && board[i] == Tile.WHITE) {
+                score+=positionValues[i];
             }
         }
         return score;
@@ -129,6 +148,11 @@ public class ReversiBoard extends Board {
         }
     }
 
+    /**
+     * Returns map of moves with corresponding amount of flipped tones
+     * @param isPlayer1 True to fetch moves for player1 (black), false to fetch for player2 (white)
+     * @return map of moves with corresponding amount of flipped tones
+     */
     public HashMap<Integer, Integer> getValidMoves(boolean isPlayer1) {
         HashMap<Integer, Integer> validMoves = new HashMap<>();
         for (int i = 0; i < 64; i++) {
@@ -137,16 +161,13 @@ public class ReversiBoard extends Board {
                 validMoves.put(i, moveScore);
             }
         }
-        System.out.println(validMoves);
         return validMoves;
 
     }
 
     @Override
     public boolean isMoveValid(int move, boolean firstPlayerAtTurn) {
-        int test = getMoveFlips(move, firstPlayerAtTurn);
-        System.out.println(test);
-        return test > 0;
+        return move >= 0 && getMoveFlips(move, firstPlayerAtTurn) > 0;
     }
 
     private int getMoveFlips(int index, boolean isPlayer1) {

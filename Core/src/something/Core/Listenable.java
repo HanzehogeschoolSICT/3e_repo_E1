@@ -9,21 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Listenable {
-    private final List<WeakReference<GameEventListener>> eventListeners = ConcurrentListDebug.getProxy(new ArrayList<>());
+    private final List<GameEventListener> eventListeners = ConcurrentListDebug.getProxy(new ArrayList<>());
 
     public void registerEventListener(GameEventListener eventListener) {
         synchronized (eventListeners) {
-            eventListeners.add(new WeakReference<>(eventListener));
+            eventListeners.add(eventListener);
         }
     }
 
     protected void fireEvent(GameEvent gameEvent) {
         synchronized (eventListeners) {
-            for (WeakReference<GameEventListener> reference : eventListeners) {
-                GameEventListener gameEventListener = reference.get();
-                if (gameEventListener != null) {
-                    gameEventListener.handleEvent(gameEvent);
-                }
+            for (GameEventListener gameEventListener : eventListeners) {
+                gameEventListener.handleEvent(gameEvent);
             }
         }
     }

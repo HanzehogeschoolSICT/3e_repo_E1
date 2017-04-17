@@ -37,8 +37,7 @@ public class ModeSelectController {
     }
 
     public void startTest(ActionEvent actionEvent) {
-        System.out.println(actionEvent);
-
+        // TODO if spare time
     }
 
     public void startOnline(ActionEvent actionEvent) {
@@ -79,7 +78,7 @@ public class ModeSelectController {
         }
 
         ReversiBoard reversiBoard = new ReversiBoard();
-        AbstractGameController<ReversiBoard> controller = new AbstractGameController<>(reversiBoard, player1, player2);
+        AbstractGameController<ReversiBoard> controller = new AbstractGameController<>(reversiBoard, player1, player2, true);
         controller.start();
         Platform.runLater(() -> {
             stage.setTitle("Reversi");

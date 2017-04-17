@@ -50,7 +50,6 @@ public class WaitPopUp {
         try {
             client.connect(address, 7789);
             client.login(username);
-            client.registerEventListener(System.out::println);
 
             parent.setScene(makeScene());
             parent.setOnCloseRequest(event -> {
@@ -83,7 +82,7 @@ public class WaitPopUp {
                         player1.setPlayer1(true);
                         player2.setPlayer1(false);
                         TicTacToeBoard ticTacToeBoard = new TicTacToeBoard();
-                        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2);
+                        AbstractGameController<TicTacToeBoard> controller = new AbstractGameController<>(ticTacToeBoard, player1, player2, false);
 
                         Platform.runLater(() -> {
                             Stage gameStage = new Stage();
