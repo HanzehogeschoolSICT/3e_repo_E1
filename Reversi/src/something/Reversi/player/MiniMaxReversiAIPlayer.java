@@ -5,16 +5,13 @@ import something.Core.player.AIPlayer;
 import something.Reversi.ReversiBoard;
 import something.Reversi.player.util.InterruptibleExecutor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class MiniMaxReversiAIPlayer extends AIPlayer<ReversiBoard> {
     private static final int TOTAL_TIME = 9500;
     private final int THINKING_TIME;
-    private InterruptibleExecutor buildTreeExecutor = new InterruptibleExecutor(4);
+    private InterruptibleExecutor buildTreeExecutor = new InterruptibleExecutor(2);
     private ExecutorService parseExecutor = Executors.newSingleThreadExecutor();
 
     public MiniMaxReversiAIPlayer(int thinking_time) {
@@ -28,8 +25,7 @@ public class MiniMaxReversiAIPlayer extends AIPlayer<ReversiBoard> {
         RecursiveMap<Integer> moveMap = buildTree(buildTreeExecutor, board.clone(), isPlayer1);
         try {
             Thread.sleep(THINKING_TIME);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ignored) {
         }
         buildTreeExecutor.stop();
 
@@ -49,7 +45,7 @@ public class MiniMaxReversiAIPlayer extends AIPlayer<ReversiBoard> {
                             bestMove = move.getKey();
                         }
                     }
-                    System.out.println("Tree parse complete: " + (System.currentTimeMillis()-startParse));
+                    System.out.println("Tree parse complete: " + (System.currentTimeMillis() - startParse));
                     return bestMove;
                 } catch (IllegalMoveException e) {
                     e.printStackTrace();
@@ -59,11 +55,10 @@ public class MiniMaxReversiAIPlayer extends AIPlayer<ReversiBoard> {
         });
 
         try {
-            System.out.println("Planning for: " + (TOTAL_TIME-spentTime));
-            return future.get(TOTAL_TIME-spentTime, TimeUnit.MILLISECONDS);
+            System.out.println("Planning for: " + (TOTAL_TIME - spentTime));
+            return future.get(TOTAL_TIME - spentTime, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | TimeoutException | ExecutionException e1) {
             future.cancel(true);
-            e1.printStackTrace();
             HashMap<Integer, Integer> validMoves = board.getValidMoves(isPlayer1());
             int bestMove = -1;
             int bestScore = -1;
@@ -87,7 +82,7 @@ public class MiniMaxReversiAIPlayer extends AIPlayer<ReversiBoard> {
             if (subMap == null || subMap.size() == 0) {
                 value = Math.max(value, board.getScore(isPlayer1));
             } else {
-                value = Math.max(value, miniMax(depth+1, subMap, board, !isPlayer1));
+                value = Math.max(value, miniMax(depth + 1, subMap, board, !isPlayer1));
             }
         }
         return value;
