@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class InterruptibleExecutor {
+    private static int TASKS_PER_THROTTLE = 750;    // TODO: Tweak on laptop
     private ConcurrentLinkedDeque<Runnable> runnableQueue;
     private Thread[] threads;
     private boolean spinLock;
@@ -14,12 +15,18 @@ public class InterruptibleExecutor {
         spinLock = false;
         for (int i = 0; i < poolSize; i++) {
             (threads[i] = new Thread(() -> {
+                int tasks = 0;
                 try {
                     while (true) {
                         if (!spinLock) {
                             Runnable runnable = runnableQueue.pollFirst();
                             if (runnable != null) {
                                 runnable.run();
+                                tasks++;
+                                if (tasks > TASKS_PER_THROTTLE) {
+                                    Thread.sleep(10);
+                                    tasks = 0;
+                                }
                             } else {
                                 Thread.sleep(100);
                             }

@@ -18,6 +18,7 @@ public enum PlayerType {
     RandomAI(RandomReversiAIPlayer::new),
     MinimaxAI_200(() -> new MiniMaxReversiAIPlayer(200)),
     MinimaxAI_2000(() -> new MiniMaxReversiAIPlayer(2000)),
+    MinimaxAI_4000(() -> new MiniMaxReversiAIPlayer(4000)),
     MinimaxAI_5500(() -> new MiniMaxReversiAIPlayer(5500));
 
     private Supplier<Player<ReversiBoard>> supplier;
