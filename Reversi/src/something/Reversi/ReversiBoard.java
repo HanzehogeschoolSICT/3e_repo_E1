@@ -137,6 +137,19 @@ public class ReversiBoard extends Board implements Cloneable {
         return score;
     }
 
+    public int getTileCount(boolean isPlayer1) {
+        int score = 0;
+        for (Tile aBoard : board) {
+            if (isPlayer1 && aBoard == Tile.BLACK) {
+                score++;
+            }
+            if (!isPlayer1 && aBoard == Tile.WHITE) {
+                score++;
+            }
+        }
+        return score;
+    }
+
 
     public Tile[] getBoard() {
         return this.board;

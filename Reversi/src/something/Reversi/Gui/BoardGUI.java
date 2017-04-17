@@ -22,7 +22,6 @@ import javafx.scene.text.Font;
 import something.Core.Client;
 import something.Core.Listenable;
 import something.Core.event.events.common.BoardUpdateEvent;
-import something.Core.event.events.game.ForfeitEvent;
 import something.Core.player.ManualPlayer;
 import something.Core.player.Player;
 import something.Reversi.ReversiBoard;
@@ -111,8 +110,8 @@ public class BoardGUI extends Listenable {
     }
 
     private void redrawScore() {
-        scoreBlack.setText(Integer.toString(reversiBoard.getScore(true)));
-        scoreWhite.setText(Integer.toString(reversiBoard.getScore(false)));
+        scoreBlack.setText(Integer.toString(reversiBoard.getTileCount(true)));
+        scoreWhite.setText(Integer.toString(reversiBoard.getTileCount(false)));
         if (turnCount%2 == 0) {
             turn.setFill(Color.BLACK);
         } else {

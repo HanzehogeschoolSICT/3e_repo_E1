@@ -64,15 +64,13 @@ public class WaitPopUp {
                 @Override
                 public void handleEvent(GameEvent event) {
                     if (event instanceof MatchFinishEvent) {
-                        if (((MatchFinishEvent) event).getComment().contains("timelimit")) {
                             Platform.runLater(() -> {
                                 Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
-                                resultInfo.setTitle("Game timeout!");
-                                resultInfo.setHeaderText(((MatchFinishEvent) event).getResult());
+                                resultInfo.setTitle(((MatchFinishEvent) event).getResult());
+                                resultInfo.setHeaderText(((MatchFinishEvent) event).getComment());
                                 resultInfo.setContentText(null);
                                 resultInfo.show();
                             });
-                        }
                     } else if (event instanceof MatchStartEvent) {
                         boolean isPlayer1 = username.equals(((MatchStartEvent) event).getPlayerToMove());
 
@@ -115,24 +113,24 @@ public class WaitPopUp {
                         });
 
                         if (player.isPlayer1()) controller.start();
-                        controller.registerEventListener(controllerEvent -> {
-                            if (controllerEvent instanceof GameFinishedEvent) {
-                                Platform.runLater(() -> {
-                                    Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
-                                    String victoryText = victor.toString();
-                                    if (victor == Board.Victor.PLAYER1) {
-                                        victoryText = "Black wins!";
-                                    } else if (victor == Board.Victor.PLAYER2) {
-                                        victoryText = "White wins!";
-                                    }
-                                    Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
-                                    resultInfo.setTitle("Game Result");
-                                    resultInfo.setHeaderText(victoryText);
-                                    resultInfo.setContentText(null);
-                                    resultInfo.show();
-                                });
-                            }
-                        });
+//                        controller.registerEventListener(controllerEvent -> {
+//                            if (controllerEvent instanceof GameFinishedEvent) {
+//                                Platform.runLater(() -> {
+//                                    Board.Victor victor = ((GameFinishedEvent) controllerEvent).getVictor();
+//                                    String victoryText = victor.toString();
+//                                    if (victor == Board.Victor.PLAYER1) {
+//                                        victoryText = "Black wins!";
+//                                    } else if (victor == Board.Victor.PLAYER2) {
+//                                        victoryText = "White wins!";
+//                                    }
+//                                    Alert resultInfo = new Alert(Alert.AlertType.INFORMATION);
+//                                    resultInfo.setTitle("Game Result");
+//                                    resultInfo.setHeaderText(victoryText);
+//                                    resultInfo.setContentText(null);
+//                                    resultInfo.show();
+//                                });
+//                            }
+//                        });
                     }
                 }
             });

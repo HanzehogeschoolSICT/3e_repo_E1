@@ -9,40 +9,70 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 
 public class MiniMaxReversiAIPlayer extends AIPlayer<ReversiBoard> {
-    private static final long THINKING_TIME = 3000;
-    private InterruptibleExecutor interruptibleExecutor = new InterruptibleExecutor(4);
+    private static final int TOTAL_TIME = 9500;
+    private final int THINKING_TIME;
+    private InterruptibleExecutor buildTreeExecutor = new InterruptibleExecutor(4);
+    private ExecutorService parseExecutor = Executors.newSingleThreadExecutor();
+
+    public MiniMaxReversiAIPlayer(int thinking_time) {
+        THINKING_TIME = thinking_time;
+    }
 
     @Override
     public int decideMove() {
-        if (!interruptibleExecutor.isRunning()) interruptibleExecutor.start();
+        if (!buildTreeExecutor.isRunning()) buildTreeExecutor.start();
         long startBuild = System.currentTimeMillis();
-        RecursiveMap<Integer> moveMap = buildTree(interruptibleExecutor, board.clone(), isPlayer1);
+        RecursiveMap<Integer> moveMap = buildTree(buildTreeExecutor, board.clone(), isPlayer1);
         try {
             Thread.sleep(THINKING_TIME);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        interruptibleExecutor.stop();
-        //System.out.println("Tree building complete: " + (System.currentTimeMillis() - startBuild));
-        try {
-            long startParse = System.currentTimeMillis();
-            int bestMove = -1;
-            int bestScore = Integer.MIN_VALUE;
-            for (Map.Entry<Integer, RecursiveMap<Integer>> move : moveMap.entrySet()) {
-                int score = miniMax(0, move.getValue(), board.clone(), !isPlayer1);
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = move.getKey();
+        buildTreeExecutor.stop();
+
+        long spentTime = (System.currentTimeMillis() - startBuild);
+        System.out.println("Tree building complete: " + spentTime);
+        Future<Integer> future = parseExecutor.submit(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                try {
+                    long startParse = System.currentTimeMillis();
+                    int bestMove = -1;
+                    int bestScore = Integer.MIN_VALUE;
+                    for (Map.Entry<Integer, RecursiveMap<Integer>> move : moveMap.entrySet()) {
+                        int score = miniMax(0, move.getValue(), board.clone(), !isPlayer1);
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestMove = move.getKey();
+                        }
+                    }
+                    System.out.println("Tree parse complete: " + (System.currentTimeMillis()-startParse));
+                    return bestMove;
+                } catch (IllegalMoveException e) {
+                    e.printStackTrace();
+                    return -1;
                 }
             }
-            //System.out.println("Tree parse complete: " + (System.currentTimeMillis()-startParse));
+        });
+
+        try {
+            System.out.println("Planning for: " + (TOTAL_TIME-spentTime));
+            return future.get(TOTAL_TIME-spentTime, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | TimeoutException | ExecutionException e1) {
+            e1.printStackTrace();
+            HashMap<Integer, Integer> validMoves = board.getValidMoves(isPlayer1());
+            int bestMove = -1;
+            int bestScore = -1;
+            for (Map.Entry<Integer, Integer> moveScoreEntry : validMoves.entrySet()) {
+                if (bestScore < moveScoreEntry.getValue()) {
+                    bestMove = moveScoreEntry.getKey();
+                    bestScore = moveScoreEntry.getValue();
+                }
+            }
             return bestMove;
-        } catch (IllegalMoveException e) {
-            e.printStackTrace();
-            return -1;
         }
     }
 
@@ -64,12 +94,13 @@ public class MiniMaxReversiAIPlayer extends AIPlayer<ReversiBoard> {
 
     @Override
     protected void reset() {
-        interruptibleExecutor.stop();
+        buildTreeExecutor.stop();
     }
 
     @Override
     protected void finalize() {
-        interruptibleExecutor.shutdown();
+        buildTreeExecutor.shutdown();
+        parseExecutor.shutdownNow();
     }
 
     private static RecursiveMap<Integer> buildTree(InterruptibleExecutor interruptibleExecutor, ReversiBoard board, boolean isPlayer1) {
