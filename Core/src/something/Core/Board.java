@@ -1,12 +1,7 @@
 package something.Core;
 
 public abstract class Board extends Listenable {
-    /**
-     *
-     * @param move
-     * @param firstPlayerAtTurn
-     * @return
-     */
+
     public abstract boolean isMoveValid(int move, boolean firstPlayerAtTurn);
 
     /**

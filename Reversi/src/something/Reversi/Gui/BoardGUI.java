@@ -19,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import something.Core.AbstractGameController;
 import something.Core.Client;
 import something.Core.Listenable;
 import something.Core.event.events.common.BoardUpdateEvent;
@@ -39,11 +40,13 @@ public class BoardGUI extends Listenable {
     private Label scoreBlack, scoreWhite;
     private Circle turn;
     private VBox vBox;
-    private int turnCount;
-    private Player player1, player2;
+    private final AbstractGameController<ReversiBoard> controller;
+    private Player player1;
+    private Player player2;
 
-    public BoardGUI(ReversiBoard reversiBoard, EventHandler<MouseEvent> mouseEventEventHandler, Player<ReversiBoard> player1, Player<ReversiBoard> player2) {
+    public BoardGUI(ReversiBoard reversiBoard, AbstractGameController<ReversiBoard> controller, EventHandler<MouseEvent> mouseEventEventHandler, Player<ReversiBoard> player1, Player<ReversiBoard> player2) {
         this.reversiBoard = reversiBoard;
+        this.controller = controller;
         this.player1 = player1;
         this.player2 = player2;
         reversiBoard.registerEventListener(event -> {
@@ -112,12 +115,12 @@ public class BoardGUI extends Listenable {
     private void redrawScore() {
         scoreBlack.setText(Integer.toString(reversiBoard.getTileCount(true)));
         scoreWhite.setText(Integer.toString(reversiBoard.getTileCount(false)));
-        if (turnCount%2 == 0) {
+
+        if (controller.isFirstPlayerAtTurn()) {
             turn.setFill(Color.BLACK);
         } else {
             turn.setFill(Color.WHITE);
         }
-        turnCount++;
     }
 
     private Canvas makeCanvas() {
@@ -148,7 +151,6 @@ public class BoardGUI extends Listenable {
         Label turnLabel = new Label("Turn:");
         turnLabel.setFont(Font.font("Helvetica", 18));
         turn = new Circle(30, Color.BLACK);
-        turnCount = 1;
         Label scoreBlackLabel = new Label("Score black:");
         scoreBlackLabel.setFont(Font.font("Helvetica", 18));
         scoreBlack = new Label("2");

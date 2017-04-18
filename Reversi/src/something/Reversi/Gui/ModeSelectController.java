@@ -82,7 +82,7 @@ public class ModeSelectController {
         controller.start();
         Platform.runLater(() -> {
             stage.setTitle("Reversi");
-            stage.setScene(new BoardGUI(reversiBoard, mouseEventHandler, player1, player2).scene);
+            stage.setScene(new BoardGUI(reversiBoard, controller, mouseEventHandler, player1, player2).scene);
             stage.setOnCloseRequest(event12 -> {
                 controller.interrupt();
                 StartGui.shutdown();

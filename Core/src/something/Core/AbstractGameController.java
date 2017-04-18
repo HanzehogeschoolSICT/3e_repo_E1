@@ -8,8 +8,6 @@ import something.Core.event.events.player.EnemyMoveEvent;
 import something.Core.event.events.player.YourTurnEvent;
 import something.Core.player.Player;
 
-import java.io.IOException;
-
 public class AbstractGameController<GameType extends Board> extends Listenable {
     private final GameType board;
     private final Player<GameType> player1;
@@ -53,6 +51,10 @@ public class AbstractGameController<GameType extends Board> extends Listenable {
         }
         fireEvent(new GameFinishedEvent(victor));
         interrupt();
+    }
+
+    public boolean isFirstPlayerAtTurn() {
+        return firstPlayerAtTurn;
     }
 
     public class GameControllerEventListener implements GameEventListener {
