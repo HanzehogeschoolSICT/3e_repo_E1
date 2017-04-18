@@ -20,6 +20,12 @@ public class MiniMaxReversiAIPlayer extends AIPlayer<ReversiBoard> {
 
     @Override
     public int decideMove() {
+        HashMap<Integer, Integer> validMoves = board.getValidMoves(isPlayer1);
+        if (validMoves.size() == 1) {
+            return validMoves.entrySet().iterator().next().getKey();
+        }
+
+
         if (!buildTreeExecutor.isRunning()) buildTreeExecutor.start();
         long startBuild = System.currentTimeMillis();
         RecursiveMap<Integer> moveMap = buildTree(buildTreeExecutor, board.clone(), isPlayer1);
@@ -59,7 +65,6 @@ public class MiniMaxReversiAIPlayer extends AIPlayer<ReversiBoard> {
             return future.get(TOTAL_TIME - spentTime, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | TimeoutException | ExecutionException e1) {
             future.cancel(true);
-            HashMap<Integer, Integer> validMoves = board.getValidMoves(isPlayer1());
             int bestMove = -1;
             int bestScore = -1;
             for (Map.Entry<Integer, Integer> moveScoreEntry : validMoves.entrySet()) {
