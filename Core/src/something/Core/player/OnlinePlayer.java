@@ -25,7 +25,6 @@ public class OnlinePlayer<GameType extends Board> extends Player<GameType> {
                             this.fireEvent(event);
                         }
                     }
-
                 }));
     }
 

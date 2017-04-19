@@ -13,14 +13,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import something.Core.AbstractGameController;
-import something.Core.Board;
 import something.Core.Client;
 import something.Core.event.GameEvent;
 import something.Core.event.GameEventListener;
 import something.Core.event.events.client.ChallengeReceiveEvent;
 import something.Core.event.events.client.MatchFinishEvent;
 import something.Core.event.events.client.MatchStartEvent;
-import something.Core.event.events.game.GameFinishedEvent;
 import something.Core.player.ManualPlayer;
 import something.Core.player.OnlinePlayer;
 import something.Core.player.Player;
@@ -105,7 +103,7 @@ public class WaitPopUp {
                                 mouseEventEventHandler = mouseEvent -> {
                                 };
                             }
-                            BoardGUI boardGUI = new BoardGUI(reversiBoard, mouseEventEventHandler, player1, player2);
+                            BoardGUI boardGUI = new BoardGUI(reversiBoard, controller, mouseEventEventHandler, player1, player2);
                             gameStage.setScene(boardGUI.scene);
                             boardGUI.setToolbar(client);
                             boardGUI.setPlayerColor();
