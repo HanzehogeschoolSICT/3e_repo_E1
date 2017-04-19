@@ -6,7 +6,7 @@ import something.Core.event.events.client.MatchFinishEvent;
 import something.Core.event.events.client.MatchStartEvent;
 import something.Core.event.events.common.MoveEvent;
 import something.Core.event.events.player.YourTurnEvent;
-import something.Core.utils.StringUtils;
+import something.Core.util.StringUtils;
 
 import java.io.*;
 import java.net.InetAddress;

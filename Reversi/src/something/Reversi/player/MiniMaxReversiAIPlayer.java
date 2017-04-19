@@ -54,6 +54,7 @@ public class MiniMaxReversiAIPlayer extends AIPlayer<ReversiBoard> {
             }
         });
 
+        System.gc();
         try {
             System.out.println("Planning for: " + (TOTAL_TIME - spentTime));
             return future.get(TOTAL_TIME - spentTime, TimeUnit.MILLISECONDS);
